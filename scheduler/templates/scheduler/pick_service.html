@@ -1,0 +1,22 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<h2>Pick a Service</h2>
+<form method="post" action="{% url 'pick_service' booking.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="slot_id" value="{{ booking.slot.id }}">
+    <input type="hidden" name="time" value="{{ booking.time }}">
+    <input type="hidden" name="date" value="{{ booking.date }}">
+    <input type="hidden" name="customer_phone" value="{{ booking.customer_phone }}">
+    
+    <div class="form-group">
+        <label for="service">Choose a Service</label>
+        <select name="service_id" id="service" class="form-control" required>
+            {% for service in services %}
+                <option value="{{ service.id }}">{{ service.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Next</button>
+</form>
+{% endblock %}
