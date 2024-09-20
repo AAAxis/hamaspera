@@ -1,0 +1,10 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<h2>Pick a Service</h2>
+<form method="post" action="{% url 'confirm_booking' %}">
+    {% csrf_token %}
+    <input type="hidden" name="slot_id" value="{{ slot.id }}">
+    <input type="hidden" name="time" value="{{ slot.time }}">
+    <input type="hidden" name="date" value="{{ slot.date }}">
+    <input type="hidden" name="customer_phone" value="{{ customer_phone }}">

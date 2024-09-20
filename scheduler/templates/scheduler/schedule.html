@@ -1,0 +1,57 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<h2>Available Slots</h2>
+{% if slots %}
+<div id="calendar"></div>
+
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: [
+                {% for slot in slots %}
+                {
+                    title: 'Available Slot',
+                    start: '{{ slot.date }}T{{ slot.time }}',
+                    url: '{% url "book_slot" slot.date %}',  // Removed slot_id
+                    color: 'gray',
+                    textColor: 'white',
+                },
+                {% endfor %}
+            ],
+            dateClick: function(info) { 
+                // Ensure info.dateStr is valid
+                if (info.dateStr) {
+                    window.location.href = '{% url "book_slot" "date" %}'.replace('date', info.dateStr);  // Pass the date correctly
+                } else {
+                    console.error("Date is not valid:", info.dateStr);
+                }
+            },
+            eventClick: function(info) {
+                info.jsEvent.preventDefault(); // don't let the browser navigate
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                    alert('Booking slot: ' + info.event.title);
+                }
+            },
+            eventDidMount: function(info) {
+                info.el.style.cursor = 'pointer';
+                info.el.addEventListener('click', function() {
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                    }
+                });
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% else %}
+<p class="text-center">No available slots.</p>
+{% endif %}
+{% endblock %}
