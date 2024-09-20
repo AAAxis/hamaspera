@@ -37,7 +37,7 @@ class Shift(models.Model):
     
 class Booking(models.Model):
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
-    customer_phone = PhoneNumberField()
+    customer_phone = PhoneNumberField(null=True, blank=True)
     confirmed_at = models.DateTimeField(null=True, blank=True)
     barber = models.ForeignKey(Barber, on_delete=models.CASCADE, related_name='bookings')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookings')

@@ -25,9 +25,11 @@ cryptography==43.0.1
 cssselect==1.2.0
 cssutils==2.11.1
 dj-database-url==2.2.0
+Django==4.2.16
 django-celery-beat==2.7.0
 django-crispy-forms==2.3
 django-environ==0.11.2
+django-phonenumber-field==8.0.0
 django-rest-framework==0.1.0
 django-timezone-field==7.0
 djangorestframework==3.15.2
@@ -69,6 +71,7 @@ multidict==6.1.0
 networkx==3.2.1
 numpy==1.26.4
 packaging==24.1
+phonenumbers==8.13.45
 premailer==3.10.0
 prompt_toolkit==3.0.47
 proto-plus==1.24.0
