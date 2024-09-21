@@ -2,59 +2,59 @@
 
 {% block content %}
 <h2>Available Barbershops</h2>
-
-<!-- Placeholder where the fetched barbershops will be displayed -->
-<div id="barbershop-list" class="list-group"></div>
-
-<p id="no-barbershops-message" class="text-center" style="display:none;">No available barbershops.</p>
+<div id="business-list">
+    <!-- Businesses will be dynamically loaded here -->
+</div>
 
 <script type="module">
     // Firebase SDK Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-  authDomain: "barbershop-77353.firebaseapp.com",
-  projectId: "barbershop-77353",
-  storageBucket: "barbershop-77353.appspot.com",
-  messagingSenderId: "1018170430611",
-  appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-  measurementId: "G-4VS048B47G"
-};
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+      authDomain: "barbershop-77353.firebaseapp.com",
+      projectId: "barbershop-77353",
+      storageBucket: "barbershop-77353.appspot.com",
+      messagingSenderId: "1018170430611",
+      appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+      measurementId: "G-4VS048B47G"
+    };
 
-    // Initialize Firebase
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Function to fetch and display barbershops
-    async function fetchBarbershops() {
-        const querySnapshot = await getDocs(collection(db, 'barbershops'));
-        const barbershopList = document.getElementById('barbershop-list');
-        const noBarbershopsMessage = document.getElementById('no-barbershops-message');
+    // Fetch all businesses from Firestore
+    async function fetchBusinesses() {
+        const businessesList = document.getElementById('business-list');
+        try {
+            const querySnapshot = await getDocs(collection(db, 'businesses'));
 
-        if (querySnapshot.empty) {
-            noBarbershopsMessage.style.display = "block";  // Show "No barbershops" message if none found
-        } else {
-            noBarbershopsMessage.style.display = "none";  // Hide the message if we have results
-
-            querySnapshot.forEach((doc) => {
-                const barbershop = doc.data();
-                const listItem = document.createElement('a');
-                listItem.href = `/barbershop/${barbershop.name}/`;  // Adjust this URL according to your view
-                listItem.className = "list-group-item list-group-item-action";
-                listItem.innerHTML = `
-                    <h5 class="mb-1">${barbershop.name}</h5>
-                    <p class="mb-1">${barbershop.address}</p>
-                    <small>${barbershop.phone}</small>
-                `;
-                barbershopList.appendChild(listItem);
-            });
+            if (querySnapshot.empty) {
+                businessesList.innerHTML = '<p class="text-center">No available businesses.</p>';
+            } else {
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const businessItem = `
+                        <div class="list-group-item">
+                            <h5 class="mb-1">${data.business_name}</h5>
+                            <p class="mb-1">Address: ${data.address}</p>
+                            <p class="mb-1">Phone: ${data.phone}</p>
+                            <small>Service: ${data.service}</small>
+                        </div>
+                    `;
+                    businessesList.innerHTML += businessItem;
+                });
+            }
+        } catch (e) {
+            console.error("Error fetching businesses: ", e);
+            businessesList.innerHTML = '<p class="text-center">Error loading businesses.</p>';
         }
     }
 
-    // Fetch the barbershops when the page loads
-    fetchBarbershops();
+    // Call the function to fetch businesses on page load
+    fetchBusinesses();
 </script>
 {% endblock %}
