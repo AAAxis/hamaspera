@@ -1,17 +1,110 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<div class="container mt-5 bg-light bg-gradient rounded-lg p-4">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{{ barbershop.cover_image.url }}" alt="{{ barbershop.name }}" class="img-fluid rounded-lg shadow-lg">
-            <div class="mt-3">
-                <h1 class="text-primary" style="font-size: 2rem; font-weight: bold;">{{ barbershop.name }}</h1>
-                <p class="text-muted">{{ barbershop.address }}</p>
-                <p class="text-muted">{{ barbershop.phone }}</p>
-                <p class="text-muted">{{ barbershop.email }}</p>
-            </div>
-        </div>
-    </div>
+<div id="register-container">
+    <h2>Business Registration</h2>
+    <form id="business-form">
+        <input type="text" id="business-name" placeholder="Business Name" required>
+        <input type="text" id="address" placeholder="Address" required>
+        <input type="text" id="phone" placeholder="Phone" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <select id="service" required>
+            <option value="" disabled selected>Select a Service</option>
+            <option value="Hair Cut">Hair Cut</option>
+            <option value="Nail Salon">Nail Salon</option>
+            <option value="Spa">Spa</option>
+            <option value="Massage">Massage</option>
+            <option value="Other">Other</option>
+        </select>
+        <button type="submit">Register Business</button>
+    </form>
+    <p id="message"></p>
 </div>
+
+<div id="business-list">
+    <h2>Registered Businesses</h2>
+    <ul id="businesses"></ul>
+</div>
+
+<script type="module">
+    // Firebase SDK Imports
+  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+  authDomain: "barbershop-77353.firebaseapp.com",
+  projectId: "barbershop-77353",
+  storageBucket: "barbershop-77353.appspot.com",
+  messagingSenderId: "1018170430611",
+  appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+  measurementId: "G-4VS048B47G"
+};
+
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+
+    // Handle form submission to add new business
+    document.getElementById('business-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const businessName = document.getElementById('business-name').value;
+        const address = document.getElementById('address').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const service = document.getElementById('service').value;
+
+        try {
+            // Create user in Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Save business details in Firestore
+            await addDoc(collection(db, 'businesses'), {
+                business_name: businessName,
+                address: address,
+                phone: phone,
+                email: email,  // Store email
+                service: service,
+                uid: user.uid   // Link to user account
+            });
+
+            document.getElementById('message').innerText = "Business registered successfully!";
+            document.getElementById('business-form').reset(); // Reset the form after submission
+
+            // Fetch and update the business list after new registration
+            fetchBusinesses();
+
+        } catch (e) {
+            console.error("Error registering: ", e);
+            document.getElementById('message').innerText = "Error registering business!";
+        }
+    });
+
+    // Fetch and display businesses
+    async function fetchBusinesses() {
+        const querySnapshot = await getDocs(collection(db, 'businesses'));
+        const businessList = document.getElementById('businesses');
+        businessList.innerHTML = '';  // Clear previous results
+
+        querySnapshot.forEach((doc) => {
+            const business = doc.data();
+            const listItem = document.createElement('li');
+            listItem.textContent = `Name: ${business.business_name}, Address: ${business.address}, Phone: ${business.phone}, Service: ${business.service}`;
+            businessList.appendChild(listItem);
+        });
+    }
+
+    // Fetch the list of businesses on page load
+    fetchBusinesses();
+</script>
 {% endblock %}
