@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1 id="welcome-message"></h1>
+
+    <script>
+        // Retrieve the business name from local storage
+        const businessName = localStorage.getItem('businessName');
+        
+        // Display the welcome message
+        if (businessName) {
+            document.getElementById('welcome-message').innerText = `Welcome ${businessName}`;
+        } else {
+            document.getElementById('welcome-message').innerText = 'Welcome to the Dashboard';
+        }
+    </script>
+</body>
+</html>
