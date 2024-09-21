@@ -9,10 +9,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-image: url('your-default-background.jpg'); /* Set your default background */
+            background-image: url('https://lorenzosbarbershop.com/wp-content/uploads/2023/09/IMG_8819-1024x683.jpg'); /* Set your default background */
             background-size: cover;
             background-position: center;
             color: #fff;
+            cursor: pointer; /* Change cursor to pointer */
         }
 
         h1 {
@@ -97,21 +98,11 @@
             font-size: 1.5em;
             cursor: pointer;
         }
-
-        #uploadContainer {
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
     <h1 id="welcome-message"></h1>
     <p>ID: <span id="user-id"></span></p>
-
-    <!-- Upload background image -->
-    <div id="uploadContainer">
-        <input type="file" id="backgroundImageInput" accept="image/*" />
-        <button id="uploadBackgroundButton">Upload Background Image</button>
-    </div>
 
     <div id="business-data"></div>
 
@@ -194,16 +185,24 @@
             }
         }
 
-        // Upload background image
-        document.getElementById('uploadBackgroundButton').onclick = async () => {
-            const file = document.getElementById('backgroundImageInput').files[0];
-            if (file) {
-                const storageRef = ref(storage, 'backgrounds/' + file.name);
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                document.body.style.backgroundImage = `url(${downloadURL})`;
-            } else {
-                alert('Please select an image to upload.');
+        // Handle background image click
+        document.body.onclick = (event) => {
+            if (event.target === document.body) {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.onchange = async () => {
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const storageRef = ref(storage, 'backgrounds/' + file.name);
+                        await uploadBytes(storageRef, file);
+                        const downloadURL = await getDownloadURL(storageRef);
+                        document.body.style.backgroundImage = `url(${downloadURL})`;
+                    } else {
+                        alert('Please select an image to upload.');
+                    }
+                };
+                fileInput.click(); // Open file selector
             }
         };
 
