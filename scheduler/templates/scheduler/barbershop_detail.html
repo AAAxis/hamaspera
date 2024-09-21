@@ -1,0 +1,17 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<div class="container mt-5 bg-light bg-gradient rounded-lg p-4">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ barbershop.cover_image.url }}" alt="{{ barbershop.name }}" class="img-fluid rounded-lg shadow-lg">
+            <div class="mt-3">
+                <h1 class="text-primary" style="font-size: 2rem; font-weight: bold;">{{ barbershop.name }}</h1>
+                <p class="text-muted">{{ barbershop.address }}</p>
+                <p class="text-muted">{{ barbershop.phone }}</p>
+                <p class="text-muted">{{ barbershop.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

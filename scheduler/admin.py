@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Booking, Barber, Service, Slot, Shift
+from .models import Booking, Barber, Service, Slot, Shift, BarberShop
 
+@admin.register(BarberShop)
+class BarberShopAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'phone', 'email')
+    search_fields = ('name', 'address', 'phone', 'email')
+    list_filter = ('name', 'address', 'phone', 'email')
 @admin.register(Barber)
 class BarberAdmin(admin.ModelAdmin):        
     list_display = ('name', 'specialty')  
@@ -31,3 +36,6 @@ class SlotAdmin(admin.ModelAdmin):
     list_display = ('service', 'date', 'time', 'is_available')
     list_filter = ('is_available',)
     search_fields = ('service__name', 'date', 'time')
+
+
+
