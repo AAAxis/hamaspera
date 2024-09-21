@@ -24,7 +24,7 @@
         </select>
 
         <!-- Submit Button -->
-        <button type="submit">Register Business</button>
+        <button type="submit">Create Business</button>
     </form>
     <p id="message"></p>
 </div>
@@ -75,7 +75,7 @@
             // Display success message and redirect to home
             document.getElementById('message').innerText = "Business registered successfully!";
             setTimeout(() => {
-                window.location.href = "/";  // Redirect to home page after a short delay
+                window.location.href = "/login";  // Redirect to home page after a short delay
             }, 2000);  // 2-second delay before redirecting
 
         } catch (e) {

@@ -51,7 +51,7 @@
           const user = userCredential.user;
           console.log('User signed in:', user);
           // Redirect to the home page after successful sign in
-          window.location.href = '/';  // Redirect to your home page URL
+          window.location.href = '/dashboard';  // Redirect to your home page URL
         })
         .catch((error) => {
           const errorMessage = error.message;
