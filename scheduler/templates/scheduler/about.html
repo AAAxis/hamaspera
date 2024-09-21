@@ -1,9 +1,61 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<h2>About Us</h2>
-<p>Welcome to our barber shop booking system. We are dedicated to providing you with the best barber experience in town.</p>
-<p>Our team of skilled barbers are here to ensure you look and feel your best. Whether you need a simple haircut or a more complex styling, we've got you covered.</p>
-<p>We use the latest techniques and products to deliver high-quality results. Our shop is equipped with the best tools and equipment to ensure your satisfaction.</p>
-<p>We are committed to providing you with a comfortable and welcoming environment. Our barbers are friendly and professional, ensuring you have a great experience from start to finish.</p>
+
+<body>
+  <!-- Auth Form -->
+  <div id="auth-container">
+    <h2>Login</h2>
+    <form id="auth-form">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Sign In</button>
+    </form>
+    <p id="error-message"></p>
+  </div>
+
+  <!-- Ensure that the script is treated as a module -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+      authDomain: "barbershop-77353.firebaseapp.com",
+      projectId: "barbershop-77353",
+      storageBucket: "barbershop-77353.appspot.com",
+      messagingSenderId: "1018170430611",
+      appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+      measurementId: "G-4VS048B47G"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // Auth form event
+    document.getElementById('auth-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Firebase Sign In
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log('User signed in:', user);
+          alert("Signed in successfully");
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          document.getElementById('error-message').innerText = errorMessage;
+        });
+    });
+  </script>
+</body>
+
 {% endblock %}
