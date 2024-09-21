@@ -4,15 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #business-data {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .business-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin: 0 0 15px;
+        }
+
+        .modal-content label {
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-content input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        #closeModal {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1 id="welcome-message"></h1>
-    <p>Your user ID: <span id="user-id"></span></p>
+    <p>ID: <span id="user-id"></span></p>
     <div id="business-data"></div>
+
+    <!-- Modal for editing business info -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal">&times;</span>
+            <h2>Edit Business Info</h2>
+            <label for="businessName">Business Name:</label>
+            <input type="text" id="businessName" />
+            <label for="businessAddress">Address:</label>
+            <input type="text" id="businessAddress" />
+            <label for="businessEmail">Email:</label>
+            <input type="email" id="businessEmail" />
+            <label for="businessPhone">Phone:</label>
+            <input type="tel" id="businessPhone" />
+            <label for="businessService">Service:</label>
+            <input type="text" id="businessService" />
+            <br><br>
+            <button id="submitBusinessInfo">Submit</button>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -42,16 +149,19 @@
                 const querySnapshot = await getDocs(q);
                 
                 const businessDataDiv = document.getElementById('business-data');
+                businessDataDiv.innerHTML = ''; // Clear existing data
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
                         const business = doc.data();
                         const businessItem = document.createElement('div');
+                        businessItem.className = 'business-item';
                         businessItem.innerHTML = `
                             <h3>${business.business_name}</h3>
-                            <p>Address: ${business.address}</p>
+                            <p>Address: ${business.address || '<span style="color:red;">No address provided.</span>'}</p>
                             <p>Email: ${business.email}</p>
                             <p>Phone: ${business.phone}</p>
                             <p>Service: ${business.service}</p>
+                            <button onclick="openEditModal('${doc.id}', '${business.business_name}', '${business.address || ''}', '${business.email}', '${business.phone}', '${business.service}')">Edit</button>
                         `;
                         businessDataDiv.appendChild(businessItem);
                     });
@@ -63,6 +173,46 @@
                 document.getElementById('business-data').innerHTML = '<p>Error loading business data.</p>';
             }
         }
+
+        // Open modal function
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService) {
+            document.getElementById('businessName').value = businessName;
+            document.getElementById('businessAddress').value = businessAddress;
+            document.getElementById('businessEmail').value = businessEmail;
+            document.getElementById('businessPhone').value = businessPhone;
+            document.getElementById('businessService').value = businessService;
+
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'block';
+
+            document.getElementById('submitBusinessInfo').onclick = async () => {
+                const updatedBusiness = {
+                    business_name: document.getElementById('businessName').value,
+                    address: document.getElementById('businessAddress').value,
+                    email: document.getElementById('businessEmail').value,
+                    phone: document.getElementById('businessPhone').value,
+                    service: document.getElementById('businessService').value,
+                };
+
+                const businessRef = doc(db, "businesses", businessId);
+                await updateDoc(businessRef, updatedBusiness);
+                modal.style.display = 'none';
+                fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+            };
+        };
+
+        // Close modal
+        document.getElementById('closeModal').onclick = () => {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        // Close modal if clicked outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>
