@@ -80,6 +80,14 @@ class RegisterView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+    
+    #     API to get available slots
+class LoginView(TemplateView):
+    template_name = "scheduler/login_business.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class available_slots_api(View):    
     def get(self, request, *args, **kwargs):
