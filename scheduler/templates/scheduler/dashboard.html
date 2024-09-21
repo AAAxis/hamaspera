@@ -9,7 +9,10 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-image: url('your-default-background.jpg'); /* Set your default background */
+            background-size: cover;
+            background-position: center;
+            color: #fff;
         }
 
         h1 {
@@ -21,6 +24,9 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            background-color: rgba(255, 255, 255, 0.8); /* Lighten background for readability */
+            border-radius: 5px;
+            padding: 15px;
         }
 
         .business-item {
@@ -29,6 +35,7 @@
             border-radius: 5px;
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
         }
 
         button {
@@ -90,11 +97,22 @@
             font-size: 1.5em;
             cursor: pointer;
         }
+
+        #uploadContainer {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
     <h1 id="welcome-message"></h1>
     <p>ID: <span id="user-id"></span></p>
+
+    <!-- Upload background image -->
+    <div id="uploadContainer">
+        <input type="file" id="backgroundImageInput" accept="image/*" />
+        <button id="uploadBackgroundButton">Upload Background Image</button>
+    </div>
+
     <div id="business-data"></div>
 
     <!-- Modal for editing business info -->
@@ -120,6 +138,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -132,6 +151,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         const userId = localStorage.getItem('userId');
 
@@ -173,6 +193,19 @@
                 document.getElementById('business-data').innerHTML = '<p>Error loading business data.</p>';
             }
         }
+
+        // Upload background image
+        document.getElementById('uploadBackgroundButton').onclick = async () => {
+            const file = document.getElementById('backgroundImageInput').files[0];
+            if (file) {
+                const storageRef = ref(storage, 'backgrounds/' + file.name);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                document.body.style.backgroundImage = `url(${downloadURL})`;
+            } else {
+                alert('Please select an image to upload.');
+            }
+        };
 
         // Open modal function
         window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService) {
