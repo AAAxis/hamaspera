@@ -2,7 +2,6 @@ aiohappyeyeballs==2.4.0
 aiohttp==3.10.5
 aiohttp-retry==2.8.3
 aiosignal==1.3.1
-altgraph @ file:///AppleInternal/Library/BuildRoots/70bb1684-5013-11ef-a329-a2cee5656455/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
 amqp==5.2.0
 anyio==4.4.0
 arrow==1.3.0
