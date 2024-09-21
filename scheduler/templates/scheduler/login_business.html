@@ -12,6 +12,11 @@
       <button type="submit">Sign In</button>
     </form>
     <p id="error-message"></p>
+
+    <div class="auth-links">
+      <p>Don't have an account? <a href="/signup/">Sign up here</a></p>
+      <p><a href="/recover-password/">Forgot your password?</a></p>
+    </div>
   </div>
 
   <!-- Ensure that the script is treated as a module -->
@@ -54,6 +59,90 @@
         });
     });
   </script>
+
+  <!-- Custom Styles for Mobile & Desktop -->
+  <style>
+    /* Background Image */
+    body {
+      background: url('/static/img/barbershop-bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+    }
+
+    #auth-container {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 400px;
+      margin: 50px auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .auth-links {
+      margin-top: 20px;
+    }
+
+    .auth-links a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 15px;
+    }
+
+    /* Responsive Design for Mobile */
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      #auth-container {
+        padding: 20px;
+        width: 100%;
+      }
+
+      h2 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+
 </body>
 
 {% endblock %}
