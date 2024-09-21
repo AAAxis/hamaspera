@@ -1,25 +1,27 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<div id="register-container">
-    <h2>Business Registration</h2>
-    <form id="business-form">
-        <input type="text" id="business-name" placeholder="Business Name" required>
-        <input type="text" id="address" placeholder="Address" required>
-        <input type="text" id="phone" placeholder="Phone" required>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <select id="service" required>
-            <option value="" disabled selected>Select a Service</option>
-            <option value="Hair Cut">Hair Cut</option>
-            <option value="Nail Salon">Nail Salon</option>
-            <option value="Spa">Spa</option>
-            <option value="Massage">Massage</option>
-            <option value="Other">Other</option>
+<div id="register-container" class="container mt-5 bg-light bg-gradient rounded-lg p-4">
+    <h2 class="text-center" style="color: #333; font-weight: bold; font-size: 2rem; margin-top: 20px;">Business Registration</h2>
+    <form id="business-form" class="text-center" style="margin-top: 20px;">
+        <input type="text" id="business-name" placeholder="Business Name" required class="form-control">
+        <input type="text" id="address" placeholder="Address" required class="form-control">
+        <input type="text" id="phone" placeholder="Phone" required class="form-control">
+        <input type="email" id="email" placeholder="Email" required class="form-control">
+        <input type="password" id="password" placeholder="Password" required class="form-control">
+        <select id="service" required class="form-select" style="color: #333;" >
+            <option value="" disabled selected class="form-select" style="color: #333;">Select a Service</option>
+            <option value="Hair Cut" class="form-select" style="color: #333;"   >Hair Cut</option>
+            <option value="Nail Salon" class="form-select" style="color: #333;" >Nail Salon</option>
+            <option value="Spa" class="form-select" style="color: #333;" >Spa</option>
+            <option value="Massage" class="form-select" style="color: #333;">Massage</option>
+            <option value="Other" class="form-select" style="color: #333;">Other</option>
         </select>
-        <button type="submit">Register Business</button>
+        <button type="submit" class="btn btn-primary">Register Business</button>
     </form>
     <p id="message"></p>
+</div>
+<div style="display: flex; flex-direction: column; justify-content: space-between;">
 </div>
 
 <script type="module">
