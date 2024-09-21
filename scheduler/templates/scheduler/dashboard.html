@@ -9,11 +9,10 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-image: url('https://lorenzosbarbershop.com/wp-content/uploads/2023/09/IMG_8819-1024x683.jpg'); /* Set your default background */
             background-size: cover;
             background-position: center;
             color: #fff;
-            cursor: pointer; /* Change cursor to pointer */
+            cursor: pointer;
         }
 
         h1 {
@@ -25,7 +24,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background-color: rgba(255, 255, 255, 0.8); /* Lighten background for readability */
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 5px;
             padding: 15px;
         }
@@ -37,6 +36,16 @@
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .business-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
         }
 
         button {
@@ -93,6 +102,26 @@
             box-sizing: border-box;
         }
 
+        #progressContainer {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #progressBar {
+            width: 100%;
+            background-color: #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        #progressBarFill {
+            height: 100%;
+            background-color: #007BFF;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
         #closeModal {
             float: right;
             font-size: 1.5em;
@@ -121,6 +150,13 @@
             <input type="tel" id="businessPhone" />
             <label for="businessService">Service:</label>
             <input type="text" id="businessService" />
+            <label for="businessImage">Upload Image:</label>
+            <input type="file" id="businessImage" accept="image/*" />
+            <div id="progressContainer">
+                <div id="progressBar">
+                    <div id="progressBarFill"></div>
+                </div>
+            </div>
             <br><br>
             <button id="submitBusinessInfo">Submit</button>
         </div>
@@ -129,7 +165,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -163,18 +199,24 @@
                 businessDataDiv.innerHTML = ''; // Clear existing data
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
-                        const business = doc.data();
-                        const businessItem = document.createElement('div');
-                        businessItem.className = 'business-item';
-                        businessItem.innerHTML = `
-                            <h3>${business.business_name}</h3>
-                            <p>Address: ${business.address || '<span style="color:red;">No address provided.</span>'}</p>
-                            <p>Email: ${business.email}</p>
-                            <p>Phone: ${business.phone}</p>
-                            <p>Service: ${business.service}</p>
-                            <button onclick="openEditModal('${doc.id}', '${business.business_name}', '${business.address || ''}', '${business.email}', '${business.phone}', '${business.service}')">Edit</button>
+                        const data = doc.data();
+                        const businessImage = data.image_url; // Get the existing image URL
+
+                        const businessItem = `
+                            <div class="business-item">
+                                <img src="${businessImage}" alt="${data.business_name}" class="business-image">
+                                <div>
+                                    <h5 class="mb-1">${data.business_name}</h5>
+                                    <p class="mb-1">Address: ${data.address}</p>
+                                    <p class="mb-1">Email: ${data.email}</p>
+                                    <small>Service: ${data.service}</small>
+                                    <br><br>
+                                    <button onclick="openEditModal('${doc.id}', '${data.business_name}', '${data.address || ''}', '${data.email}', '${data.phone}', '${data.service}', '${businessImage}')">Edit</button>
+                                </div>
+                            </div>
                         `;
-                        businessDataDiv.appendChild(businessItem);
+
+                        businessDataDiv.innerHTML += businessItem;
                     });
                 } else {
                     businessDataDiv.innerHTML = '<p>No business data found.</p>';
@@ -185,29 +227,7 @@
             }
         }
 
-        // Handle background image click
-        document.body.onclick = (event) => {
-            if (event.target === document.body) {
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.accept = 'image/*';
-                fileInput.onchange = async () => {
-                    const file = fileInput.files[0];
-                    if (file) {
-                        const storageRef = ref(storage, 'backgrounds/' + file.name);
-                        await uploadBytes(storageRef, file);
-                        const downloadURL = await getDownloadURL(storageRef);
-                        document.body.style.backgroundImage = `url(${downloadURL})`;
-                    } else {
-                        alert('Please select an image to upload.');
-                    }
-                };
-                fileInput.click(); // Open file selector
-            }
-        };
-
-        // Open modal function
-        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService) {
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService, imageUrl) {
             document.getElementById('businessName').value = businessName;
             document.getElementById('businessAddress').value = businessAddress;
             document.getElementById('businessEmail').value = businessEmail;
@@ -226,10 +246,44 @@
                     service: document.getElementById('businessService').value,
                 };
 
-                const businessRef = doc(db, "businesses", businessId);
-                await updateDoc(businessRef, updatedBusiness);
-                modal.style.display = 'none';
-                fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                const fileInput = document.getElementById('businessImage');
+                const file = fileInput.files[0]; // Get the selected file
+
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBarFill = document.getElementById('progressBarFill');
+                progressContainer.style.display = 'none'; // Hide progress by default
+
+                // If a new file is selected
+                if (file) {
+                    const storageRef = ref(storage, 'business_images/' + file.name);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    // Show progress
+                    progressContainer.style.display = 'block';
+
+                    // Monitor progress
+                    uploadTask.on('state_changed', (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBarFill.style.width = progress + '%'; // Update progress bar width
+                    }, (error) => {
+                        console.error('Upload error:', error);
+                    }, async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        updatedBusiness.image_url = downloadURL; // Add image URL to the object
+
+                        const businessRef = doc(db, "businesses", businessId);
+                        await updateDoc(businessRef, updatedBusiness);
+                        modal.style.display = 'none';
+                        fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                    });
+                } else {
+                    updatedBusiness.image_url = imageUrl; // Keep the existing image URL if no new image is uploaded
+
+                    const businessRef = doc(db, "businesses", businessId);
+                    await updateDoc(businessRef, updatedBusiness);
+                    modal.style.display = 'none';
+                    fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                }
             };
         };
 

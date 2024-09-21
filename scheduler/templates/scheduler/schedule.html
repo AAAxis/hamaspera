@@ -5,23 +5,49 @@
 <div id="business-list">
     <!-- Businesses will be dynamically loaded here -->
 </div>
+<style>
+    .business-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .business-image {
+        width: 100px; /* Increased size */
+        height: 100px; /* Increased size */
+        border-radius: 50%; /* Makes the image circular */
+        object-fit: cover; /* Ensures the image covers the circle */
+        margin-right: 15px; /* Space between image and text */
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Align items to the start */
+        padding: 10px;
+        border: 1px solid #ddd; /* Optional border for better visibility */
+        border-radius: 5px; /* Optional rounding of corners */
+        background-color: #fff; /* Optional background color */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
+    }
+</style>
+
 
 <script type="module">
     // Firebase SDK Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-      authDomain: "barbershop-77353.firebaseapp.com",
-      projectId: "barbershop-77353",
-      storageBucket: "barbershop-77353.appspot.com",
-      messagingSenderId: "1018170430611",
-      appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-      measurementId: "G-4VS048B47G"
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        authDomain: "barbershop-77353.firebaseapp.com",
+        projectId: "barbershop-77353",
+        storageBucket: "barbershop-77353.appspot.com",
+        messagingSenderId: "1018170430611",
+        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        measurementId: "G-4VS048B47G"
     };
-
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -37,14 +63,21 @@
             } else {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    const businessImage = data.image_url; // Use default image if none is provided
                     const businessItem = `
-                        <div class="list-group-item">
-                            <h5 class="mb-1">${data.business_name}</h5>
-                            <p class="mb-1">Address: ${data.address}</p>
-                            <p class="mb-1">Email: ${data.email}</p>
-                            <small>Service: ${data.service}</small>
+                        <div class="list-group-item business-item">
+                            <img src="${businessImage}" alt="${data.business_name}" class="business-image">
+                            <div>
+                                <h5 class="mb-1">${data.business_name}</h5>
+                                <p class="mb-1">Address: ${data.address}</p>
+                                <p class="mb-1">Email: ${data.email}</p>
+                                <small>Service: ${data.service}</small>
+                            </div>
                         </div>
                     `;
+
+
+                    
                     businessesList.innerHTML += businessItem;
                 });
             }
