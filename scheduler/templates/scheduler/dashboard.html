@@ -7,16 +7,61 @@
 </head>
 <body>
     <h1 id="welcome-message"></h1>
+    <p>Your user ID: <span id="user-id"></span></p>
+    <div id="business-data"></div>
 
-    <script>
-        // Retrieve the business name from local storage
-        const businessName = localStorage.getItem('businessName');
-        
-        // Display the welcome message
-        if (businessName) {
-            document.getElementById('welcome-message').innerText = `Welcome ${businessName}`;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const userId = localStorage.getItem('userId');
+
+        if (userId) {
+            document.getElementById('user-id').innerText = userId;
+            fetchBusinessData(userId);
         } else {
-            document.getElementById('welcome-message').innerText = 'Welcome to the Dashboard';
+            document.getElementById('user-id').innerText = 'Not logged in';
+        }
+
+        async function fetchBusinessData(userId) {
+            try {
+                const businessesRef = collection(db, "businesses");
+                const q = query(businessesRef, where("uid", "==", userId));
+                const querySnapshot = await getDocs(q);
+                
+                const businessDataDiv = document.getElementById('business-data');
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        const business = doc.data();
+                        const businessItem = document.createElement('div');
+                        businessItem.innerHTML = `
+                            <h3>${business.business_name}</h3>
+                            <p>Address: ${business.address}</p>
+                            <p>Email: ${business.email}</p>
+                            <p>Phone: ${business.phone}</p>
+                            <p>Service: ${business.service}</p>
+                        `;
+                        businessDataDiv.appendChild(businessItem);
+                    });
+                } else {
+                    businessDataDiv.innerHTML = '<p>No business data found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching business data:', error);
+                document.getElementById('business-data').innerHTML = '<p>Error loading business data.</p>';
+            }
         }
     </script>
 </body>
