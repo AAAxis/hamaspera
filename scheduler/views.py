@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.views import View
 from .models import Slot, Booking, Service, Barber, BarberShop
 
+
 class BarberShopDetailView(TemplateView):
     template_name = "scheduler/barbershop_detail.html"
 
@@ -65,12 +66,20 @@ class ScheduleView(TemplateView):
 class AboutView(TemplateView):
     template_name = "scheduler/about.html"
 
+    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['barbershops'] = BarberShop.objects.all()
         return context
     
 #     API to get available slots
+class RegisterView(TemplateView):
+    template_name = "scheduler/register_business.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class available_slots_api(View):    
     def get(self, request, *args, **kwargs):
