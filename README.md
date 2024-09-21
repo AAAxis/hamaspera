@@ -6,7 +6,7 @@ This example shows how to use Django 4 on Vercel with Serverless Functions using
 
 ## Demo
 
-https://django-template.vercel.app/
+https://hamaspera.vercel.app
 
 ## How it Works
 
