@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #business-data {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .business-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .business-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin: 0 0 15px;
+        }
+
+        .modal-content label {
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-content input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        #progressContainer {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #progressBar {
+            width: 100%;
+            background-color: #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        #progressBarFill {
+            height: 100%;
+            background-color: #007BFF;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        #closeModal {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="welcome-message"></h1>
+    <div style="display: flex; align-items: center;">
+        <p style="color:black; margin: 0;">ID: <span id="user-id"></span></p>
+        <button id="logoutButton" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
+            <i class="fas fa-sign-out-alt" style="font-size: 24px; color: black;"></i>
+        </button>
+    </div>
+    
+    
+    <div id="business-data"></div>
+
+    <!-- Modal for editing business info -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal">&times;</span>
+            <h2>Edit Business Info</h2>
+            <label for="businessName">Business Name:</label>
+            <input type="text" id="businessName" />
+            <label for="businessAddress">Address:</label>
+            <input type="text" id="businessAddress" />
+            <label for="businessEmail">Email:</label>
+            <input type="email" id="businessEmail" />
+            <label for="businessPhone">Phone:</label>
+            <input type="tel" id="businessPhone" />
+            <label for="businessService">Service:</label>
+            <input type="text" id="businessService" />
+            <label for="businessImage">Upload Image:</label>
+            <input type="file" id="businessImage" accept="image/*" />
+            <div id="progressContainer">
+                <div id="progressBar">
+                    <div id="progressBarFill"></div>
+                </div>
+            </div>
+            <br><br>
+            <button id="submitBusinessInfo">Submit</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const userId = localStorage.getItem('userId');
+
+        if (userId) {
+            document.getElementById('user-id').innerText = userId;
+            fetchBusinessData(userId);
+        } else {
+            document.getElementById('user-id').innerText = 'Not logged in';
+        }
+
+        async function fetchBusinessData(userId) {
+            try {
+                const businessesRef = collection(db, "businesses");
+                const q = query(businessesRef, where("uid", "==", userId));
+                const querySnapshot = await getDocs(q);
+                
+                const businessDataDiv = document.getElementById('business-data');
+                businessDataDiv.innerHTML = ''; // Clear existing data
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const businessImage = data.image_url; // Get the existing image URL
+
+                        const businessItem = `
+                            <div class="business-item">
+                                <img src="${businessImage}" alt="${data.business_name}" class="business-image">
+                                <div>
+                                    <h5 class="mb-1">${data.business_name}</h5>
+                                    <p class="mb-1">Address: ${data.address}</p>
+                                    <p class="mb-1">Email: ${data.email}</p>
+                                    <small>Service: ${data.service}</small>
+                                    <br><br>
+                                    <button onclick="openEditModal('${doc.id}', '${data.business_name}', '${data.address || ''}', '${data.email}', '${data.phone}', '${data.service}', '${businessImage}')">Edit</button>
+                                </div>
+                            </div>
+                        `;
+
+                        businessDataDiv.innerHTML += businessItem;
+                    });
+                } else {
+                    businessDataDiv.innerHTML = '<p style="color:black;">No business data found.</p>';
+
+                }
+            } catch (error) {
+                console.error('Error fetching business data:', error);
+                document.getElementById('business-data').innerHTML = '<p>Error loading business data.</p>';
+            }
+        }
+
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService, imageUrl) {
+            document.getElementById('businessName').value = businessName;
+            document.getElementById('businessAddress').value = businessAddress;
+            document.getElementById('businessEmail').value = businessEmail;
+            document.getElementById('businessPhone').value = businessPhone;
+            document.getElementById('businessService').value = businessService;
+
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'block';
+
+            document.getElementById('submitBusinessInfo').onclick = async () => {
+                const updatedBusiness = {
+                    business_name: document.getElementById('businessName').value,
+                    address: document.getElementById('businessAddress').value,
+                    email: document.getElementById('businessEmail').value,
+                    phone: document.getElementById('businessPhone').value,
+                    service: document.getElementById('businessService').value,
+                };
+
+                const fileInput = document.getElementById('businessImage');
+                const file = fileInput.files[0]; // Get the selected file
+
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBarFill = document.getElementById('progressBarFill');
+                progressContainer.style.display = 'none'; // Hide progress by default
+
+                // If a new file is selected
+                if (file) {
+                    const storageRef = ref(storage, 'business_images/' + file.name);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    // Show progress
+                    progressContainer.style.display = 'block';
+
+                    // Monitor progress
+                    uploadTask.on('state_changed', (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBarFill.style.width = progress + '%'; // Update progress bar width
+                    }, (error) => {
+                        console.error('Upload error:', error);
+                    }, async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        updatedBusiness.image_url = downloadURL; // Add image URL to the object
+
+                        const businessRef = doc(db, "businesses", businessId);
+                        await updateDoc(businessRef, updatedBusiness);
+                        modal.style.display = 'none';
+                        fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                    });
+                } else {
+                    updatedBusiness.image_url = imageUrl; // Keep the existing image URL if no new image is uploaded
+
+                    const businessRef = doc(db, "businesses", businessId);
+                    await updateDoc(businessRef, updatedBusiness);
+                    modal.style.display = 'none';
+                    fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                }
+            };
+        };
+
+        // Close modal
+        document.getElementById('closeModal').onclick = () => {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        // Close modal if clicked outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Logout functionality
+        document.getElementById('logoutButton').onclick = () => {
+            localStorage.removeItem('userId'); // Clear user ID from local storage
+            window.location.href = '/'; 
+        };
+    </script>
+</body>
+</html>
