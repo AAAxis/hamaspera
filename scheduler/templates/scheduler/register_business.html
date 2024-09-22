@@ -4,25 +4,28 @@
 <div id="register-container" class="container mt-5 bg-light bg-gradient rounded-lg p-4">
     <h2 class="text-center" style="color: #333; font-weight: bold; font-size: 2rem; margin-top: 20px;">Business Registration</h2>
     <form id="business-form" class="text-center" style="margin-top: 20px;">
-        <input type="text" id="business-name" placeholder="Business Name" required class="form-control">
-        <input type="text" id="address" placeholder="Address" required class="form-control">
-        <input type="text" id="phone" placeholder="Phone" required class="form-control">
-        <input type="email" id="email" placeholder="Email" required class="form-control">
-        <input type="password" id="password" placeholder="Password" required class="form-control">
-        <select id="service" required class="form-select" style="color: #333;" >
-            <option value="" disabled selected class="form-select" style="color: #333;">Select a Service</option>
-            <option value="Hair Cut" class="form-select" style="color: #333;"   >Hair Cut</option>
-            <option value="Nail Salon" class="form-select" style="color: #333;" >Nail Salon</option>
-            <option value="Spa" class="form-select" style="color: #333;" >Spa</option>
-            <option value="Massage" class="form-select" style="color: #333;">Massage</option>
-            <option value="Other" class="form-select" style="color: #333;">Other</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Register Business</button>
+        <input type="text" id="business-name" placeholder="Business Name" required class="form-control" style="margin-top: 20px;">
+        <input type="text" id="address" placeholder="Address" required class="form-control" style="margin-top: 20px;">
+        <input type="text" id="phone" placeholder="Phone" required class="form-control" style="margin-top: 20px;">
+        <input type="email" id="email" placeholder="Email" required class="form-control" style="margin-top: 20px;">
+        <input type="password" id="password" placeholder="Password" required class="form-control" style="margin-top: 20px;">
+        <div class="dropdown" style="margin-top: 20px;">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Select a Service
+            </a>
+          
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Hair Cut</a></li>
+              <li><a class="dropdown-item" href="#">Nail Salon</a></li>
+              <li><a class="dropdown-item" href="#">Spa</a></li>
+              <li><a class="dropdown-item" href="#">Massage</a></li>
+              <li><a class="dropdown-item" href="#">Other</a></li>
+            </ul>
+          </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Register Business</button>
     </form>
     <p id="message"></p>
-</div>
-<div style="display: flex; flex-direction: column; justify-content: space-between;">
-</div>
+
 
 <script type="module">
     // Firebase SDK Imports
