@@ -54,6 +54,7 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
     // Function to handle form submission for email/password login
     document.getElementById('auth-form').addEventListener('submit', (event) => {
@@ -66,19 +67,16 @@
       fetchSignInMethodsForEmail(auth, email)
         .then((signInMethods) => {
           if (signInMethods.includes('google.com')) {
-            // Ask the user if they want to switch to Google
             const confirmSwitch = confirm("This email is already registered with Google. Do you want to sign in with Google and link your accounts?");
             
             if (confirmSwitch) {
               signInWithGoogleAndLink(email, password);
             }
           } else {
-            // Proceed with email/password authentication
             signInWithEmailAndPassword(auth, email, password)
               .then((userCredential) => {
                 const user = userCredential.user;
                 if (user.emailVerified) {
-                  // Redirect to dashboard after successful login
                   localStorage.setItem('userId', user.uid);
                   window.location.href = '/dashboard';
                 } else {
@@ -95,50 +93,21 @@
         });
     });
 
-    // Function to handle Google sign-in and linking accounts
-    function signInWithGoogleAndLink(email, password) {
-      const provider = new GoogleAuthProvider();
-      
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          
-          // Link Google account with existing email/password account
-          linkWithPopup(user, provider)
-            .then((result) => {
-              // Accounts successfully linked
-              window.location.href = '/dashboard';
-            })
-            .catch((error) => {
-              document.getElementById('error-message').innerText = error.message;
-            });
-        })
-        .catch((error) => {
-          document.getElementById('error-message').innerText = error.message;
-        });
-    }
-
-   // Google Auth Provider
-const provider = new GoogleAuthProvider();
-
-// Google Sign-In button event
-document.getElementById('google-signin-btn').addEventListener('click', () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      // User signed in with Google
-      console.log('User signed in with Google:', result.user);
-      window.location.href = '/dashboard';
-    })
-    .catch((error) => {
-      if (error.code === 'auth/popup-closed-by-user') {
-        document.getElementById('error-message').innerText = 'Popup was closed before completing the sign-in process. Please try again.';
-      } else {
-        console.error("Google sign-in error: ", error);
+    // Google sign-up function
+    const googleSignup = async (auth, provider) => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        console.log('User signed in with Google:', result.user);
+        window.location.href = '/dashboard';
+      } catch (error) {
         document.getElementById('error-message').innerText = error.message;
       }
-    });
-});
+    };
 
+    // Google Sign-In button event
+    document.getElementById('google-signin-btn').addEventListener('click', () => {
+      googleSignup(auth, provider);
+    });
   </script>
 
   <!-- Custom styles -->
