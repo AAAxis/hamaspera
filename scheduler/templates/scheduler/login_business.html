@@ -93,16 +93,17 @@
         });
     });
 
-    // Google sign-up function
     const googleSignup = async (auth, provider) => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        console.log('User signed in with Google:', result.user);
-        window.location.href = '/dashboard';
-      } catch (error) {
-        document.getElementById('error-message').innerText = error.message;
-      }
-    };
+  try {
+    const result = await signInWithPopup(auth, provider);
+    console.log('User signed in with Google:', result.user);
+    window.location.href = '/dashboard';
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+    document.getElementById('error-message').innerText = error.message;
+  }
+};
+
 
     // Google Sign-In button event
     document.getElementById('google-signin-btn').addEventListener('click', () => {
