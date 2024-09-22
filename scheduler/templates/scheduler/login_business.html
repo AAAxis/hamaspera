@@ -118,19 +118,27 @@
         });
     }
 
-    // Function to handle direct Google Sign-In
-    document.getElementById('google-signin-btn').addEventListener('click', () => {
-      const provider = new GoogleAuthProvider();
-      
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          // Redirect to dashboard after successful Google sign-in
-          window.location.href = '/dashboard';
-        })
-        .catch((error) => {
-          document.getElementById('error-message').innerText = error.message;
-        });
+   // Google Auth Provider
+const provider = new GoogleAuthProvider();
+
+// Google Sign-In button event
+document.getElementById('google-signin-btn').addEventListener('click', () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // User signed in with Google
+      console.log('User signed in with Google:', result.user);
+      window.location.href = '/dashboard';
+    })
+    .catch((error) => {
+      if (error.code === 'auth/popup-closed-by-user') {
+        document.getElementById('error-message').innerText = 'Popup was closed before completing the sign-in process. Please try again.';
+      } else {
+        console.error("Google sign-in error: ", error);
+        document.getElementById('error-message').innerText = error.message;
+      }
     });
+});
+
   </script>
 
   <!-- Custom styles -->
