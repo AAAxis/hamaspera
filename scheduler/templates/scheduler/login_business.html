@@ -23,7 +23,7 @@
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -45,22 +45,36 @@
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-    // Firebase Sign In
-signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    console.log('User signed in:', user);
+      // Firebase Sign In
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log('User signed in:', user);
 
-    // Store user ID in local storage
-    localStorage.setItem('userId', user.uid);
+          // Check if the user's email is verified
+          if (user.emailVerified) {
+            // Store user ID in local storage
+            localStorage.setItem('userId', user.uid);
 
-    // Redirect to the home page after successful sign in
-    window.location.href = '/dashboard';  // Redirect to your home page URL
-  })
-  .catch((error) => {
-    const errorMessage = error.message;
-    document.getElementById('error-message').innerText = errorMessage;
-  });
+            // Redirect to the dashboard after successful sign-in and verification
+            window.location.href = '/dashboard';
+          } else {
+            // Notify user that their email is not verified
+            document.getElementById('error-message').innerText = "Email not verified. Please check your inbox.";
+            
+            // Optionally, you can resend the verification email
+            sendEmailVerification(user).then(() => {
+              document.getElementById('error-message').innerText = "Verification email sent! Please check your inbox.";
+            }).catch((error) => {
+              console.error("Error sending verification email: ", error);
+              document.getElementById('error-message').innerText = "Error sending verification email.";
+            });
+          }
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          document.getElementById('error-message').innerText = errorMessage;
+        });
     });
   </script>
 
