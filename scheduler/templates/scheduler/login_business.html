@@ -1,7 +1,10 @@
-{% extends 'scheduler/base.html' %}
-
-{% block content %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
 <body>
   <!-- Auth Form -->
   <div id="auth-container">
@@ -21,19 +24,26 @@
 
     <div class="auth-links">
       <p>Don't have an account? <a href="/register/">Signup</a></p>
-      <p style="color:black"><a href="/forgot/">Forgot your password?</a></p>
+      <p><a href="/forgot/">Forgot your password?</a></p>
     </div>
   </div>
 
-  <!-- Ensure that the script is treated as a module -->
+  <!-- Firebase Script (Module) -->
   <script type="module">
-    // Import the functions you need from the SDKs you need
+    // Import the Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, sendEmailVerification, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      fetchSignInMethodsForEmail, 
+      GoogleAuthProvider, 
+      signInWithPopup, 
+      linkWithPopup 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-    // Your web app's Firebase configuration
+    // Firebase configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
       authDomain: "barbershop-77353.firebaseapp.com",
       projectId: "barbershop-77353",
       storageBucket: "barbershop-77353.appspot.com",
@@ -45,24 +55,39 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Email/Password Auth form event
+    // Function to handle form submission for email/password login
     document.getElementById('auth-form').addEventListener('submit', (event) => {
       event.preventDefault();
+      
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-
-      // Firebase Sign In with email/password
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-
-          // Check if email is verified
-          if (user.emailVerified) {
-            localStorage.setItem('userId', user.uid);
-            window.location.href = '/dashboard';
+      
+      // Check if the email is associated with a Google account
+      fetchSignInMethodsForEmail(auth, email)
+        .then((signInMethods) => {
+          if (signInMethods.includes('google.com')) {
+            // Ask the user if they want to switch to Google
+            const confirmSwitch = confirm("This email is already registered with Google. Do you want to sign in with Google and link your accounts?");
+            
+            if (confirmSwitch) {
+              signInWithGoogleAndLink(email, password);
+            }
           } else {
-            document.getElementById('error-message').innerText = "Email not verified. Please check your inbox.";
-            sendEmailVerification(user);
+            // Proceed with email/password authentication
+            signInWithEmailAndPassword(auth, email, password)
+              .then((userCredential) => {
+                const user = userCredential.user;
+                if (user.emailVerified) {
+                  // Redirect to dashboard after successful login
+                  localStorage.setItem('userId', user.uid);
+                  window.location.href = '/dashboard';
+                } else {
+                  document.getElementById('error-message').innerText = "Please verify your email address.";
+                }
+              })
+              .catch((error) => {
+                document.getElementById('error-message').innerText = error.message;
+              });
           }
         })
         .catch((error) => {
@@ -70,27 +95,45 @@
         });
     });
 
-    // Google Auth Provider
-    const provider = new GoogleAuthProvider();
+    // Function to handle Google sign-in and linking accounts
+    function signInWithGoogleAndLink(email, password) {
+      const provider = new GoogleAuthProvider();
+      
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          
+          // Link Google account with existing email/password account
+          linkWithPopup(user, provider)
+            .then((result) => {
+              // Accounts successfully linked
+              window.location.href = '/dashboard';
+            })
+            .catch((error) => {
+              document.getElementById('error-message').innerText = error.message;
+            });
+        })
+        .catch((error) => {
+          document.getElementById('error-message').innerText = error.message;
+        });
+    }
 
-    // Google Sign-In button event
+    // Function to handle direct Google Sign-In
     document.getElementById('google-signin-btn').addEventListener('click', () => {
+      const provider = new GoogleAuthProvider();
+      
       signInWithPopup(auth, provider)
         .then((result) => {
-          const user = result.user;
-          console.log('User signed in with Google:', user);
-
-          // Redirect to dashboard after Google sign-in
+          // Redirect to dashboard after successful Google sign-in
           window.location.href = '/dashboard';
         })
         .catch((error) => {
-          console.error("Google sign-in error: ", error);
           document.getElementById('error-message').innerText = error.message;
         });
     });
   </script>
 
-  <!-- Custom Styles for Mobile & Desktop -->
+  <!-- Custom styles -->
   <style>
     body {
       background: url('/static/img/barbershop-bg.jpg') no-repeat center center fixed;
@@ -152,6 +195,11 @@
       background-color: #c23321;
     }
 
+    #error-message {
+      color: red;
+      margin-top: 15px;
+    }
+
     .auth-links {
       margin-top: 20px;
     }
@@ -164,28 +212,6 @@
     .auth-links a:hover {
       text-decoration: underline;
     }
-
-    #error-message {
-      color: red;
-      margin-top: 15px;
-    }
-
-    /* Responsive Design for Mobile */
-    @media screen and (max-width: 600px) {
-      body {
-        padding: 20px;
-      }
-
-      #auth-container {
-        padding: 20px;
-        width: 100%;
-      }
-
-      h2 {
-        font-size: 1.5em;
-      }
-    }
   </style>
 </body>
-
-{% endblock %}
+</html>
