@@ -10,6 +10,11 @@
         display: flex;
         align-items: center;
         margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd; /* Optional border for better visibility */
+        border-radius: 5px; /* Optional rounding of corners */
+        background-color: #fff; /* Optional background color */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
     }
 
     .business-image {
@@ -20,18 +25,25 @@
         margin-right: 15px; /* Space between image and text */
     }
 
-    .list-group-item {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start; /* Align items to the start */
-        padding: 10px;
-        border: 1px solid #ddd; /* Optional border for better visibility */
-        border-radius: 5px; /* Optional rounding of corners */
-        background-color: #fff; /* Optional background color */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
+    .business-details {
+        flex: 1;
+    }
+
+    .business-name {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #007bff; /* Link color */
+        text-decoration: none;
+    }
+
+    .business-name:hover {
+        text-decoration: underline;
+    }
+
+    .business-info {
+        color: #333; /* Black color for other text */
     }
 </style>
-
 
 <script type="module">
     // Firebase SDK Imports
@@ -63,21 +75,19 @@
             } else {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    const businessId = doc.id; // Get the document ID
                     const businessImage = data.image_url; // Use default image if none is provided
                     const businessItem = `
                         <div class="list-group-item business-item">
                             <img src="${businessImage}" alt="${data.business_name}" class="business-image">
-                            <div>
-                                <h5 class="mb-1">${data.business_name}</h5>
-                                <p class="mb-1">Address: ${data.address}</p>
-                                <p class="mb-1">Email: ${data.email}</p>
-                                <small>Service: ${data.service}</small>
+                            <div class="business-details">
+                                <a href="/barbershop/${businessId}/" class="business-name">${data.business_name}</a>
+                                <p class="business-info mb-1">Address: ${data.address}</p>
+                                <p class="business-info mb-1">Email: ${data.email}</p>
+                                <small class="business-info">Service: ${data.service}</small>
                             </div>
                         </div>
                     `;
-
-
-                    
                     businessesList.innerHTML += businessItem;
                 });
             }
