@@ -30,8 +30,6 @@
                     <div class="invalid-feedback">Please enter your address.</div>
                 </div>
 
-                
-
                 <!-- Business Type -->
                 <div class="form-group mb-3">
                     <select id="service" class="form-select btn btn-secondary dropdown-toggle w-100" required>
@@ -45,11 +43,10 @@
                     <div class="invalid-feedback">Please select a service.</div>
                 </div>
 
-
-            <!-- Terms and Services Agreement -->
+                <!-- Terms and Services Agreement -->
                 <div class="form-group mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="terms" required>
-                <label class="form-check-label" for="terms">I agree to the <a href="/terms-and-services" target="_blank">terms and services</a></label>
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label" for="terms">I agree to the <a href="https://theholylabs.com/privacy" target="_blank">terms and services</a></label>
                     <div class="invalid-feedback">You must agree to the terms and services.</div>
                 </div>
 
@@ -65,7 +62,7 @@
     // Firebase SDK Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -97,7 +94,12 @@
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Save business details in Firestore
+            // Send email verification
+            await sendEmailVerification(user);
+            
+            document.getElementById('message').innerText = "A verification email has been sent to your email address.";
+
+            // Save business details in Firestore after verification
             await addDoc(collection(db, 'businesses'), {
                 business_name: businessName,
                 email: email,
@@ -110,8 +112,9 @@
             // Store user ID in local storage
             localStorage.setItem('userId', user.uid);
 
-            // Redirect to the home page after successful sign in
-            window.location.href = '/dashboard';
+            // Redirect to the dashboard after verification
+            window.location.href = '/login';
+
         } catch (e) {
             console.error("Error registering: ", e);
             document.getElementById('message').innerText = "Error registering business!";
