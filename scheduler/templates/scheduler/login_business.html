@@ -13,8 +13,14 @@
     </form>
     <p id="error-message"></p>
 
+    <!-- Google Sign-In Button -->
+    <div id="google-signin-container">
+      <p>OR</p>
+      <button id="google-signin-btn">Sign In with Google</button>
+    </div>
+
     <div class="auth-links">
-      <p>Don't have an account? <a href="/register/">Signup here</a></p>
+      <p>Don't have an account? <a href="/register/">Signup</a></p>
       <p style="color:black"><a href="/forgot/">Forgot your password?</a></p>
     </div>
   </div>
@@ -23,11 +29,11 @@
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, sendEmailVerification, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+      apiKey: "YOUR_API_KEY",
       authDomain: "barbershop-77353.firebaseapp.com",
       projectId: "barbershop-77353",
       storageBucket: "barbershop-77353.appspot.com",
@@ -39,48 +45,53 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Auth form event
+    // Email/Password Auth form event
     document.getElementById('auth-form').addEventListener('submit', (event) => {
       event.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      // Firebase Sign In
+      // Firebase Sign In with email/password
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log('User signed in:', user);
 
-          // Check if the user's email is verified
+          // Check if email is verified
           if (user.emailVerified) {
-            // Store user ID in local storage
             localStorage.setItem('userId', user.uid);
-
-            // Redirect to the dashboard after successful sign-in and verification
             window.location.href = '/dashboard';
           } else {
-            // Notify user that their email is not verified
             document.getElementById('error-message').innerText = "Email not verified. Please check your inbox.";
-            
-            // Optionally, you can resend the verification email
-            sendEmailVerification(user).then(() => {
-              document.getElementById('error-message').innerText = "Verification email sent! Please check your inbox.";
-            }).catch((error) => {
-              console.error("Error sending verification email: ", error);
-              document.getElementById('error-message').innerText = "Error sending verification email.";
-            });
+            sendEmailVerification(user);
           }
         })
         .catch((error) => {
-          const errorMessage = error.message;
-          document.getElementById('error-message').innerText = errorMessage;
+          document.getElementById('error-message').innerText = error.message;
+        });
+    });
+
+    // Google Auth Provider
+    const provider = new GoogleAuthProvider();
+
+    // Google Sign-In button event
+    document.getElementById('google-signin-btn').addEventListener('click', () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          console.log('User signed in with Google:', user);
+
+          // Redirect to dashboard after Google sign-in
+          window.location.href = '/dashboard';
+        })
+        .catch((error) => {
+          console.error("Google sign-in error: ", error);
+          document.getElementById('error-message').innerText = error.message;
         });
     });
   </script>
 
   <!-- Custom Styles for Mobile & Desktop -->
   <style>
-    /* Background Image */
     body {
       background: url('/static/img/barbershop-bg.jpg') no-repeat center center fixed;
       background-size: cover;
@@ -126,6 +137,21 @@
       background-color: #218838;
     }
 
+    #google-signin-btn {
+      background-color: #db4437;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #google-signin-btn:hover {
+      background-color: #c23321;
+    }
+
     .auth-links {
       margin-top: 20px;
     }
@@ -160,7 +186,6 @@
       }
     }
   </style>
-
 </body>
 
 {% endblock %}
