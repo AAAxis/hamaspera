@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'phonenumber_field',
 ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -50,11 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    ...
+    
 ]
-
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 # OR specify allowed origins (for production)
 CORS_ALLOWED_ORIGINS = [
