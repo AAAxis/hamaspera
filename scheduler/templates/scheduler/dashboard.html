@@ -3,43 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Admin Dashboard</title>
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
+        /* Custom Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-size: cover;
             background-position: center;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        h1 {
             color: #333;
         }
 
-        #business-data {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 5px;
-            padding: 15px;
+        .banner {
+            height: 300px;
+            background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            border: 5px solid white;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: -75px;
+            background-color: white;
         }
 
         .business-item {
+            display: flex;
+            align-items: center;
             background: #fff;
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             color: #333;
-            display: flex;
-            align-items: center;
+            margin-bottom: 15px;
         }
 
         .business-image {
@@ -50,60 +59,7 @@
             margin-right: 15px;
         }
 
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 5px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-content h2 {
-            margin: 0 0 15px;
-        }
-
-        .modal-content label {
-            margin-top: 10px;
-            display: block;
-        }
-
-        .modal-content input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
+        /* Progress Bar Styles */
         #progressContainer {
             display: none;
             margin-top: 10px;
@@ -123,59 +79,176 @@
             width: 0%;
             transition: width 0.3s;
         }
-
-        #closeModal {
-            float: right;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
+    <!-- Banner Section -->
+    <div class="banner"></div>
 
-    <h1 id="welcome-message"></h1>
-    <div style="display: flex; align-items: center;">
-        <p style="color:black; margin: 0;">ID: <span id="user-id"></span></p>
-        <button id="logoutButton" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
-            <i class="fas fa-sign-out-alt" style="font-size: 24px; color: black;"></i>
-        </button>
+    
+
+    <!-- Barbershop Information -->
+    <div class="container mt-4">
+        <h1 id="barbershop-name" class="text-center mb-4"></h1>
+        <p id="barbershop-address" class="text-center"></p>
+        <p id="barbershop-email" class="text-center"></p>
+        <p id="barbershop-service" class="text-center"></p>
+        <p id="barbershop-description" class="text-center"></p>
+        <p id="barbershop-phone" class="text-center"></p>
+        <p id="barbershop-working_hours" class="text-center"></p>
+        <p id="barbershop-services" class="text-center"></p>
+        <p id="barbershop-services_prices" class="text-center"></p>
+        <p id="barbershop-services_descriptions" class="text-center"></p>
     </div>
-    
-    
-    <div id="business-data"></div>
 
-    <!-- Modal for editing business info -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span id="closeModal">&times;</span>
-            <h2>Edit Business Info</h2>
-            <label for="businessName">Business Name:</label>
-            <input type="text" id="businessName" />
-            <label for="businessAddress">Address:</label>
-            <input type="text" id="businessAddress" />
-            <label for="businessEmail">Email:</label>
-            <input type="email" id="businessEmail" />
-            <label for="businessPhone">Phone:</label>
-            <input type="tel" id="businessPhone" />
-            <label for="businessService">Service:</label>
-            <input type="text" id="businessService" />
-            <label for="businessImage">Upload Image:</label>
-            <input type="file" id="businessImage" accept="image/*" />
-            <div id="progressContainer">
-                <div id="progressBar">
-                    <div id="progressBarFill"></div>
+    <!-- Admin Dashboard Header -->
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-center" style="color: #000;">Admin Dashboard</h2>
+            
+            <div id="greeting" class="text-center">
+                <script>
+                    // Get current hour
+                    const currentHour = new Date().getHours();
+                    let greeting;
+
+                    // Determine the appropriate greeting
+                    if (currentHour < 12) {
+                        greeting = "Good Morning";
+                    } else if (currentHour < 18) {
+                        greeting = "Good Afternoon";
+                    } else {
+                        greeting = "Good Evening";
+                    }
+
+                    // Get the user's name (assuming it's stored in localStorage)
+                    const userEmail = localStorage.getItem('email') || 'User';
+
+                    // Display the greeting
+                    document.write(`${greeting}, ${userEmail}!`);
+                </script>
+            </div>
+            <div class="d-flex align-items-center">
+                <p class="mb-0 me-3"><strong>ID:</strong> <span id="user-id"></span></p>
+                <button id="logoutButton" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Business Data Section -->
+        <div id="business-data" class="row">
+            <div class="col-md-6">
+                <h3 id="business-name"></h3>
+                <p id="business-address"></p>
+                <p id="business-email"></p>
+                <p>Phone</p>
+                <p id="business-service"></p>
+                <p id="business-image"></p>
+                <p id="business-cover_images"></p>
+                <p id="business-cover_images_urls"></p>
+                <p>Working Hours</p>
+                <p>Services</p>
+                <p>Services Prices</p>
+                <p>Services Descriptions</p>
+            </div>
+            <!-- Business items will be dynamically inserted here -->
+        </div>
+
+        <!-- Modal for Editing Business Info -->
+        <div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Business Info</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editBusinessForm">
+                            <!-- Business Name -->
+                            <div class="mb-3">
+                                <label for="businessName" class="form-label">Business Name:</label>
+                                <input type="text" class="form-control" id="businessName" required />
+                            </div>
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label for="businessAddress" class="form-label">Address:</label>
+                                <input type="text" class="form-control" id="businessAddress" required />
+                            </div>
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="businessEmail" class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="businessEmail" required />
+                            </div>
+                            <!-- Phone -->
+                            <div class="mb-3">
+                                <label for="businessPhone" class="form-label">Phone:</label>
+                                <input type="tel" class="form-control" id="businessPhone" required />
+                            </div>
+                            <!-- Service -->
+                            <div class="mb-3">
+                                <label for="businessService" class="form-label">Service:</label>
+                                <input type="text" class="form-control" id="businessService" required />
+                            </div>
+                            <!-- Upload Image -->
+                            <div class="mb-3">
+                                <label for="businessImage" class="form-label">Upload Image:</label>
+                                <input type="file" class="form-control" id="businessImage" accept="image/*" />
+                            </div>
+                            <!-- Cover Images -->
+                            <div class="mb-3">
+                                <label for="cover_images" class="form-label">Cover Images:</label>
+                                <input type="file" class="form-control" id="cover_images" accept="image/*" multiple />
+                            </div>
+                            <!-- Cover Images URLs -->
+                            <div class="mb-3">
+                                <label for="cover_images_urls" class="form-label">Cover Images URLs:</label>
+                                <input type="text" class="form-control" id="cover_images_urls" placeholder="Enter image URLs separated by commas" />
+                            </div>
+                            <!-- Working Hours -->
+                            <div class="mb-3">
+                                <label for="working_hours" class="form-label">Working Hours:</label>
+                                <input type="text" class="form-control" id="working_hours" placeholder="e.g., Mon-Fri: 9am - 6pm" required />
+                            </div>
+                            <!-- Services -->
+                            <div class="mb-3">
+                                <label for="services" class="form-label">Services:</label>
+                                <input type="text" class="form-control" id="services" placeholder="List of services" required />
+                            </div>
+                            <!-- Optional Fields for Prices and Descriptions -->
+                            <div class="mb-3">
+                                <label for="services_prices" class="form-label">Services Prices:</label>
+                                <input type="text" class="form-control" id="services_prices" placeholder="Enter prices separated by commas" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="services_descriptions" class="form-label">Services Descriptions:</label>
+                                <textarea class="form-control" id="services_descriptions" rows="2" placeholder="Enter descriptions separated by commas"></textarea>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div id="progressContainer" class="mb-3">
+                                <label class="form-label">Upload Progress:</label>
+                                <div id="progressBar">
+                                    <div id="progressBarFill"></div>
+                                </div>
+                            </div>
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <br><br>
-            <button id="submitBusinessInfo">Submit</button>
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
             authDomain: "barbershop-77353.firebaseapp.com",
@@ -185,10 +258,12 @@
             appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // Get userId from localStorage
         const userId = localStorage.getItem('userId');
 
         if (userId) {
@@ -198,6 +273,10 @@
             document.getElementById('user-id').innerText = 'Not logged in';
         }
 
+        /**
+         * Fetches business data for the given userId and displays it on the dashboard.
+         * @param {string} userId - The ID of the user.
+         */
         async function fetchBusinessData(userId) {
             try {
                 const businessesRef = collection(db, "businesses");
@@ -207,20 +286,25 @@
                 const businessDataDiv = document.getElementById('business-data');
                 businessDataDiv.innerHTML = ''; // Clear existing data
                 if (!querySnapshot.empty) {
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const businessImage = data.image_url; // Get the existing image URL
+                    querySnapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        const businessImage = data.image_url || 'https://via.placeholder.com/60';
 
                         const businessItem = `
-                            <div class="business-item">
+                            <div class="col-md-6 business-item">
                                 <img src="${businessImage}" alt="${data.business_name}" class="business-image">
                                 <div>
                                     <h5 class="mb-1">${data.business_name}</h5>
                                     <p class="mb-1">Address: ${data.address}</p>
                                     <p class="mb-1">Email: ${data.email}</p>
                                     <small>Service: ${data.service}</small>
+                                    <p>Phone: ${data.phone}</p> 
+                                    <p>Working Hours: ${data.working_hours}</p>
+                                    <p>Services: ${data.services}</p>
+                                    <p>Services Prices: ${data.services_prices}</p>
+                                    <p>Services Descriptions: ${data.services_descriptions}</p>
                                     <br><br>
-                                    <button onclick="openEditModal('${doc.id}', '${data.business_name}', '${data.address || ''}', '${data.email}', '${data.phone}', '${data.service}', '${businessImage}')">Edit</button>
+                                    <button class="btn btn-sm btn-primary" onclick="openEditModal('${docSnap.id}', '${escapeQuotes(data.business_name)}', '${escapeQuotes(data.address)}', '${escapeQuotes(data.email)}', '${escapeQuotes(data.phone)}', '${escapeQuotes(data.service)}', '${escapeQuotes(data.image_url)}')">Edit</button>
                                 </div>
                             </div>
                         `;
@@ -228,32 +312,59 @@
                         businessDataDiv.innerHTML += businessItem;
                     });
                 } else {
-                    businessDataDiv.innerHTML = '<p style="color:black;">No business data found.</p>';
-
+                    businessDataDiv.innerHTML = '<p class="text-center text-dark">No business data found.</p>';
                 }
             } catch (error) {
                 console.error('Error fetching business data:', error);
-                document.getElementById('business-data').innerHTML = '<p>Error loading business data.</p>';
+                document.getElementById('business-data').innerHTML = '<p class="text-center text-danger">Error loading business data.</p>';
             }
         }
 
-        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService, imageUrl) {
-            document.getElementById('businessName').value = businessName;
-            document.getElementById('businessAddress').value = businessAddress;
-            document.getElementById('businessEmail').value = businessEmail;
-            document.getElementById('businessPhone').value = businessPhone;
-            document.getElementById('businessService').value = businessService;
+        /**
+         * Opens the edit modal and populates it with the current business data.
+         * @param {string} businessId - The Firestore document ID of the business.
+         * @param {string} businessName - The name of the business.
+         * @param {string} businessAddress - The address of the business.
+         * @param {string} businessEmail - The email of the business.
+         * @param {string} businessPhone - The phone number of the business.
+         * @param {string} businessService - The service offered by the business.
+         * @param {string} imageUrl - The URL of the business image.
+         */
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService, imageUrl, working_hours, services, services_prices, services_descriptions) {
+            // Populate form fields with existing data
+            document.getElementById('businessName').value = businessName || '';
+            document.getElementById('businessAddress').value = businessAddress || '';
+            document.getElementById('businessEmail').value = businessEmail || '';
+            document.getElementById('businessPhone').value = businessPhone || '';
+            document.getElementById('businessService').value = businessService || '';
+            document.getElementById('businessImage').value = ''; // Clear file input
+            document.getElementById('cover_images').value = ''; // Clear file input
+            document.getElementById('cover_images_urls').value = ''; // Clear URLs input
+            document.getElementById('working_hours').value = working_hours || ''; // Clear working hours
+            document.getElementById('services').value = services || ''; // Clear services
+            document.getElementById('services_prices').value = services_prices || ''; // Clear prices
+            document.getElementById('services_descriptions').value = services_descriptions || ''; // Clear descriptions
 
-            const modal = document.getElementById('editModal');
-            modal.style.display = 'block';
+            // Initialize Bootstrap modal
+            const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show();
 
-            document.getElementById('submitBusinessInfo').onclick = async () => {
+            // Handle form submission
+            document.getElementById('editBusinessForm').onsubmit = async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
                 const updatedBusiness = {
                     business_name: document.getElementById('businessName').value,
                     address: document.getElementById('businessAddress').value,
                     email: document.getElementById('businessEmail').value,
                     phone: document.getElementById('businessPhone').value,
                     service: document.getElementById('businessService').value,
+                    cover_images: document.getElementById('cover_images').value,
+                    cover_images_urls: document.getElementById('cover_images_urls').value,
+                    working_hours: document.getElementById('working_hours').value,
+                    services: document.getElementById('services').value,
+                    services_prices: document.getElementById('services_prices').value || '',
+                    services_descriptions: document.getElementById('services_descriptions').value || '',
                 };
 
                 const fileInput = document.getElementById('businessImage');
@@ -262,59 +373,76 @@
                 const progressContainer = document.getElementById('progressContainer');
                 const progressBarFill = document.getElementById('progressBarFill');
                 progressContainer.style.display = 'none'; // Hide progress by default
+                progressBarFill.style.width = '0%';
 
-                // If a new file is selected
-                if (file) {
-                    const storageRef = ref(storage, 'business_images/' + file.name);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
+                try {
+                    if (file) {
+                        const storageRef = ref(storage, 'business_images/' + file.name);
+                        const uploadTask = uploadBytesResumable(storageRef, file);
 
-                    // Show progress
-                    progressContainer.style.display = 'block';
+                        // Show progress bar
+                        progressContainer.style.display = 'block';
 
-                    // Monitor progress
-                    uploadTask.on('state_changed', (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        progressBarFill.style.width = progress + '%'; // Update progress bar width
-                    }, (error) => {
-                        console.error('Upload error:', error);
-                    }, async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        updatedBusiness.image_url = downloadURL; // Add image URL to the object
+                        // Monitor upload progress
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                progressBarFill.style.width = `${progress}%`; // Update progress bar width
+                            },
+                            (error) => {
+                                console.error('Upload error:', error);
+                                alert('Error uploading image.');
+                            },
+                            async () => {
+                                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                                updatedBusiness.image_url = downloadURL; // Add image URL to the object
 
+                                // Update Firestore document
+                                const businessRef = doc(db, "businesses", businessId);
+                                await updateDoc(businessRef, updatedBusiness);
+
+                                // Refresh data
+                                fetchBusinessData(userId);
+
+                                // Hide modal
+                                editModal.hide();
+                            }
+                        );
+                    } else {
+                        updatedBusiness.image_url = imageUrl || ''; // Keep the existing image URL if no new image is uploaded
+
+                        // Update Firestore document
                         const businessRef = doc(db, "businesses", businessId);
                         await updateDoc(businessRef, updatedBusiness);
-                        modal.style.display = 'none';
-                        fetchBusinessData(localStorage.getItem('userId')); // Refresh data
-                    });
-                } else {
-                    updatedBusiness.image_url = imageUrl; // Keep the existing image URL if no new image is uploaded
 
-                    const businessRef = doc(db, "businesses", businessId);
-                    await updateDoc(businessRef, updatedBusiness);
-                    modal.style.display = 'none';
-                    fetchBusinessData(localStorage.getItem('userId')); // Refresh data
+                        // Refresh data
+                        fetchBusinessData(userId);
+
+                        // Hide modal
+                        editModal.hide();
+                    }
+                } catch (error) {
+                    console.error('Error updating business info:', error);
+                    alert('Error updating business information.');
                 }
             };
         };
 
-        // Close modal
-        document.getElementById('closeModal').onclick = () => {
-            document.getElementById('editModal').style.display = 'none';
-        };
-
-        // Close modal if clicked outside
-        window.onclick = (event) => {
-            const modal = document.getElementById('editModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
+        /**
+         * Escapes single quotes and backslashes in a string to prevent JavaScript injection.
+         * @param {string} str - The string to escape.
+         * @returns {string} - The escaped string.
+         */
+        function escapeQuotes(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/"/g, '\\"');
+        }
 
         // Logout functionality
-        document.getElementById('logoutButton').onclick = () => {
+        document.getElementById('logoutButton').addEventListener('click', () => {
             localStorage.removeItem('userId'); // Clear user ID from local storage
-            window.location.href = '/'; 
-        };
+            window.location.href = '/';
+        });
     </script>
 </body>
 </html>
