@@ -20,12 +20,13 @@ import {
 
 // Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // Replace with your actual API key
-  authDomain: "YOUR_AUTH_DOMAIN", // Replace with your actual auth domain
-  projectId: "YOUR_PROJECT_ID", // Replace with your actual project ID
-  storageBucket: "YOUR_STORAGE_BUCKET", // Replace with your actual storage bucket
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your actual messaging sender ID
-  appId: "YOUR_APP_ID", // Replace with your actual app ID
+  apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+  authDomain: "barbershop-77353.firebaseapp.com",
+  projectId: "barbershop-77353",
+  storageBucket: "barbershop-77353.appspot.com",
+  messagingSenderId: "1018170430611",
+  appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+  measurementId: "G-4VS048B47G"
 };
 
 // Initialize Firebase
@@ -69,7 +70,8 @@ async function fetchBusinessData(userId) {
     if (!querySnapshot.empty) {
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const businessImage = data.image_url || "https://via.placeholder.com/60";
+        const businessImage = data.image_url
+        const businessBanner = data.banner_url
 
         const businessRow = `
           <tr>
@@ -80,6 +82,7 @@ async function fetchBusinessData(userId) {
             <td class="px-4 py-2">${data.phone}</td>
             <td class="px-4 py-2">${data.business_type}</td>
             <td class="px-4 py-2">${data.working_hours}</td>
+            <td class="px-4 py-2">${data.banner_url}</td>
           </tr>
         `;
 
@@ -331,4 +334,139 @@ async function deleteEmployee(employeeId) {
 // Fetch employee data on page load
 if (userId) {
     fetchEmployeeData(userId);
+}
+
+// Function to close the add/edit service modal
+function closeServiceModal() {
+  document.getElementById("serviceModal").classList.add("hidden");
+}
+
+// Event listener for the "Add Service" button
+document.getElementById("addServiceButton").addEventListener("click", () => {
+  openServiceModal();
+});
+
+// Handle form submission for adding/editing service
+document.getElementById("serviceForm").onsubmit = async (e) => {
+  e.preventDefault(); // Prevent default form submission
+
+  const serviceName = document.getElementById("serviceName").value;
+  const servicePrice = document.getElementById("servicePrice").value;
+
+  try {
+    // Add service to Firestore
+    const servicesRef = collection(db, "services");
+    await addDoc(servicesRef, {
+      name: serviceName,
+      price: servicePrice,
+      businessId: userId, // Assuming userId is the business ID
+    });
+
+    // Refresh service data
+    fetchServiceData(userId);
+
+    // Hide modal
+    closeServiceModal();
+  } catch (error) {
+    console.error("Error adding service:", error);
+    alert("Error adding service.");
+  }
+};
+
+// Function to fetch and display service data
+async function fetchServiceData(businessId) {
+  try {
+    const servicesRef = collection(db, "services");
+    const q = query(servicesRef, where("businessId", "==", businessId));
+    const querySnapshot = await getDocs(q);
+
+    const servicesTableBody = document.getElementById("services-table-body");
+    servicesTableBody.innerHTML = ""; // Clear existing data
+
+    if (!querySnapshot.empty) {
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const serviceRow = `
+          <tr data-id="${docSnap.id}">
+            <td class="px-4 py-2">${data.name}</td>
+            <td class="px-4 py-2">${data.price}</td>
+            <td class="px-4 py-2">
+              <button onclick="openServiceModal('${docSnap.id}', '${data.name}', '${data.price}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+              <button onclick="deleteService('${docSnap.id}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+            </td>
+          </tr>
+        `;
+        servicesTableBody.innerHTML += serviceRow;
+      });
+    } else {
+      servicesTableBody.innerHTML =
+        '<tr><td colspan="3" class="text-center text-black">No services found.</td></tr>';
+    }
+  } catch (error) {
+    console.error("Error fetching service data:", error);
+    document.getElementById("services-table-body").innerHTML =
+      '<tr><td colspan="3" class="text-center text-red-500">Error loading service data.</td></tr>';
+  }
+}
+
+// Function to delete a service
+async function deleteService(serviceId) {
+  try {
+    const serviceRef = doc(db, "services", serviceId);
+    await deleteDoc(serviceRef);
+
+    // Refresh service data
+    fetchServiceData(userId);
+  } catch (error) {
+    console.error("Error deleting service:", error);
+    alert("Error deleting service.");
+  }
+}
+
+// Fetch service data on page load
+if (userId) {
+  fetchServiceData(userId);
+}
+
+// Function to open the add/edit service modal
+function openServiceModal(serviceId = "", serviceName = "", servicePrice = "") {
+  document.getElementById("serviceName").value = serviceName;
+  document.getElementById("servicePrice").value = servicePrice;
+  document.getElementById("serviceModal").classList.remove("hidden");
+
+  // Update form submission logic
+  document.getElementById("serviceForm").onsubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const serviceName = document.getElementById("serviceName").value;
+    const servicePrice = document.getElementById("servicePrice").value;
+
+    try {
+      if (serviceId) {
+        // Update existing service
+        const serviceRef = doc(db, "services", serviceId);
+        await updateDoc(serviceRef, {
+          name: serviceName,
+          price: servicePrice,
+        });
+      } else {
+        // Add new service
+        const servicesRef = collection(db, "services");
+        await addDoc(servicesRef, {
+          name: serviceName,
+          price: servicePrice,
+          businessId: userId, // Assuming userId is the business ID
+        });
+      }
+
+      // Refresh service data
+      fetchServiceData(userId);
+
+      // Hide modal
+      closeServiceModal();
+    } catch (error) {
+      console.error("Error saving service:", error);
+      alert("Error saving service.");
+    }
+  };
 }
