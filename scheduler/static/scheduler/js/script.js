@@ -8,6 +8,8 @@ import {
   where,
   updateDoc,
   doc,
+  addDoc,
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import {
   getStorage,
@@ -76,14 +78,8 @@ async function fetchBusinessData(userId) {
             <td class="px-4 py-2">${data.address}</td>
             <td class="px-4 py-2">${data.email}</td>
             <td class="px-4 py-2">${data.phone}</td>
-            <td class="px-4 py-2">${data.service}</td>
+            <td class="px-4 py-2">${data.business_type}</td>
             <td class="px-4 py-2">${data.working_hours}</td>
-            <td class="px-4 py-2">${data.services}</td>
-            <td class="px-4 py-2">${data.services_prices}</td>
-            <td class="px-4 py-2">${data.services_descriptions}</td>
-            <td class="px-4 py-2">
-              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="openEditModal('${docSnap.id}', '${escapeQuotes(data.business_name)}', '${escapeQuotes(data.address)}', '${escapeQuotes(data.email)}', '${escapeQuotes(data.phone)}', '${escapeQuotes(data.service)}', '${escapeQuotes(data.image_url)}', '${escapeQuotes(data.working_hours)}', '${escapeQuotes(data.services)}', '${escapeQuotes(data.services_prices)}', '${escapeQuotes(data.services_descriptions)}')">Edit</button>
-            </td>
           </tr>
         `;
 
@@ -91,12 +87,12 @@ async function fetchBusinessData(userId) {
       });
     } else {
       businessTableBody.innerHTML =
-        '<tr><td colspan="11" class="text-center text-black">No business data found.</td></tr>';
+        '<tr><td colspan="7" class="text-center text-black">No business data found.</td></tr>';
     }
   } catch (error) {
     console.error("Error fetching business data:", error);
     document.getElementById("business-table-body").innerHTML =
-      '<tr><td colspan="11" class="text-center text-red-500">Error loading business data.</td></tr>';
+      '<tr><td colspan="7" class="text-center text-red-500">Error loading business data.</td></tr>';
   }
 }
 
@@ -113,27 +109,18 @@ window.openEditModal = function (
   businessAddress,
   businessEmail,
   businessPhone,
-  businessService,
+  businessType,
   imageUrl,
-  working_hours,
-  services,
-  services_prices,
-  services_descriptions
+  workingHours
 ) {
   // Populate form fields with existing data
   document.getElementById("businessName").value = businessName || "";
   document.getElementById("businessAddress").value = businessAddress || "";
   document.getElementById("businessEmail").value = businessEmail || "";
   document.getElementById("businessPhone").value = businessPhone || "";
-  document.getElementById("businessService").value = businessService || "";
+  document.getElementById("businessType").value = businessType || "";
   document.getElementById("businessImage").value = ""; // Clear file input
-  document.getElementById("cover_images").value = ""; // Clear file input
-  document.getElementById("cover_images_urls").value = ""; // Clear URLs input
-  document.getElementById("working_hours").value = working_hours || "";
-  document.getElementById("services").value = services || "";
-  document.getElementById("services_prices").value = services_prices || "";
-  document.getElementById("services_descriptions").value =
-    services_descriptions || "";
+  document.getElementById("working_hours").value = workingHours || "";
 
   // Show the modal
   document.getElementById("editModal").classList.remove("hidden");
@@ -147,12 +134,8 @@ window.openEditModal = function (
       address: document.getElementById("businessAddress").value,
       email: document.getElementById("businessEmail").value,
       phone: document.getElementById("businessPhone").value,
-      service: document.getElementById("businessService").value,
+      business_type: document.getElementById("businessType").value,
       working_hours: document.getElementById("working_hours").value,
-      services: document.getElementById("services").value,
-      services_prices: document.getElementById("services_prices").value || "",
-      services_descriptions:
-        document.getElementById("services_descriptions").value || "",
     };
 
     const fileInput = document.getElementById("businessImage");
@@ -252,3 +235,100 @@ document.getElementById("user-menu-button").addEventListener("click", () => {
   const menu = document.getElementById("user-menu");
   menu.classList.toggle("hidden");
 });
+
+// Function to open the add/edit employee modal
+function openEmployeeModal(employeeId = '', employeeName = '', employeePhone = '') {
+    document.getElementById('employeeName').value = employeeName;
+    document.getElementById('employeePhone').value = employeePhone;
+    document.getElementById('employeeModal').classList.remove('hidden');
+}
+
+// Function to close the add/edit employee modal
+function closeEmployeeModal() {
+    document.getElementById('employeeModal').classList.add('hidden');
+}
+
+// Event listener for the "Add Employee" button
+document.getElementById('addEmployeeButton').addEventListener('click', () => {
+    openEmployeeModal();
+});
+
+// Handle form submission for adding/editing employee
+document.getElementById('employeeForm').onsubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const employeeName = document.getElementById('employeeName').value;
+    const employeePhone = document.getElementById('employeePhone').value;
+
+    try {
+        // Add employee to Firestore
+        const employeesRef = collection(db, 'employees');
+        await addDoc(employeesRef, {
+            name: employeeName,
+            phone: employeePhone,
+            businessId: userId // Assuming userId is the business ID
+        });
+
+        // Refresh employee data
+        fetchEmployeeData(userId);
+
+        // Hide modal
+        closeEmployeeModal();
+    } catch (error) {
+        console.error('Error adding employee:', error);
+        alert('Error adding employee.');
+    }
+};
+
+// Function to fetch and display employee data
+async function fetchEmployeeData(businessId) {
+    try {
+        const employeesRef = collection(db, 'employees');
+        const q = query(employeesRef, where('businessId', '==', businessId));
+        const querySnapshot = await getDocs(q);
+
+        const employeesTableBody = document.getElementById('employees-table-body');
+        employeesTableBody.innerHTML = ''; // Clear existing data
+
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const employeeRow = `
+                    <tr data-id="${docSnap.id}">
+                        <td class="px-4 py-2">${data.name}</td>
+                        <td class="px-4 py-2">${data.phone}</td>
+                        <td class="px-4 py-2">
+                            <button onclick="openEmployeeModal('${docSnap.id}', '${data.name}', '${data.phone}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                            <button onclick="deleteEmployee('${docSnap.id}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                employeesTableBody.innerHTML += employeeRow;
+            });
+        } else {
+            employeesTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-black">No employees found.</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        document.getElementById('employees-table-body').innerHTML = '<tr><td colspan="3" class="text-center text-red-500">Error loading employee data.</td></tr>';
+    }
+}
+
+// Function to delete an employee
+async function deleteEmployee(employeeId) {
+    try {
+        const employeeRef = doc(db, 'employees', employeeId);
+        await deleteDoc(employeeRef);
+
+        // Refresh employee data
+        fetchEmployeeData(userId);
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        alert('Error deleting employee.');
+    }
+}
+
+// Fetch employee data on page load
+if (userId) {
+    fetchEmployeeData(userId);
+}

@@ -76,6 +76,9 @@
         <main>
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <!-- Business Data Section -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
+                </div>
                 <div id="business-data" class="overflow-x-auto rounded-lg shadow-md">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -87,14 +90,37 @@
                                 <th class="px-4 py-2">Phone</th>
                                 <th class="px-4 py-2">Business Type</th>
                                 <th class="px-4 py-2">Working Hours</th>
-                                <th class="px-4 py-2">Services</th>
-                                <th class="px-4 py-2">Prices</th>
-                                <th class="px-4 py-2">Banners</th>
-                                <th class="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="business-table-body" class="bg-white divide-y divide-gray-200">
                             <!-- Business items will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4">
+                    <button id="editBusinessButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Edit Info
+                    </button>
+                </div>
+
+                <!-- My Employees Section -->
+                <div id="employees-data" class="mt-8 overflow-x-auto rounded-lg shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">My Employees</h2>
+                        <button id="addEmployeeButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-plus"></i> Add Employee
+                        </button>
+                    </div>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Phone</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Employee items will be dynamically inserted here -->
                         </tbody>
                     </table>
                 </div>
@@ -104,8 +130,6 @@
 
     <!-- Modal for Editing Business Info -->
     <div id="editModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="editModalLabel" aria-hidden="true">
-        <!-- Include the modal content from your working example -->
-        <!-- Modal content starts here -->
         <div class="flex items-end justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -123,7 +147,6 @@
                             <!-- Modal Body -->
                             <div class="mt-2">
                                 <form id="editBusinessForm">
-                                    <!-- Include form fields from your working example -->
                                     <!-- Business Name -->
                                     <div class="mb-4">
                                         <label for="businessName" class="block text-sm font-medium text-gray-700">Business Name:</label>
@@ -159,26 +182,6 @@
                                         <label for="working_hours" class="block text-sm font-medium text-gray-700">Working Hours:</label>
                                         <input type="text" id="working_hours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     </div>
-                                    <!-- Services -->
-                                    <div class="mb-4">
-                                        <label for="services" class="block text-sm font-medium text-gray-700">Services:</label>
-                                        <input type="text" id="services" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Prices -->
-                                    <div class="mb-4">
-                                        <label for="services_prices" class="block text-sm font-medium text-gray-700">Services Prices:</label>
-                                        <input type="text" id="services_prices" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Descriptions -->
-                                    <div class="mb-4">
-                                        <label for="services_descriptions" class="block text-sm font-medium text-gray-700">Services Descriptions:</label>
-                                        <textarea id="services_descriptions" rows="2" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-                                    </div>
-                                    <!-- Banners -->
-                                    <div class="mb-4">
-                                        <label for="businessBanners" class="block text-sm font-medium text-gray-700">Banners:</label>
-                                        <input type="file" id="businessBanners" multiple accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
                                     <!-- Progress Bar -->
                                     <div id="progressContainer" class="mb-4 hidden">
                                         <label class="block text-sm font-medium text-gray-700">Upload Progress:</label>
@@ -199,13 +202,48 @@
                 </div>
             </div>
         </div>
-        <!-- Modal content ends here -->
+    </div>
+
+    <!-- Modal for Adding/Editing Employee Info -->
+    <div id="employeeModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="flex items-end justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p- ">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="employeeModalLabel">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 sm:mt-0 sm:ml-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="employeeModalLabel">
+                                Add/Edit Employee
+                            </h3>
+                            <div class="mt-2">
+                                <form id="employeeForm">
+                                    <div class="mb-4">
+                                        <label for="employeeName" class="block text-sm font-medium text-gray-700">Name:</label>
+                                        <input type="text" id="employeeName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="employeePhone" class="block text-sm font-medium text-gray-700">Phone:</label>
+                                        <input type="tel" id="employeePhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    </div>
+                                    <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" onclick="closeEmployeeModal()" class="mt-3 w-full inline-flex justify-center rounded-md bg-white text-gray-700 py-2 px-4 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         // Your Firebase configuration
@@ -247,10 +285,9 @@
             document.getElementById('user-id').innerText = userId;
             document.getElementById('mobile-user-id').innerText = userId;
             fetchBusinessData(userId);
+            fetchEmployeesData(userId);
         } else {
-            document.getElementById('user-id').innerText = 'Not logged in';
-            document.getElementById('mobile-user-id').innerText = 'Not logged in';
-            console.error('User ID not found in localStorage.');
+            console.error("User ID not found in localStorage.");
         }
 
         /**
@@ -263,16 +300,15 @@
                 const q = query(businessesRef, where("uid", "==", userId));
                 const querySnapshot = await getDocs(q);
 
-                const businessTableBody = document.getElementById('business-table-body');
-                businessTableBody.innerHTML = ''; // Clear existing data
+                const businessTableBody = document.getElementById("business-table-body");
+                businessTableBody.innerHTML = ""; // Clear existing data
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        const businessImage = data.logo_url || 'https://via.placeholder.com/60';
-                        const bannerImages = data.banner_urls.map(url => `<img src="${url}" alt="Banner" class="h-10 w-10 rounded-full">`).join(' ');
+                        const businessImage = data.image_url || "https://via.placeholder.com/60";
 
                         const businessRow = `
-                            <tr>
+                            <tr data-id="${docSnap.id}">
                                 <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full"></td>
                                 <td class="px-4 py-2">${data.business_name}</td>
                                 <td class="px-4 py-2">${data.address}</td>
@@ -280,51 +316,21 @@
                                 <td class="px-4 py-2">${data.phone}</td>
                                 <td class="px-4 py-2">${data.business_type}</td>
                                 <td class="px-4 py-2">${data.working_hours}</td>
-                                <td class="px-4 py-2">${data.services.map(service => `${service.name}: $${service.price}`).join('<br>')}</td>
-                                <td class="px-4 py-2">${data.services.map(service => `$${service.price}`).join('<br>')}</td>
-                                <td class="px-4 py-2">${bannerImages}</td>
-                                <td class="px-4 py-2">
-                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="openEditModal(
-                                        '${docSnap.id}', 
-                                        '${escapeQuotes(data.business_name)}', 
-                                        '${escapeQuotes(data.address)}', 
-                                        '${escapeQuotes(data.email)}', 
-                                        '${escapeQuotes(data.phone)}', 
-                                        '${escapeQuotes(data.business_type)}', 
-                                        '${escapeQuotes(data.logo_url)}', 
-                                        '${escapeQuotes(data.working_hours)}', 
-                                        '${escapeQuotes(JSON.stringify(data.services))}', 
-                                        '${escapeQuotes(JSON.stringify(data.banner_urls))}'
-                                    )">Edit</button>
-                                </td>
                             </tr>
                         `;
 
                         businessTableBody.innerHTML += businessRow;
                     });
                 } else {
-                    businessTableBody.innerHTML = '<tr><td colspan="11" class="text-center text-black">No business data found.</td></tr>';
+                    businessTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-black">No business data found.</td></tr>';
                 }
             } catch (error) {
                 console.error('Error fetching business data:', error);
-                document.getElementById('business-table-body').innerHTML = '<tr><td colspan="11" class="text-center text-red-500">Error loading business data.</td></tr>';
+                document.getElementById('business-table-body').innerHTML = '<tr><td colspan="7" class="text-center text-red-500">Error loading business data.</td></tr>';
             }
         }
 
-        /**
-         * Opens the edit modal and populates it with the current business data.
-         * @param {string} businessId - The Firestore document ID of the business.
-         * @param {string} businessName - The name of the business.
-         * @param {string} businessAddress - The address of the business.
-         * @param {string} businessEmail - The email of the business.
-         * @param {string} businessPhone - The phone number of the business.
-         * @param {string} businessType - The type of business.
-         * @param {string} imageUrl - The URL of the business image.
-         * @param {string} workingHours - The working hours of the business.
-         * @param {string} services - The services offered by the business (as JSON string).
-         * @param {string} bannerUrls - The banner image URLs (as JSON string).
-         */
-         window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessType, imageUrl, workingHours, services, bannerUrls) {
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessType, imageUrl, workingHours) {
             // Populate form fields with existing data
             document.getElementById('businessName').value = businessName || '';
             document.getElementById('businessAddress').value = businessAddress || '';
@@ -333,18 +339,6 @@
             document.getElementById('businessType').value = businessType || '';
             document.getElementById('businessImage').value = ''; // Clear file input
             document.getElementById('working_hours').value = workingHours || '';
-            document.getElementById('services').value = services || '';
-            
-            // Populate services section
-            const parsedServices = JSON.parse(services);
-            const servicesWrapper = document.getElementById('services');
-            servicesWrapper.innerHTML = ''; // Clear previous services
-            parsedServices.forEach(service => {
-                servicesWrapper.innerHTML += `
-                    <input type="text" class="form-control mb-2" value="${service.name}" required>
-                    <input type="number" class="form-control mb-2" value="${service.price}" required>
-                `;
-            });
 
             // Show the modal
             document.getElementById('editModal').classList.remove('hidden');
@@ -353,7 +347,6 @@
             document.getElementById('editBusinessForm').onsubmit = async (e) => {
                 e.preventDefault(); // Prevent default form submission
 
-
                 const updatedBusiness = {
                     business_name: document.getElementById('businessName').value,
                     address: document.getElementById('businessAddress').value,
@@ -361,11 +354,6 @@
                     phone: document.getElementById('businessPhone').value,
                     business_type: document.getElementById('businessType').value,
                     working_hours: document.getElementById('working_hours').value,
-                    services: Array.from(document.querySelectorAll('#services .form-control')).map((input, i) => ({
-                        name: input.value,
-                        price: document.querySelectorAll('#services .form-control')[i + 1].value
-                    })),
-                    banner_urls: Array.from(document.querySelectorAll('#businessBanners')).map(input => input.value)
                 };
 
                 const fileInput = document.getElementById('businessImage');
@@ -429,15 +417,23 @@
             };
         };
 
-        /**
-         * Escapes single quotes and backslashes in a string to prevent JavaScript injection.
-         * @param {string} str - The string to escape.
-         * @returns {string} - The escaped string.
-         */
-        function escapeQuotes(str) {
-            if (!str) return '';
-            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
-        }
+        // Event listener for the "Edit Info" button
+        document.getElementById('editBusinessButton').addEventListener('click', () => {
+            // Assuming you have only one business to edit
+            const businessRow = document.querySelector('#business-table-body tr');
+            if (businessRow) {
+                const businessId = businessRow.getAttribute('data-id');
+                const businessName = businessRow.querySelector('td:nth-child(2)').innerText;
+                const businessAddress = businessRow.querySelector('td:nth-child(3)').innerText;
+                const businessEmail = businessRow.querySelector('td:nth-child(4)').innerText;
+                const businessPhone = businessRow.querySelector('td:nth-child(5)').innerText;
+                const businessType = businessRow.querySelector('td:nth-child(6)').innerText;
+                const workingHours = businessRow.querySelector('td:nth-child(7)').innerText;
+                const imageUrl = businessRow.querySelector('td:nth-child(1) img').src;
+
+                openEditModal(businessId, businessName, businessAddress, businessEmail, businessPhone, businessType, imageUrl, workingHours);
+            }
+        });
 
         // Close edit modal
         window.closeEditModal = function() {
@@ -459,6 +455,103 @@
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
+
+        // Function to open the add/edit employee modal
+        function openEmployeeModal(employeeId = '', employeeName = '', employeePhone = '') {
+            document.getElementById('employeeName').value = employeeName;
+            document.getElementById('employeePhone').value = employeePhone;
+            document.getElementById('employeeModal').classList.remove('hidden');
+        }
+
+        // Function to close the add/edit employee modal
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.add('hidden');
+        }
+
+        // Event listener for the "Add Employee" button
+        document.getElementById('addEmployeeButton').addEventListener('click', () => {
+            openEmployeeModal();
+        });
+
+        // Handle form submission for adding/editing employee
+        document.getElementById('employeeForm').onsubmit = async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const employeeName = document.getElementById('employeeName').value;
+            const employeePhone = document.getElementById('employeePhone').value;
+
+            try {
+                // Add employee to Firestore
+                const employeesRef = collection(db, 'employees');
+                await addDoc(employeesRef, {
+                    name: employeeName,
+                    phone: employeePhone,
+                    businessId: userId // Assuming userId is the business ID
+                });
+
+                // Refresh employee data
+                fetchEmployeesData(userId);
+
+                // Hide modal
+                closeEmployeeModal();
+            } catch (error) {
+                console.error('Error adding employee:', error);
+                alert('Error adding employee.');
+            }
+        };
+
+        // Function to fetch and display employee data
+        async function fetchEmployeesData(businessId) {
+            try {
+                const employeesRef = collection(db, 'employees');
+                const q = query(employeesRef, where('businessId', '==', businessId));
+                const querySnapshot = await getDocs(q);
+
+                const employeesTableBody = document.getElementById('employees-table-body');
+                employeesTableBody.innerHTML = ''; // Clear existing data
+
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        const employeeRow = `
+                            <tr data-id="${docSnap.id}">
+                                <td class="px-4 py-2">${data.name}</td>
+                                <td class="px-4 py-2">${data.phone}</td>
+                                <td class="px-4 py-2">
+                                    <button onclick="openEmployeeModal('${docSnap.id}', '${data.name}', '${data.phone}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                                    <button onclick="deleteEmployee('${docSnap.id}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        employeesTableBody.innerHTML += employeeRow;
+                    });
+                } else {
+                    employeesTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-black">No employees found.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching employee data:', error);
+                document.getElementById('employees-table-body').innerHTML = '<tr><td colspan="3" class="text-center text-red-500">Error loading employee data.</td></tr>';
+            }
+        }
+
+        // Function to delete an employee
+        async function deleteEmployee(employeeId) {
+            try {
+                const employeeRef = doc(db, 'employees', employeeId);
+                await deleteDoc(employeeRef);
+
+                // Refresh employee data
+                fetchEmployeesData(userId);
+            } catch (error) {
+                console.error('Error deleting employee:', error);
+                alert('Error deleting employee.');
+            }
+        }
+
+        // Fetch employee data on page load
+        if (userId) {
+            fetchEmployeesData(userId);
+        }
 
     </script>
 </body>
