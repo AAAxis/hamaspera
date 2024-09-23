@@ -30,17 +30,53 @@
                     <div class="invalid-feedback">Please enter your address.</div>
                 </div>
 
+                <!-- Phone -->
+                <div class="form-group mb-3">
+                    <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required>
+                    <div class="invalid-feedback">Please enter your business phone number.</div>
+                </div>
+
                 <!-- Business Type -->
                 <div class="form-group mb-3">
-                    <select id="service" class="form-select btn btn-secondary dropdown-toggle w-100" required>
-                        <option value="" disabled selected>Select a Service</option>
-                        <option value="Hair Cut">Hair Cut</option>
+                    <select id="business-type" class="form-select btn btn-secondary dropdown-toggle w-100" required>
+                        <option value="" disabled selected>Select Business Type</option>
+                        <option value="Barbershop">Barbershop</option>
                         <option value="Nail Salon">Nail Salon</option>
-                        <option value="Spa">Spa</option>
-                        <option value="Massage">Massage</option>
-                        <option value="Other">Other</option>
+                        <option value="Beauty Salon">Beauty Salon</option>
                     </select>
-                    <div class="invalid-feedback">Please select a service.</div>
+                    <div class="invalid-feedback">Please select a business type.</div>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="form-group mb-3">
+                    <label for="logo">Upload Business Logo</label>
+                    <input type="file" id="logo" class="form-control" accept="image/*" required>
+                    <div class="invalid-feedback">Please upload a logo for your business.</div>
+                </div>
+
+                <!-- Banner Upload -->
+                <div class="form-group mb-3">
+                    <label for="banners">Upload Banners (Max 3)</label>
+                    <input type="file" id="banners" class="form-control" accept="image/*" multiple required>
+                    <div class="invalid-feedback">Please upload up to 3 banners.</div>
+                </div>
+
+                <!-- Working Hours -->
+                <div class="form-group mb-3">
+                    <input type="text" id="working-hours" class="form-control" placeholder="Working Hours (e.g., Mon-Fri 9 AM - 6 PM)" required>
+                    <div class="invalid-feedback">Please enter your working hours.</div>
+                </div>
+
+                <!-- Services -->
+                <div id="services-section" class="form-group mb-3">
+                    <label for="services">Add Services and Prices</label>
+                    <div id="services-wrapper">
+                        <div class="service-row">
+                            <input type="text" class="form-control mb-2" placeholder="Service Name" required>
+                            <input type="number" class="form-control mb-2" placeholder="Price ($)" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="add-service">Add Another Service</button>
                 </div>
 
                 <!-- Terms and Services Agreement -->
@@ -63,6 +99,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -78,6 +115,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+    const storage = getStorage(app);
+
+    // Add Service Logic
+    document.getElementById('add-service').addEventListener('click', () => {
+        const serviceWrapper = document.getElementById('services-wrapper');
+        const newServiceRow = document.createElement('div');
+        newServiceRow.classList.add('service-row');
+        newServiceRow.innerHTML = `
+            <input type="text" class="form-control mb-2" placeholder="Service Name" required>
+            <input type="number" class="form-control mb-2" placeholder="Price ($)" required>
+        `;
+        serviceWrapper.appendChild(newServiceRow);
+    });
 
     // Handle form submission
     document.getElementById('business-form').addEventListener('submit', async (event) => {
@@ -87,7 +137,31 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const address = document.getElementById('address').value;
-        const service = document.getElementById('service').value;
+        const phone = document.getElementById('phone').value;
+        const businessType = document.getElementById('business-type').value;
+        const workingHours = document.getElementById('working-hours').value;
+
+        // Collect services
+        const services = Array.from(document.querySelectorAll('#services-wrapper .service-row')).map(row => ({
+            name: row.querySelector('input[type="text"]').value,
+            price: row.querySelector('input[type="number"]').value
+        }));
+
+        // Upload Logo
+        const logoFile = document.getElementById('logo').files[0];
+        const logoRef = ref(storage, `logos/${logoFile.name}`);
+        const logoSnapshot = await uploadBytes(logoRef, logoFile);
+        const logoUrl = await getDownloadURL(logoSnapshot.ref);
+
+        // Upload Banners
+        const bannerFiles = document.getElementById('banners').files;
+        const bannerUrls = await Promise.all(
+            Array.from(bannerFiles).map(async (file) => {
+                const bannerRef = ref(storage, `banners/${file.name}`);
+                const snapshot = await uploadBytes(bannerRef, file);
+                return await getDownloadURL(snapshot.ref);
+            })
+        );
 
         try {
             // Create user in Firebase Authentication
@@ -96,30 +170,31 @@
 
             // Send email verification
             await sendEmailVerification(user);
-            
-            document.getElementById('message').innerText = "A verification email has been sent to your email address.";
 
-            // Save business details in Firestore after verification
+            // Save business details in Firestore
             await addDoc(collection(db, 'businesses'), {
                 business_name: businessName,
                 email: email,
-                service: service,
+                phone: phone,
+                business_type: businessType,
                 address: address,
+                working_hours: workingHours,
+                services: services,
+                logo_url: logoUrl,
+                banner_urls: bannerUrls,
                 uid: user.uid,
-                image_url: "https://static.vecteezy.com/system/resources/thumbnails/010/403/942/small_2x/gentleman-barber-shop-vintage-logo-design-vector.jpg"
             });
 
             // Store user ID in local storage
             localStorage.setItem('userId', user.uid);
 
-            // Redirect to the dashboard after verification
+            // Redirect to login after successful registration
             window.location.href = '/login';
 
-        } catch (e) {
-            console.error("Error registering: ", e);
+        } catch (error) {
+            console.error("Error registering business:", error);
             document.getElementById('message').innerText = "Error registering business!";
         }
     });
 </script>
-
 {% endblock %}

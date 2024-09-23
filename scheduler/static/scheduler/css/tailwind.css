@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-gray-100;
+    }
+}
+
+.table-container {
+    @apply overflow-x-auto;
+}
+
+.table {
+    @apply w-full;
+}
+
+.table-header {
+    @apply bg-gray-200;
+}
+
+.table-row {
+    @apply hover:bg-gray-300;
+}
+
+.table-cell {
+    @apply px-4 py-2;
+}
+
+.table-cell-image {
+    @apply w-16 h-16;
+}
+
+.table-cell-business-name {
+    @apply w-48;
+}
+
+.table-cell-address {
+    @apply w-48;
+}
+
+.table-cell-email {
+    @apply w-48;
+}
