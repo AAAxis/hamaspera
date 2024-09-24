@@ -120,26 +120,70 @@
                     </table>
                 </div>
 
-                <!-- Employees Data Section -->
-                <div id="hours-data" class="mt-8 overflow-x-auto rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-900">My Schedule</h2>
-                        <button id="addEmployeeButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-plus"></i> Add Working Hours
-                        </button>
+                <!-- Working Hours Section -->
+                <div class="mt-8 flex">
+                    <div class="w-full">
+                        <h2 class="text-2xl font-bold text-gray-900">Update Working Hours</h2>
+                        <ul class="max-w-xs flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Monday
+                                <input type="checkbox" id="monday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="monday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="monday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Tuesday
+                                <input type="checkbox" id="tuesday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="tuesday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="tuesday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Wednesday
+                                <input type="checkbox" id="wednesday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="wednesday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="wednesday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Thursday
+                                <input type="checkbox" id="thursday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="thursday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="thursday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Friday
+                                <input type="checkbox" id="friday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="friday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="friday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Saturday
+                                <input type="checkbox" id="saturday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="saturday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="saturday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                                Sunday
+                                <input type="checkbox" id="sunday-working" class="ml-auto">
+                                <div class="flex gap-x-2">
+                                    <input type="time" id="sunday-from" class="py-1 px-2 border rounded" disabled>
+                                    <input type="time" id="sunday-to" class="py-1 px-2 border rounded" disabled>
+                                </div>
+                            </li>
+                        </ul>
+                        <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Working Hours</button>
                     </div>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Days</th>
-                                <th class="px-4 py-2">Hours</th>
-                                <th class="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Employee items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
                 </div>
 
             </div>
@@ -184,14 +228,10 @@
         </div>
     </div>
 
-
-   
-
-
     <!-- Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, updateDoc, doc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc, addDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         // Your Firebase configuration
@@ -342,6 +382,8 @@
             }
         };
 
+        
+
         // Function to fetch and display employee data
         async function fetchEmployeesData(businessId) {
             try {
@@ -414,6 +456,38 @@
         if (userId) {
             fetchBusinessData(userId);
         }
+
+        // Enable/disable time inputs based on checkbox
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                const day = event.target.id.split('-')[0];
+                document.getElementById(`${day}-from`).disabled = !event.target.checked;
+                document.getElementById(`${day}-to`).disabled = !event.target.checked;
+            });
+        });
+
+        // Save working hours
+        document.getElementById('saveWorkingHours').addEventListener('click', async () => {
+            const workingHours = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const day = checkbox.id.split('-')[0];
+                workingHours[day] = {
+                    working: checkbox.checked,
+                    from: document.getElementById(`${day}-from`).value,
+                    to: document.getElementById(`${day}-to`).value
+                };
+            });
+
+            try {
+                const userId = localStorage.getItem('userId');
+                const workingHoursRef = doc(db, 'working_hours', userId);
+                await setDoc(workingHoursRef, { workingHours });
+                alert('Working hours updated successfully');
+            } catch (error) {
+                console.error('Error updating working hours:', error);
+                alert('Error updating working hours.');
+            }
+        });
     </script>
 </body>
 </html>
