@@ -56,7 +56,7 @@ class BarberShopBookingView(TemplateView):
         return redirect('barbershop_detail', name=barbershop_name)
     
 class ScheduleView(TemplateView):
-    template_name = "scheduler/index.html"
+    template_name = "scheduler/schedule.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

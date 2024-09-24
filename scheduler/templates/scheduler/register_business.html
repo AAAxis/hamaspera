@@ -1,91 +1,61 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<div class="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-  <div class="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
-    <div class="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
-  </div>
-  <div class="mx-auto max-w-4xl text-center">
-    <h2 class="text-3xl font-bold tracking-tight text-gray-800 sm:text-4xl">Business Registration</h2>
-    <p class="mt-2 text-lg leading-8 text-gray-500 sm:text-xl">Register your business to get started.</p>
-  </div>
-  <form id="business-form" class="mx-auto mt-16 max-w-xl sm:mt-20">
-    <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-      <div class="sm:col-span-2">
-        <label for="business-name" class="block text-sm font-semibold leading-6 text-gray-900">Business Name</label>
-        <div class="mt-2.5">
-          <input type="text" id="business-name" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
+<div id="register-container" class="container mt-5">
+    <h2 class="text-center mb-4">Business Registration</h2>
+    <div class="row justify-content-center" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
+        <div class="col-md-6">
+            <form id="business-form" class="needs-validation" novalidate>
+                <!-- Business Name -->
+                <div class="form-group mb-3">
+                    <input type="text" id="business-name" class="form-control" placeholder="Business Name" required>
+                    <div class="invalid-feedback">Please enter your business name.</div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group mb-3">
+                    <input type="email" id="email" class="form-control" placeholder="Email" required>
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group mb-3">
+                    <input type="password" id="password" class="form-control" placeholder="Password" required>
+                    <div class="invalid-feedback">Please enter your password.</div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-group mb-3">
+                    <input type="text" id="address" class="form-control" placeholder="Address" required>
+                    <div class="invalid-feedback">Please enter your address.</div>
+                </div>
+
+                <!-- Business Type -->
+                <div class="form-group mb-3">
+                    <select id="service" class="form-select btn btn-secondary dropdown-toggle w-100" required>
+                        <option value="" disabled selected>Select a Service</option>
+                        <option value="Hair Cut">Hair Cut</option>
+                        <option value="Nail Salon">Nail Salon</option>
+                        <option value="Spa">Spa</option>
+                        <option value="Massage">Massage</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a service.</div>
+                </div>
+
+                <!-- Terms and Services Agreement -->
+                <div class="form-group mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label" for="terms">I agree to the <a href="https://theholylabs.com/privacy" target="_blank">terms and services</a></label>
+                    <div class="invalid-feedback">You must agree to the terms and services.</div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100">Create Business</button>
+            </form>
+            <p id="message" class="text-center mt-3"></p>
         </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="email" class="block text-sm font-semibold leading-6 text-gray-900">Email</label>
-        <div class="mt-2.5">
-          <input type="email" id="email" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">Password</label>
-        <div class="mt-2.5">
-          <input type="password" id="password" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="address" class="block text-sm font-semibold leading-6 text-gray-900">Address</label>
-        <div class="mt-2.5">
-          <input type="text" id="address" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="phone" class="block text-sm font-semibold leading-6 text-gray-900">Phone Number</label>
-        <div class="mt-2.5">
-          <input type="tel" id="phone" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="business-type" class="block text-sm font-semibold leading-6 text-gray-900">Business Type</label>
-        <div class="mt-2.5">
-          <select id="business-type" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required>
-            <option value="" disabled selected>Select Business Type</option>
-            <option value="Barbershop">Barbershop</option>
-            <option value="Nail Salon">Nail Salon</option>
-            <option value="Beauty Salon">Beauty Salon</option>
-          </select>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="logo" class="block text-sm font-semibold leading-6 text-gray-900">Upload Business Logo</label>
-        <div class="mt-2.5">
-          <input type="file" id="logo" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" accept="image/*" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="banners" class="block text-sm font-semibold leading-6 text-gray-900">Upload Banners (Max 3)</label>
-        <div class="mt-2.5">
-          <input type="file" id="banners" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" accept="image/*" multiple required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="working-hours" class="block text-sm font-semibold leading-6 text-gray-900">Working Hours</label>
-        <div class="mt-2.5">
-          <input type="text" id="working-hours" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="e.g., Mon-Fri 9 AM - 6 PM" required>
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="services" class="block text-sm font-semibold leading-6 text-gray-900">Add Services and Prices</label>
-        <div id="services-wrapper" class="mt-2.5">
-          <div class="service-row">
-            <input type="text" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-2" placeholder="Service Name" required>
-            <input type="number" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-2" placeholder="Price ($)" required>
-          </div>
-        </div>
-        <button type="button" id="add-service" class="mt-2.5 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add Service</button>
-      </div>
-      <div class="sm:col-span-2">
-        <button type="submit" class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create Business</button>
-      </div>
     </div>
-  </form>
-  <p id="message" class="text-center mt-3"></p>
 </div>
 
 <script type="module">
@@ -93,7 +63,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -109,19 +78,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const storage = getStorage(app);
-
-    // Add Service Logic
-    document.getElementById('add-service').addEventListener('click', () => {
-        const serviceWrapper = document.getElementById('services-wrapper');
-        const newServiceRow = document.createElement('div');
-        newServiceRow.classList.add('service-row');
-        newServiceRow.innerHTML = `
-            <input type="text" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-2" placeholder="Service Name" required>
-            <input type="number" class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-2" placeholder="Price ($)" required>
-        `;
-        serviceWrapper.appendChild(newServiceRow);
-    });
 
     // Handle form submission
     document.getElementById('business-form').addEventListener('submit', async (event) => {
@@ -131,31 +87,7 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const address = document.getElementById('address').value;
-        const phone = document.getElementById('phone').value;
-        const businessType = document.getElementById('business-type').value;
-        const workingHours = document.getElementById('working-hours').value;
-
-        // Collect services
-        const services = Array.from(document.querySelectorAll('#services-wrapper .service-row')).map(row => ({
-            name: row.querySelector('input[type="text"]').value,
-            price: row.querySelector('input[type="number"]').value
-        }));
-
-        // Upload Logo
-        const logoFile = document.getElementById('logo').files[0];
-        const logoRef = ref(storage, `logos/${logoFile.name}`);
-        const logoSnapshot = await uploadBytes(logoRef, logoFile);
-        const logoUrl = await getDownloadURL(logoSnapshot.ref);
-
-        // Upload Banners
-        const bannerFiles = document.getElementById('banners').files;
-        const bannerUrls = await Promise.all(
-            Array.from(bannerFiles).map(async (file) => {
-                const bannerRef = ref(storage, `banners/${file.name}`);
-                const snapshot = await uploadBytes(bannerRef, file);
-                return await getDownloadURL(snapshot.ref);
-            })
-        );
+        const service = document.getElementById('service').value;
 
         try {
             // Create user in Firebase Authentication
@@ -164,31 +96,30 @@
 
             // Send email verification
             await sendEmailVerification(user);
+            
+            document.getElementById('message').innerText = "A verification email has been sent to your email address.";
 
-            // Save business details in Firestore
+            // Save business details in Firestore after verification
             await addDoc(collection(db, 'businesses'), {
                 business_name: businessName,
                 email: email,
-                phone: phone,
-                business_type: businessType,
+                service: service,
                 address: address,
-                working_hours: workingHours,
-                services: services,
-                logo_url: logoUrl,
-                banner_urls: bannerUrls,
                 uid: user.uid,
+                image_url: "https://static.vecteezy.com/system/resources/thumbnails/010/403/942/small_2x/gentleman-barber-shop-vintage-logo-design-vector.jpg"
             });
 
             // Store user ID in local storage
             localStorage.setItem('userId', user.uid);
 
-            // Redirect to login after successful registration
+            // Redirect to the dashboard after verification
             window.location.href = '/login';
 
-        } catch (error) {
-            console.error("Error registering business:", error);
+        } catch (e) {
+            console.error("Error registering: ", e);
             document.getElementById('message').innerText = "Error registering business!";
         }
     });
 </script>
+
 {% endblock %}

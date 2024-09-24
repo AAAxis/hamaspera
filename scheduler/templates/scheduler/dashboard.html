@@ -1,319 +1,238 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-100">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+            color: #333;
+        }
+
+        .banner {
+            height: 300px;
+            background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            border: 5px solid white;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: -75px;
+            background-color: white;
+        }
+
+        .business-item {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .business-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        /* Progress Bar Styles */
+        #progressContainer {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #progressBar {
+            width: 100%;
+            background-color: #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        #progressBarFill {
+            height: 100%;
+            background-color: #007BFF;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
 </head>
-<body class="h-full font-sans text-gray-800">
-    <div class="min-h-full">
-        <!-- Navigation Bar -->
-        <nav class="bg-gray-800">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <!-- Left Side -->
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
-                        </div>
-                        <div class="hidden md:block">
-                            <div class="ml-10 flex items-baseline space-x-4">
-                                <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
-                                <!-- Add more navigation links if needed -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Right Side -->
-                    <div class="hidden md:flex items-center">
-                        <!-- Client ID Display -->
-                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
-                        <!-- Logout Button -->
-                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                    <!-- Mobile Menu Button -->
-                    <div class="-mr-2 flex md:hidden">
-                        <button type="button" class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
-                            <span class="sr-only">Open main menu</span>
-                            <i class="fas fa-bars block h-6 w-6"></i>
-                            <i class="fas fa-times hidden h-6 w-6"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Mobile Menu -->
-            <div class="md:hidden hidden" id="mobile-menu">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900">Dashboard</a>
-                </div>
-                <div class="pt-4 pb-3 border-t border-gray-700">
-                    <div class="flex items-center px-5">
-                        <!-- Mobile Client ID -->
-                        <p class="text-white"><strong>ID:</strong> <span id="mobile-user-id"></span></p>
-                        <!-- Mobile Logout Button -->
-                        <button id="mobileLogoutButton" class="ml-auto bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
+<body>
+    <!-- Banner Section -->
+    <div class="banner"></div>
 
-        <!-- Page Heading -->
-        <header class="bg-white shadow">
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Admin Dashboard</h1>
-                <div id="greeting" class="text-lg text-gray-700"></div>
-            </div>
-        </header>
+    
 
-        <!-- Main Content -->
-        <main>
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                <!-- Business Data Section -->
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
-                </div>
-                <div id="business-data" class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Logo</th>
-                                <th class="px-4 py-2">Business Name</th>
-                                <th class="px-4 py-2">Address</th>
-                                <th class="px-4 py-2">Email</th>
-                                <th class="px-4 py-2">Phone</th>
-                                <th class="px-4 py-2">Business Type</th>
-                                <th class="px-4 py-2">Working Hours</th>
-                            </tr>
-                        </thead>
-                        <tbody id="business-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Business items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4">
-                    <button id="editBusinessButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Edit Info
-                    </button>
-                </div>
-
-                <!-- Employees Data Section -->
-                <div id="employees-data" class="mt-8 overflow-x-auto rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-900">My Employees</h2>
-                        <button id="addEmployeeButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-plus"></i> Add Employee
-                        </button>
-                    </div>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Phone</th>
-                                <th class="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Employee items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Services Data Section -->
-                <div id="services-data" class="mt-8 overflow-x-auto rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-900">My Services</h2>
-                        <button id="addServiceButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-plus"></i> Add Service
-                        </button>
-                    </div>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Price</th>
-                                <th class="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="services-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Service items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+    <!-- Barbershop Information -->
+    <div class="container mt-4">
+        <h1 id="barbershop-name" class="text-center mb-4"></h1>
+        <p id="barbershop-address" class="text-center"></p>
+        <p id="barbershop-email" class="text-center"></p>
+        <p id="barbershop-service" class="text-center"></p>
+        <p id="barbershop-description" class="text-center"></p>
+        <p id="barbershop-phone" class="text-center"></p>
+        <p id="barbershop-working_hours" class="text-center"></p>
+        <p id="barbershop-services" class="text-center"></p>
+        <p id="barbershop-services_prices" class="text-center"></p>
+        <p id="barbershop-services_descriptions" class="text-center"></p>
     </div>
 
-    <!-- Modal for Editing Business Info -->
-    <div id="editModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="editModalLabel" aria-hidden="true">
-        <!-- Include the modal content from your working example -->
-        <!-- Modal content starts here -->
-        <div class="flex items-end justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
+    <!-- Admin Dashboard Header -->
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-center" style="color: #000;">Admin Dashboard</h2>
+            
+            <div id="greeting" class="text-center">
+                <script>
+                    // Get current hour
+                    const currentHour = new Date().getHours();
+                    let greeting;
 
-            <!-- Modal Content -->
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="editModalLabel">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <!-- Modal Header -->
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 sm:mt-0 sm:ml-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="editModalLabel">
-                                Edit Business Info
-                            </h3>
-                            <!-- Modal Body -->
-                            <div class="mt-2">
-                                <form id="editBusinessForm">
-                                    <!-- Include form fields from your working example -->
-                                    <!-- Business Name -->
-                                    <div class="mb-4">
-                                        <label for="businessName" class="block text-sm font-medium text-gray-700">Business Name:</label>
-                                        <input type="text" id="businessName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Address -->
-                                    <div class="mb-4">
-                                        <label for="businessAddress" class="block text-sm font-medium text-gray-700">Address:</label>
-                                        <input type="text" id="businessAddress" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Email -->
-                                    <div class="mb-4">
-                                        <label for="businessEmail" class="block text-sm font-medium text-gray-700">Email:</label>
-                                        <input type="email" id="businessEmail" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Phone -->
-                                    <div class="mb-4">
-                                        <label for="businessPhone" class="block text-sm font-medium text-gray-700">Phone:</label>
-                                        <input type="tel" id="businessPhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Business Type -->
-                                    <div class="mb-4">
-                                        <label for="businessType" class="block text-sm font-medium text-gray-700">Business Type:</label>
-                                        <input type="text" id="businessType" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Upload Image -->
-                                    <div class="mb-4">
-                                        <label for="businessImage" class="block text-sm font-medium text-gray-700">Upload Image:</label>
-                                        <input type="file" id="businessImage" accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Working Hours -->
-                                    <div class="mb-4">
-                                        <label for="working_hours" class="block text-sm font-medium text-gray-700">Working Hours:</label>
-                                        <input type="text" id="working_hours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Services -->
-                                    <div class="mb-4">
-                                        <label for="services" class="block text-sm font-medium text-gray-700">Services:</label>
-                                        <input type="text" id="services" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Prices -->
-                                    <div class="mb-4">
-                                        <label for="services_prices" class="block text-sm font-medium text-gray-700">Services Prices:</label>
-                                        <input type="text" id="services_prices" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Descriptions -->
-                                    <div class="mb-4">
-                                        <label for="services_descriptions" class="block text-sm font-medium text-gray-700">Services Descriptions:</label>
-                                        <textarea id="services_descriptions" rows="2" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-                                    </div>
-                                    <!-- Banners -->
-                                    <div class="mb-4">
-                                        <label for="businessBanners" class="block text-sm font-medium text-gray-700">Banners:</label>
-                                        <input type="file" id="businessBanners" multiple accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <!-- Progress Bar -->
-                                    <div id="progressContainer" class="mb-4 hidden">
-                                        <label class="block text-sm font-medium text-gray-700">Upload Progress:</label>
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div id="progressBarFill" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
-                                        </div>
-                                    </div>
-                                    <!-- Submit Button -->
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Footer -->
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" onclick="closeEditModal()" class="mt-3 w-full inline-flex justify-center rounded-md bg-white text-gray-700 py-2 px-4 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
-                </div>
+                    // Determine the appropriate greeting
+                    if (currentHour < 12) {
+                        greeting = "Good Morning";
+                    } else if (currentHour < 18) {
+                        greeting = "Good Afternoon";
+                    } else {
+                        greeting = "Good Evening";
+                    }
+
+                    // Get the user's name (assuming it's stored in localStorage)
+                    const userEmail = localStorage.getItem('email') || 'User';
+
+                    // Display the greeting
+                    document.write(`${greeting}, ${userEmail}!`);
+                </script>
+            </div>
+            <div class="d-flex align-items-center">
+                <p class="mb-0 me-3"><strong>ID:</strong> <span id="user-id"></span></p>
+                <button id="logoutButton" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
-        <!-- Modal content ends here -->
-    </div>
 
-    <!-- Modal for Adding/Editing Employee Info -->
-    <div id="employeeModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="employeeModalLabel" aria-hidden="true">
-        <div class="flex items-end justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <!-- Business Data Section -->
+        <div id="business-data" class="row">
+            <div class="col-md-6">
+                <h3 id="business-name"></h3>
+                <p id="business-address"></p>
+                <p id="business-email"></p>
+                <p>Phone</p>
+                <p id="business-service"></p>
+                <p id="business-image"></p>
+                <p id="business-cover_images"></p>
+                <p id="business-cover_images_urls"></p>
+                <p>Working Hours</p>
+                <p>Services</p>
+                <p>Services Prices</p>
+                <p>Services Descriptions</p>
             </div>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="employeeModalLabel">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 sm:mt-0 sm:ml-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="employeeModalLabel">
-                                Add/Edit Employee
-                            </h3>
-                            <div class="mt-2">
-                                <form id="employeeForm">
-                                    <div class="mb-4">
-                                        <label for="employeeName" class="block text-sm font-medium text-gray-700">Name:</label>
-                                        <input type="text" id="employeeName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="employeePhone" class="block text-sm font-medium text-gray-700">Phone:</label>
-                                        <input type="tel" id="employeePhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" onclick="closeEmployeeModal()" class="mt-3 w-full inline-flex justify-center rounded-md bg-white text-gray-700 py-2 px-4 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
-                </div>
-            </div>
+            <!-- Business items will be dynamically inserted here -->
         </div>
-    </div>
 
-    <!-- Add/Edit Service Modal -->
-    <div id="serviceModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Add/Edit Service</h3>
-                    <div class="mt-2">
-                        <form id="serviceForm">
-                            <div class="mb-4">
-                                <label for="serviceName" class="block text-sm font-medium text-gray-700">Service Name:</label>
-                                <input type="text" id="serviceName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+        <!-- Modal for Editing Business Info -->
+        <div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Business Info</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editBusinessForm">
+                            <!-- Business Name -->
+                            <div class="mb-3">
+                                <label for="businessName" class="form-label">Business Name:</label>
+                                <input type="text" class="form-control" id="businessName" required />
                             </div>
-                            <div class="mb-4">
-                                <label for="serviceDescription" class="block text-sm font-medium text-gray-700">Description:</label>
-                                <input type="text" id="serviceDescription" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label for="businessAddress" class="form-label">Address:</label>
+                                <input type="text" class="form-control" id="businessAddress" required />
                             </div>
-                            <div class="mb-4">
-                                <label for="servicePrice" class="block text-sm font-medium text-gray-700">Price:</label>
-                                <input type="number" id="servicePrice" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="businessEmail" class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="businessEmail" required />
                             </div>
-                            <div class="flex justify-end">
-                                <button type="button" onclick="closeServiceModal()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">Cancel</button>
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
+                            <!-- Phone -->
+                            <div class="mb-3">
+                                <label for="businessPhone" class="form-label">Phone:</label>
+                                <input type="tel" class="form-control" id="businessPhone" required />
                             </div>
+                            <!-- Service -->
+                            <div class="mb-3">
+                                <label for="businessService" class="form-label">Service:</label>
+                                <input type="text" class="form-control" id="businessService" required />
+                            </div>
+                            <!-- Upload Image -->
+                            <div class="mb-3">
+                                <label for="businessImage" class="form-label">Upload Image:</label>
+                                <input type="file" class="form-control" id="businessImage" accept="image/*" />
+                            </div>
+                            <!-- Cover Images -->
+                            <div class="mb-3">
+                                <label for="cover_images" class="form-label">Cover Images:</label>
+                                <input type="file" class="form-control" id="cover_images" accept="image/*" multiple />
+                            </div>
+                            <!-- Cover Images URLs -->
+                            <div class="mb-3">
+                                <label for="cover_images_urls" class="form-label">Cover Images URLs:</label>
+                                <input type="text" class="form-control" id="cover_images_urls" placeholder="Enter image URLs separated by commas" />
+                            </div>
+                            <!-- Working Hours -->
+                            <div class="mb-3">
+                                <label for="working_hours" class="form-label">Working Hours:</label>
+                                <input type="text" class="form-control" id="working_hours" placeholder="e.g., Mon-Fri: 9am - 6pm" required />
+                            </div>
+                            <!-- Services -->
+                            <div class="mb-3">
+                                <label for="services" class="form-label">Services:</label>
+                                <input type="text" class="form-control" id="services" placeholder="List of services" required />
+                            </div>
+                            <!-- Optional Fields for Prices and Descriptions -->
+                            <div class="mb-3">
+                                <label for="services_prices" class="form-label">Services Prices:</label>
+                                <input type="text" class="form-control" id="services_prices" placeholder="Enter prices separated by commas" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="services_descriptions" class="form-label">Services Descriptions:</label>
+                                <textarea class="form-control" id="services_descriptions" rows="2" placeholder="Enter descriptions separated by commas"></textarea>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div id="progressContainer" class="mb-3">
+                                <label class="form-label">Upload Progress:</label>
+                                <div id="progressBar">
+                                    <div id="progressBarFill"></div>
+                                </div>
+                            </div>
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -321,13 +240,15 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, updateDoc, doc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-        // Your Firebase configuration
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
             authDomain: "barbershop-77353.firebaseapp.com",
@@ -342,33 +263,14 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // Get user info from localStorage
+        // Get userId from localStorage
         const userId = localStorage.getItem('userId');
-        const userEmail = localStorage.getItem('email') || 'User';
 
-        // Set greeting
-        const greetingElement = document.getElementById('greeting');
-        if (greetingElement) {
-            const currentHour = new Date().getHours();
-            let greeting;
-            if (currentHour < 12) {
-                greeting = "Good Morning";
-            } else if (currentHour < 18) {
-                greeting = "Good Afternoon";
-            } else {
-                greeting = "Good Evening";
-            }
-            greetingElement.innerText = `${greeting}, ${userEmail}!`;
-        }
-
-        // Display user ID
         if (userId) {
             document.getElementById('user-id').innerText = userId;
-            document.getElementById('mobile-user-id').innerText = userId;
             fetchBusinessData(userId);
-            fetchEmployeesData(userId);
         } else {
-            console.error("User ID not found in localStorage.");
+            document.getElementById('user-id').innerText = 'Not logged in';
         }
 
         /**
@@ -380,49 +282,72 @@
                 const businessesRef = collection(db, "businesses");
                 const q = query(businessesRef, where("uid", "==", userId));
                 const querySnapshot = await getDocs(q);
-
-                const businessTableBody = document.getElementById("business-table-body");
-                businessTableBody.innerHTML = ""; // Clear existing data
+                
+                const businessDataDiv = document.getElementById('business-data');
+                businessDataDiv.innerHTML = ''; // Clear existing data
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        const businessImage = data.image_url || "https://via.placeholder.com/60";
+                        const businessImage = data.image_url || 'https://via.placeholder.com/60';
 
-                        const businessRow = `
-                            <tr data-id="${docSnap.id}">
-                                <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full"></td>
-                                <td class="px-4 py-2">${data.business_name}</td>
-                                <td class="px-4 py-2">${data.address}</td>
-                                <td class="px-4 py-2">${data.email}</td>
-                                <td class="px-4 py-2">${data.phone}</td>
-                                <td class="px-4 py-2">${data.business_type}</td>
-                                <td class="px-4 py-2">${data.working_hours}</td>
-                            </tr>
+                        const businessItem = `
+                            <div class="col-md-6 business-item">
+                                <img src="${businessImage}" alt="${data.business_name}" class="business-image">
+                                <div>
+                                    <h5 class="mb-1">${data.business_name}</h5>
+                                    <p class="mb-1">Address: ${data.address}</p>
+                                    <p class="mb-1">Email: ${data.email}</p>
+                                    <small>Service: ${data.service}</small>
+                                    <p>Phone: ${data.phone}</p> 
+                                    <p>Working Hours: ${data.working_hours}</p>
+                                    <p>Services: ${data.services}</p>
+                                    <p>Services Prices: ${data.services_prices}</p>
+                                    <p>Services Descriptions: ${data.services_descriptions}</p>
+                                    <br><br>
+                                    <button class="btn btn-sm btn-primary" onclick="openEditModal('${docSnap.id}', '${escapeQuotes(data.business_name)}', '${escapeQuotes(data.address)}', '${escapeQuotes(data.email)}', '${escapeQuotes(data.phone)}', '${escapeQuotes(data.service)}', '${escapeQuotes(data.image_url)}')">Edit</button>
+                                </div>
+                            </div>
                         `;
 
-                        businessTableBody.innerHTML += businessRow;
+                        businessDataDiv.innerHTML += businessItem;
                     });
                 } else {
-                    businessTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-black">No business data found.</td></tr>';
+                    businessDataDiv.innerHTML = '<p class="text-center text-dark">No business data found.</p>';
                 }
             } catch (error) {
                 console.error('Error fetching business data:', error);
-                document.getElementById('business-table-body').innerHTML = '<tr><td colspan="7" class="text-center text-red-500">Error loading business data.</td></tr>';
+                document.getElementById('business-data').innerHTML = '<p class="text-center text-danger">Error loading business data.</p>';
             }
         }
 
-        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessType, imageUrl, workingHours) {
+        /**
+         * Opens the edit modal and populates it with the current business data.
+         * @param {string} businessId - The Firestore document ID of the business.
+         * @param {string} businessName - The name of the business.
+         * @param {string} businessAddress - The address of the business.
+         * @param {string} businessEmail - The email of the business.
+         * @param {string} businessPhone - The phone number of the business.
+         * @param {string} businessService - The service offered by the business.
+         * @param {string} imageUrl - The URL of the business image.
+         */
+        window.openEditModal = function(businessId, businessName, businessAddress, businessEmail, businessPhone, businessService, imageUrl, working_hours, services, services_prices, services_descriptions) {
             // Populate form fields with existing data
             document.getElementById('businessName').value = businessName || '';
             document.getElementById('businessAddress').value = businessAddress || '';
             document.getElementById('businessEmail').value = businessEmail || '';
             document.getElementById('businessPhone').value = businessPhone || '';
-            document.getElementById('businessType').value = businessType || '';
+            document.getElementById('businessService').value = businessService || '';
             document.getElementById('businessImage').value = ''; // Clear file input
-            document.getElementById('working_hours').value = workingHours || '';
+            document.getElementById('cover_images').value = ''; // Clear file input
+            document.getElementById('cover_images_urls').value = ''; // Clear URLs input
+            document.getElementById('working_hours').value = working_hours || ''; // Clear working hours
+            document.getElementById('services').value = services || ''; // Clear services
+            document.getElementById('services_prices').value = services_prices || ''; // Clear prices
+            document.getElementById('services_descriptions').value = services_descriptions || ''; // Clear descriptions
 
-            // Show the modal
-            document.getElementById('editModal').classList.remove('hidden');
+            // Initialize Bootstrap modal
+            const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show();
 
             // Handle form submission
             document.getElementById('editBusinessForm').onsubmit = async (e) => {
@@ -433,8 +358,13 @@
                     address: document.getElementById('businessAddress').value,
                     email: document.getElementById('businessEmail').value,
                     phone: document.getElementById('businessPhone').value,
-                    business_type: document.getElementById('businessType').value,
+                    service: document.getElementById('businessService').value,
+                    cover_images: document.getElementById('cover_images').value,
+                    cover_images_urls: document.getElementById('cover_images_urls').value,
                     working_hours: document.getElementById('working_hours').value,
+                    services: document.getElementById('services').value,
+                    services_prices: document.getElementById('services_prices').value || '',
+                    services_descriptions: document.getElementById('services_descriptions').value || '',
                 };
 
                 const fileInput = document.getElementById('businessImage');
@@ -442,7 +372,7 @@
 
                 const progressContainer = document.getElementById('progressContainer');
                 const progressBarFill = document.getElementById('progressBarFill');
-                progressContainer.classList.add('hidden'); // Hide progress by default
+                progressContainer.style.display = 'none'; // Hide progress by default
                 progressBarFill.style.width = '0%';
 
                 try {
@@ -451,7 +381,7 @@
                         const uploadTask = uploadBytesResumable(storageRef, file);
 
                         // Show progress bar
-                        progressContainer.classList.remove('hidden');
+                        progressContainer.style.display = 'block';
 
                         // Monitor upload progress
                         uploadTask.on('state_changed',
@@ -475,7 +405,7 @@
                                 fetchBusinessData(userId);
 
                                 // Hide modal
-                                closeEditModal();
+                                editModal.hide();
                             }
                         );
                     } else {
@@ -489,7 +419,7 @@
                         fetchBusinessData(userId);
 
                         // Hide modal
-                        closeEditModal();
+                        editModal.hide();
                     }
                 } catch (error) {
                     console.error('Error updating business info:', error);
@@ -498,251 +428,21 @@
             };
         };
 
-        // Event listener for the "Edit Info" button
-        document.getElementById('editBusinessButton').addEventListener('click', () => {
-            // Assuming you have only one business to edit
-            const businessRow = document.querySelector('#business-table-body tr');
-            if (businessRow) {
-                const businessId = businessRow.getAttribute('data-id');
-                const businessName = businessRow.querySelector('td:nth-child(2)').innerText;
-                const businessAddress = businessRow.querySelector('td:nth-child(3)').innerText;
-                const businessEmail = businessRow.querySelector('td:nth-child(4)').innerText;
-                const businessPhone = businessRow.querySelector('td:nth-child(5)').innerText;
-                const businessType = businessRow.querySelector('td:nth-child(6)').innerText;
-                const workingHours = businessRow.querySelector('td:nth-child(7)').innerText;
-                const imageUrl = businessRow.querySelector('td:nth-child(1) img').src;
-
-                openEditModal(businessId, businessName, businessAddress, businessEmail, businessPhone, businessType, imageUrl, workingHours);
-            }
-        });
-
-        // Close edit modal
-        window.closeEditModal = function() {
-            document.getElementById('editModal').classList.add('hidden');
-        };
+        /**
+         * Escapes single quotes and backslashes in a string to prevent JavaScript injection.
+         * @param {string} str - The string to escape.
+         * @returns {string} - The escaped string.
+         */
+        function escapeQuotes(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/"/g, '\\"');
+        }
 
         // Logout functionality
-        document.getElementById('logoutButton').addEventListener('click', logout);
-        document.getElementById('mobileLogoutButton').addEventListener('click', logout);
-
-        function logout() {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('email');
-            window.location.href = 'login.html';
-        }
-
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', () => {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('userId'); // Clear user ID from local storage
+            window.location.href = '/';
         });
-
-        // Function to open the add/edit employee modal
-        function openEmployeeModal(employeeId = '', employeeName = '', employeePhone = '') {
-            document.getElementById('employeeName').value = employeeName;
-            document.getElementById('employeePhone').value = employeePhone;
-            document.getElementById('employeeModal').classList.remove('hidden');
-        }
-
-        // Function to close the add/edit employee modal
-        function closeEmployeeModal() {
-            document.getElementById('employeeModal').classList.add('hidden');
-        }
-
-        // Event listener for the "Add Employee" button
-        document.getElementById('addEmployeeButton').addEventListener('click', () => {
-            openEmployeeModal();
-        });
-
-        // Handle form submission for adding/editing employee
-        document.getElementById('employeeForm').onsubmit = async (e) => {
-            e.preventDefault(); // Prevent default form submission
-
-            const employeeName = document.getElementById('employeeName').value;
-            const employeePhone = document.getElementById('employeePhone').value;
-
-            try {
-                // Add employee to Firestore
-                const employeesRef = collection(db, 'employees');
-                await addDoc(employeesRef, {
-                    name: employeeName,
-                    phone: employeePhone,
-                    businessId: userId // Assuming userId is the business ID
-                });
-
-                // Refresh employee data
-                fetchEmployeesData(userId);
-
-                // Hide modal
-                closeEmployeeModal();
-            } catch (error) {
-                console.error('Error adding employee:', error);
-                alert('Error adding employee.');
-            }
-        };
-
-        // Function to fetch and display employee data
-        async function fetchEmployeesData(businessId) {
-            try {
-                const employeesRef = collection(db, 'employees');
-                const q = query(employeesRef, where('businessId', '==', businessId));
-                const querySnapshot = await getDocs(q);
-
-                const employeesTableBody = document.getElementById('employees-table-body');
-                employeesTableBody.innerHTML = ''; // Clear existing data
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const employeeRow = `
-                            <tr data-id="${docSnap.id}">
-                                <td class="px-4 py-2">${data.name}</td>
-                                <td class="px-4 py-2">${data.phone}</td>
-                                <td class="px-4 py-2">
-                                    <button onclick="openEmployeeModal('${docSnap.id}', '${data.name}', '${data.phone}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                                    <button onclick="deleteEmployee('${docSnap.id}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
-                                </td>
-                            </tr>
-                        `;
-                        employeesTableBody.innerHTML += employeeRow;
-                    });
-                } else {
-                    employeesTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-black">No employees found.</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error fetching employee data:', error);
-                document.getElementById('employees-table-body').innerHTML = '<tr><td colspan="3" class="text-center text-red-500">Error loading employee data.</td></tr>';
-            }
-        }
-
-        // Function to delete an employee
-        async function deleteEmployee(employeeId) {
-            try {
-                const employeeRef = doc(db, 'employees', employeeId);
-                await deleteDoc(employeeRef);
-
-                // Refresh employee data
-                fetchEmployeesData(userId);
-            } catch (error) {
-                console.error('Error deleting employee:', error);
-                alert('Error deleting employee.');
-            }
-        }
-
-        // Fetch employee data on page load
-        if (userId) {
-            fetchEmployeesData(userId);
-        }
-
-        // Fetch business data on page load
-        if (userId) {
-            fetchBusinessData(userId);
-        }
-
-        // Function to Add/Edit Services
-        function openServiceModal(serviceId = '', serviceName = '', serviceDescription = '', servicePrice = '') {
-            document.getElementById('serviceName').value = serviceName;
-            document.getElementById('serviceDescription').value = serviceDescription;
-            document.getElementById('servicePrice').value = servicePrice;
-            document.getElementById('serviceModal').classList.remove('hidden');
-        }
-
-        // Function to close the add/edit service modal
-        function closeServiceModal() {
-            document.getElementById('serviceModal').classList.add('hidden');
-        }
-
-        // Event listener for the "Add Service" button
-        document.getElementById('addServiceButton').addEventListener('click', () => {
-            openServiceModal();
-        });
-
-        // Handle form submission for adding/editing service
-        document.getElementById('serviceForm').onsubmit = async (e) => {
-            e.preventDefault(); // Prevent default form submission
-
-            const serviceName = document.getElementById('serviceName').value;
-            const serviceDescription = document.getElementById('serviceDescription').value;
-            const servicePrice = document.getElementById('servicePrice').value;
-
-            try {
-                // Add service to Firestore
-                const servicesRef = collection(db, 'services');
-                await addDoc(servicesRef, {
-                    name: serviceName,
-                    description: serviceDescription,
-                    price: servicePrice,
-                    businessId: userId // Assuming userId is the business ID
-                });
-
-                // Refresh service data
-                fetchServicesData(userId);
-
-                // Hide modal
-                closeServiceModal();
-            } catch (error) {
-                console.error('Error adding service:', error);
-                alert('Error adding service.');
-            }
-        };
-
-        // Function to fetch and display service data
-        async function fetchServicesData(businessId) {
-            try {
-                const servicesRef = collection(db, 'services');
-                const q = query(servicesRef, where('businessId', '==', businessId));
-                const querySnapshot = await getDocs(q);
-
-                const servicesTableBody = document.getElementById('services-table-body');
-                servicesTableBody.innerHTML = ''; // Clear existing data
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const serviceRow = `
-                            <tr data-id="${docSnap.id}">
-                                <td class="px-4 py-2">${data.name}</td>
-                                <td class="px-4 py-2">${data.price}</td>
-                                <td class="px-4 py-2">
-                                    <button onclick="openServiceModal('${docSnap.id}', '${data.name}', '${data.description}', '${data.price}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                                    <button onclick="deleteService('${docSnap.id}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
-                                </td>
-                            </tr>
-                        `;
-                        servicesTableBody.innerHTML += serviceRow;
-                    });
-                } else {
-                    servicesTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-black">No services found.</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error fetching service data:', error);
-                document.getElementById('services-table-body').innerHTML = '<tr><td colspan="3" class="text-center text-red-500">Error loading service data.</td></tr>';
-            }
-        }
-
-        // Function to delete a service
-        async function deleteService(serviceId) {
-            try {
-                const serviceRef = doc(db, 'services', serviceId);
-                await deleteDoc(serviceRef);
-
-                // Refresh service data
-                fetchServicesData(userId);
-            } catch (error) {
-                console.error('Error deleting service:', error);
-                alert('Error deleting service.');
-            }
-        }
-
-        // Fetch service data on page load
-        if (userId) {
-            fetchServicesData(userId);
-        }
-
-        // Fetch business data on page load
-        if (userId) {
-            fetchBusinessData(userId);
-        }
     </script>
 </body>
 </html>

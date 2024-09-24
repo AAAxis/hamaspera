@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "autoprefixer": "^10.4.20",
-    "firebase": "^10.13.2",
-    "postcss": "^8.4.47"
-  },
-  "devDependencies": {
-    "tailwindcss": "^3.4.12"
-  },
-  "scripts": {
-    "build": "tailwindcss -i ./scheduler/static/scheduler/css/tailwind.css -o ./scheduler/static/scheduler/css/output.css --watch",
-    "build:css": "postcss src/styles.css -o dist/styles.css"
+    "firebase": "^10.13.2"
   }
 }
