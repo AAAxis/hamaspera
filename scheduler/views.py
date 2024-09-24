@@ -97,8 +97,14 @@ class DashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
         return context
     
+        #     API to get available slots
+class EditView(TemplateView):
+    template_name = "scheduler/edit.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
     
-    #     API to get available slots
 class LoginView(TemplateView):
     template_name = "scheduler/login_business.html"
 

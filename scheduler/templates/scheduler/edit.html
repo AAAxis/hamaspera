@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Edit Business</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="h-full font-sans text-gray-800">
+    <div class="min-h-full">
+        <!-- Navigation Bar -->
+        <nav class="bg-gray-800">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <!-- Left Side -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <a href="/dashboard" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</a>
+                                <a href="/edit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Edit Business</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Side -->
+                    <div class="hidden md:flex items-center">
+                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
+                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Heading -->
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Edit Business</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <form id="editBusinessForm">
+                        <div class="mb-4">
+                            <label for="businessName" class="block text-sm font-medium text-gray-700">Business Name:</label>
+                            <input type="text" id="businessName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="businessAddress" class="block text-sm font-medium text-gray-700">Address:</label>
+                            <input type="text" id="businessAddress" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="businessEmail" class="block text-sm font-medium text-gray-700">Email:</label>
+                            <input type="email" id="businessEmail" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="businessPhone" class="block text-sm font-medium text-gray-700">Phone:</label>
+                            <input type="tel" id="businessPhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="businessService" class="block text-sm font-medium text-gray-700">Service:</label>
+                            <input type="text" id="businessService" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Update Business</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get user ID from localStorage
+        const userId = localStorage.getItem('userId');
+
+        // Display user ID
+        if (userId) {
+            document.getElementById('user-id').innerText = userId;
+            fetchBusinessData(userId);
+        } else {
+            console.error("User ID not found in localStorage.");
+        }
+
+        /**
+         * Fetches business data for the given userId and populates the edit form.
+         * @param {string} userId - The ID of the user.
+         */
+        async function fetchBusinessData(userId) {
+            try {
+                const businessRef = doc(db, "businesses", userId); // Assuming the UID is the document ID
+                const docSnap = await getDoc(businessRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('businessName').value = data.business_name || '';
+                    document.getElementById('businessAddress').value = data.address || '';
+                    document.getElementById('businessEmail').value = data.email || '';
+                    document.getElementById('businessPhone').value = data.phone || '';
+                    document.getElementById('businessService').value = data.service || '';
+                } else {
+                    console.error("No such document!");
+                }
+            } catch (error) {
+                console.error('Error fetching business data:', error);
+            }
+        }
+
+        // Handle form submission for updating business
+        document.getElementById('editBusinessForm').onsubmit = async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const businessName = document.getElementById('businessName').value;
+            const businessAddress = document.getElementById('businessAddress').value;
+            const businessEmail = document.getElementById('businessEmail').value;
+            const businessPhone = document.getElementById('businessPhone').value;
+            const businessService = document.getElementById('businessService').value;
+
+            try {
+                const businessRef = doc(db, "businesses", userId);
+                await updateDoc(businessRef, {
+                    business_name: businessName,
+                    address: businessAddress,
+                    email: businessEmail,
+                    phone: businessPhone,
+                    service: businessService,
+                });
+
+                alert('Business information updated successfully!');
+            } catch (error) {
+                console.error('Error updating business information:', error);
+                alert('Error updating business information.');
+            }
+        };
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
+        function logout() {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('email');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

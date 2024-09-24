@@ -254,7 +254,7 @@
     <td class="px-4 py-2">${data.phone}</td>
     <td class="px-4 py-2">${data.service}</td>
     <td class="px-4 py-2">
-        <a href="edit-business.html?businessId=${docSnap.id}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>
+        <a href="/edit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>
     </td>
 </tr>
 
@@ -279,7 +279,7 @@
         function logout() {
             localStorage.removeItem('userId');
             localStorage.removeItem('email');
-            window.location.href = 'https://hamaspera.vercel.app/login/';
+            window.location.href = '/';
         }
 
         // Mobile menu toggle
