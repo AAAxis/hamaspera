@@ -79,93 +79,108 @@
 
     <!-- Scripts -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, query, where, getDocs, collection, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-            authDomain: "barbershop-77353.firebaseapp.com",
-            projectId: "barbershop-77353",
-            storageBucket: "barbershop-77353.appspot.com",
-            messagingSenderId: "1018170430611",
-            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        };
+// Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+    authDomain: "barbershop-77353.firebaseapp.com",
+    projectId: "barbershop-77353",
+    storageBucket: "barbershop-77353.appspot.com",
+    messagingSenderId: "1018170430611",
+    appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+};
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        // Get user ID from localStorage
-        const userId = localStorage.getItem('userId');
+// Get user ID from localStorage
+const userId = localStorage.getItem('userId');
 
-        // Display user ID
-        if (userId) {
-            document.getElementById('user-id').innerText = userId;
-            fetchBusinessData(userId);
+// Display user ID
+if (userId) {
+    document.getElementById('user-id').innerText = userId;
+    fetchBusinessData(userId);
+} else {
+    console.error("User ID not found in localStorage.");
+}
+
+/**
+ * Fetches business data for the given userId and populates the edit form.
+ * @param {string} userId - The ID of the user.
+ */
+async function fetchBusinessData(userId) {
+    try {
+        // Create a query to find the document where the 'uid' field matches the userId
+        const q = query(collection(db, "businesses"), where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Assuming there's only one document per user ID
+            const docSnap = querySnapshot.docs[0];
+            const data = docSnap.data();
+            document.getElementById('businessName').value = data.business_name || '';
+            document.getElementById('businessAddress').value = data.address || '';
+            document.getElementById('businessEmail').value = data.email || '';
+            document.getElementById('businessPhone').value = data.phone || '';
+            document.getElementById('businessService').value = data.service || '';
         } else {
-            console.error("User ID not found in localStorage.");
+            console.error(`No business document found for user ID: ${userId}`);
+            alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
         }
+    } catch (error) {
+        console.error('Error fetching business data:', error);
+        alert('Error fetching business data. Please check the console for more details.');
+    }
+}
 
-        /**
-         * Fetches business data for the given userId and populates the edit form.
-         * @param {string} userId - The ID of the user.
-         */
-        async function fetchBusinessData(userId) {
-            try {
-                const businessRef = doc(db, "businesses", userId); // Assuming the UID is the document ID
-                const docSnap = await getDoc(businessRef);
+// Handle form submission for updating business
+document.getElementById('editBusinessForm').onsubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('businessName').value = data.business_name || '';
-                    document.getElementById('businessAddress').value = data.address || '';
-                    document.getElementById('businessEmail').value = data.email || '';
-                    document.getElementById('businessPhone').value = data.phone || '';
-                    document.getElementById('businessService').value = data.service || '';
-                } else {
-                    console.error("No such document!");
-                }
-            } catch (error) {
-                console.error('Error fetching business data:', error);
-            }
+    const businessName = document.getElementById('businessName').value;
+    const businessAddress = document.getElementById('businessAddress').value;
+    const businessEmail = document.getElementById('businessEmail').value;
+    const businessPhone = document.getElementById('businessPhone').value;
+    const businessService = document.getElementById('businessService').value;
+
+    try {
+        const q = query(collection(db, "businesses"), where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const businessRef = doc(db, "businesses", querySnapshot.docs[0].id); // Get the document ID from the querySnapshot
+            await updateDoc(businessRef, {
+                business_name: businessName,
+                address: businessAddress,
+                email: businessEmail,
+                phone: businessPhone,
+                service: businessService,
+            });
+
+            alert('Business information updated successfully!');
+        } else {
+            console.error(`No business document found for user ID: ${userId}`);
+            alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
         }
+    } catch (error) {
+        console.error('Error updating business information:', error);
+        alert('Error updating business information.');
+    }
+};
 
-        // Handle form submission for updating business
-        document.getElementById('editBusinessForm').onsubmit = async (e) => {
-            e.preventDefault(); // Prevent default form submission
+// Logout functionality
+document.getElementById('logoutButton').addEventListener('click', logout);
 
-            const businessName = document.getElementById('businessName').value;
-            const businessAddress = document.getElementById('businessAddress').value;
-            const businessEmail = document.getElementById('businessEmail').value;
-            const businessPhone = document.getElementById('businessPhone').value;
-            const businessService = document.getElementById('businessService').value;
+function logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('email');
+    window.location.href = '/';
+}
 
-            try {
-                const businessRef = doc(db, "businesses", userId);
-                await updateDoc(businessRef, {
-                    business_name: businessName,
-                    address: businessAddress,
-                    email: businessEmail,
-                    phone: businessPhone,
-                    service: businessService,
-                });
-
-                alert('Business information updated successfully!');
-            } catch (error) {
-                console.error('Error updating business information:', error);
-                alert('Error updating business information.');
-            }
-        };
-
-        // Logout functionality
-        document.getElementById('logoutButton').addEventListener('click', logout);
-
-        function logout() {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('email');
-            window.location.href = '/';
-        }
     </script>
 </body>
 </html>
