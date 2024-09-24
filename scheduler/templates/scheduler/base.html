@@ -1,74 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="relative min-h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django Scheduler</title>
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Barbershop Booking</title>
+    <!-- Importing Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/Users/romanpochtman/Documents/GitHub/hamaspera/scheduler/static/favicon.ico">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% load static %}
-    <style>
-        /* Additional custom styles can be added here */
-        html, body {
-            height: 100%;
-        }
-        .wrapper {
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .content {
-            flex: 1;
-        }
-        footer {
-            background-color: #f8f9fa;
-            text-align: center;
-            padding: 1rem 0;
-        }
-    </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <div class="wrapper">
-        <!-- Navigation bar -->
-        <nav class="bg-white shadow-md">
-            <div class="container mx-auto flex justify-between items-center py-4 px-6">
-                <a href="{% url 'schedule' %}" class="text-lg font-bold text-indigo-600">Home</a>
-                <div class="flex space-x-4">
-                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-indigo-600">About</a>
-                    <a href="{% url 'login' %}" class="text-gray-700 hover:text-indigo-600">Login</a>
-                </div>
-            </div>
-        </nav>
+<body class="bg-gray-100 text-gray-800 relative min-h-full">
 
-        <!-- Content section -->
-        <div class="container mx-auto mt-8 p-4 bg-white rounded-lg shadow-lg content">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative" role="alert">
-                        <span class="block sm:inline">{{ message }}</span>
-                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                            <svg class="fill-current h-6 w-6 text-{{ message.tags }}-500" role="button" viewBox="0 0 20 20">
-                                <path d="M14.348 14.849a1 1 0 010 1.415l-4.243 4.243a1 1 0 01-1.414 0l-4.243-4.243a1 1 0 011.414-1.414l3.536 3.535 3.535-3.535a1 1 0 011.415 0z"/>
-                            </svg>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% block content %}{% endblock %}
-        </div>
+<!-- ========== HEADER ========== -->
+<header class="bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full">
+  <nav class="relative max-w-[85rem] w-full md:flex md:items-center md:justify-between md:gap-3 mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <!-- Logo -->
+    <div class="flex items-center justify-between">
+      <a class="flex-none font-semibold text-xl text-black focus:outline-none dark:text-white" href="{% url 'schedule' %}" aria-label="Brand">Barbershop</a>
 
-        <!-- Footer -->
-        <footer class="bg-white text-center py-4 mt-8">
-            <div class="container mx-auto">
-                <p class="text-gray-700">© 2023 Copyright: 
-                    <a class="text-indigo-600 hover:underline" href="https://mdbootstrap.com/">MDBootstrap.com</a>
-                </p>
-            </div>
-        </footer>
+      <!-- Collapse Button for mobile -->
+      <div class="md:hidden">
+        <button type="button" class="hs-collapse-toggle relative size-9 flex justify-center items-center text-sm font-semibold rounded-lg border border-gray-200 text-gray-800 hover:bg-gray-100 focus:outline-none dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-700" id="hs-header-classic-collapse" data-hs-collapse="#hs-header-classic">
+          <svg class="hs-collapse-open:hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="hs-collapse-open:block shrink-0 hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span class="sr-only">Toggle navigation</span>
+        </button>
+      </div>
     </div>
+    <!-- End Logo -->
 
-    <!-- Tailwind JavaScript (if needed) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.5.2/cdn.js" defer></script>
-    {% block scripts %}{% endblock %}
+    <!-- Navigation links -->
+    <div id="hs-header-classic" class="hs-collapse hidden md:block overflow-hidden transition-all duration-300 basis-full grow">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+        <a href="{% url 'about' %}" class="text-gray-800 hover:text-blue-600 dark:text-white">About</a>
+        <a href="{% url 'login' %}" class="text-gray-800 hover:text-blue-600 dark:text-white">Login</a>
+      </div>
+    </div>
+    <!-- End Navigation -->
+  </nav>
+</header>
+<!-- ========== END HEADER ========== -->
+
+<!-- Main Content Section -->
+<main class="container mx-auto px-4 py-6 min-h-screen">
+  {% block content %}
+  {% endblock %}
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer class="bg-gray-200 text-center py-4 mt-auto">
+  <div class="container mx-auto">
+    <p class="text-gray-700">© 2023 Barbershop Booking System</p>
+  </div>
+</footer>
+<!-- ========== END FOOTER ========== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.5.2/cdn.js" defer></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
