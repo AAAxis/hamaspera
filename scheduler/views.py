@@ -5,15 +5,14 @@ from django.http import JsonResponse
 from django.views import View
 from .models import Slot, Booking, Service, Barber, BarberShop
 
+from google.cloud import firestore
 
-class BarberShopDetailView(TemplateView):
-    template_name = "scheduler/barbershop_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        barbershop_name = self.kwargs.get('name')
-        context['barbershop'] = get_object_or_404(BarberShop, name=barbershop_name)
-        return context
+class BarberShopDetailView(View):
+    def get(self, request, id):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/barbershop_detail.html', {'barbershop_id': id})
 
 class BarberShopBookingView(TemplateView):
     template_name = "scheduler/book_slot.html"

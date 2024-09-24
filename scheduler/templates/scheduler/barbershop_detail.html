@@ -1,17 +1,73 @@
-{% extends 'scheduler/base.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop Details</title>
+    
+    <!-- Load Firebase App and Firestore SDK as modules -->
+    <script type="module">
+        // Import Firebase App and Firestore
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+            measurementId: "G-4VS048B47G"
+        };
 
-{% block content %}
-<div class="container mt-5 bg-light bg-gradient rounded-lg p-4">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{{ barbershop.cover_image.url }}" alt="{{ barbershop.name }}" class="img-fluid rounded-lg shadow-lg">
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fetch barbershop data
+        const fetchBarbershopData = async (barbershopId) => {
+            const docRef = doc(db, 'businesses', barbershopId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                // Update the HTML with fetched data
+                document.getElementById('businessName').innerText = data.business_name;
+                document.getElementById('address').innerText = data.address;
+                document.getElementById('email').innerText = data.email;
+                document.getElementById('phone').innerText = data.phone;
+                document.getElementById('service').innerText = data.service;
+                document.getElementById('imageUrl').src = data.image_url;
+                document.getElementById('background').src = data.background;
+            } else {
+                console.error('No such document!');
+            }
+        };
+
+        // Call the function with the specific barbershop ID
+        document.addEventListener('DOMContentLoaded', () => {
+            const barbershopId = "{{ barbershop_id }}"; // This will be replaced with the actual ID
+            fetchBarbershopData(barbershopId);
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5 bg-light bg-gradient rounded-lg p-4">
+        <h1>Barbershop ID: <span id="barbershopId"></span></h1>
+        <div>
+            <h2>Business Details</h2>
+            <p><strong>Business Name:</strong> <span id="businessName"></span></p>
+            <p><strong>Address:</strong> <span id="address"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <p><strong>Phone:</strong> <span id="phone"></span></p>
+            <p><strong>Service:</strong> <span id="service"></span></p>
+        </div>
+        <div>
+            <h2>Images</h2>
+            <img id="imageUrl" alt="Business Image" class="img-fluid">
             <div class="mt-3">
-                <h1 class="text-primary" style="font-size: 2rem; font-weight: bold;">{{ barbershop.name }}</h1>
-                <p class="text-muted">{{ barbershop.address }}</p>
-                <p class="text-muted">{{ barbershop.phone }}</p>
-                <p class="text-muted">{{ barbershop.email }}</p>
+                <h3>Background</h3>
+                <img id="background" alt="Background Image" class="img-fluid">
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+</body>

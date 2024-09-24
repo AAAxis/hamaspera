@@ -227,11 +227,13 @@
           // Create user in Firebase Authentication
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
+          localStorage.setItem('userId', user.uid);
+      
 
           // Send email verification
           await sendEmailVerification(user);
           document.getElementById('message').innerText = "A verification email has been sent to your email address.";
-
+          window.location.href = '/login';
           // Save business details in Firestore
           await addDoc(collection(db, 'businesses'), {
               business_name: businessName,
@@ -245,9 +247,7 @@
               // Optionally save logo and background URLs if needed
           });
 
-          localStorage.setItem('userId', user.uid);
-          window.location.href = '/login';
-
+   
       } catch (e) {
           console.error("Error registering: ", e);
           document.getElementById('message').innerText = "Error occurred during registration.";

@@ -16,6 +16,7 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('available-slots/<str:name>/', available_slots_api.as_view(), name='available-slots'),
     path('barbershop/<str:id>/', BarberShopDetailView.as_view(), name='barbershop_detail'),
+
     path('barbershop/<str:name>/book/', BarberShopBookingView.as_view(), name='barbershop_booking'),
 
    
