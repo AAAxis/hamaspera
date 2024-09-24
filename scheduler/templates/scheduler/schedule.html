@@ -1,49 +1,10 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<h2 class="text-center" style="color: #333; font-weight: bold; font-size: 2rem; margin-top: 20px;">Available Barbershops</h2>
-<div id="business-list" class="list-group">
-    <!-- Businesses will be dynamically loaded here -->
+<h2 class="text-center text-gray-800 font-bold text-3xl my-8">Available Barbershops</h2>
+<div id="business-list" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <!-- Barbershop cards will be dynamically loaded here -->
 </div>
-<style>
-    .business-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        padding: 10px;
-        border: 1px solid #ddd; /* Optional border for better visibility */
-        border-radius: 5px; /* Optional rounding of corners */
-        background-color: #fff; /* Optional background color */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
-    }
-
-    .business-image {
-        width: 100px; /* Increased size */
-        height: 100px; /* Increased size */
-        border-radius: 50%; /* Makes the image circular */
-        object-fit: cover; /* Ensures the image covers the circle */
-        margin-right: 15px; /* Space between image and text */
-    }
-
-    .business-details {
-        flex: 1;
-    }
-
-    .business-name {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #007bff; /* Link color */
-        text-decoration: none;
-    }
-
-    .business-name:hover {
-        text-decoration: underline;
-    }
-
-    .business-info {
-        color: #333; /* Black color for other text */
-    }
-</style>
 
 <script type="module">
     // Firebase SDK Imports
@@ -52,7 +13,7 @@
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        apiKey: "YOUR_API_KEY",
         authDomain: "barbershop-77353.firebaseapp.com",
         projectId: "barbershop-77353",
         storageBucket: "barbershop-77353.appspot.com",
@@ -71,20 +32,29 @@
             const querySnapshot = await getDocs(collection(db, 'businesses'));
 
             if (querySnapshot.empty) {
-                businessesList.innerHTML = '<p class="text-center">No available businesses.</p>';
+                businessesList.innerHTML = '<p class="text-center text-gray-500">No available barbershops.</p>';
             } else {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const businessId = doc.id; // Get the document ID
-                    const businessImage = data.image_url; // Use default image if none is provided
+                    const businessId = doc.id; 
+                    const bannerImage = data.banner_url || 'https://via.placeholder.com/600x300'; // Fallback for banner
+                    const logoImage = data.image_url || 'https://via.placeholder.com/100'; // Fallback for logo
                     const businessItem = `
-                        <div class="list-group-item business-item">
-                            <img src="${businessImage}" alt="${data.business_name}" class="business-image">
-                            <div class="business-details">
-                                <a href="/barbershop/${businessId}/" class="business-name">${data.business_name}</a>
-                                <p class="business-info mb-1">Address: ${data.address}</p>
-                                <p class="business-info mb-1">Email: ${data.email}</p>
-                                <small class="business-info">Service: ${data.service}</small>
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                            <!-- Top half: Banner and Logo -->
+                            <div class="relative">
+                                <img class="w-full h-48 object-cover" src="${bannerImage}" alt="${data.business_name}">
+                                <div class="absolute inset-0 flex justify-center items-center">
+                                    <img src="${logoImage}" alt="${data.business_name}" class="w-24 h-24 rounded-full border-4 border-white object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Bottom half: Business Info -->
+                            <div class="p-6 text-center">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">${data.business_name}</h3>
+                                <p class="text-sm text-gray-600 mb-1">Address: ${data.address}</p>
+                                <p class="text-sm text-gray-600">Working Hours: ${data.working_hours}</p>
+                                <a href="/barbershop/${businessId}/" class="mt-4 inline-block bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-indigo-500 transition-colors">View Details</a>
                             </div>
                         </div>
                     `;
@@ -93,7 +63,7 @@
             }
         } catch (e) {
             console.error("Error fetching businesses: ", e);
-            businessesList.innerHTML = '<p class="text-center">Error loading businesses.</p>';
+            businessesList.innerHTML = '<p class="text-center text-red-500">Error loading businesses.</p>';
         }
     }
 
