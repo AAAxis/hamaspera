@@ -156,8 +156,62 @@
       }
   }
 
-  // Handle form submission for Step 3
   document.getElementById('step-3').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const businessName = document.getElementById('business-name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const address = document.getElementById('address').value;
+    const phone = document.getElementById('phone').value;
+    const service = document.getElementById('service').value;
+    const logoFile = document.getElementById('logo').files[0]; // File object for the logo
+    const backgroundFile = document.getElementById('background').files[0]; // File object for the background
+
+    try {
+        // Create user in Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Send email verification
+        await sendEmailVerification(user);
+        document.getElementById('message').innerText = "A verification email has been sent to your email address.";
+
+        // Initialize URLs to empty strings if no file is uploaded
+        let imageUrl = '';
+        let backgroundUrl = '';
+
+        // Upload logo and get the download URL if a file is selected
+        if (logoFile) {
+            const logoUploadTask = uploadBytesResumable(ref(storage, `logos/${logoFile.name}`), logoFile);
+            await logoUploadTask;  // Wait for the upload to finish
+            imageUrl = await getDownloadURL(logoUploadTask.snapshot.ref);  // Get the logo's download URL
+        }
+
+        // Upload background and get the download URL if a file is selected
+        if (backgroundFile) {
+            const backgroundUploadTask = uploadBytesResumable(ref(storage, `backgrounds/${backgroundFile.name}`), backgroundFile);
+            await backgroundUploadTask;  // Wait for the upload to finish
+            backgroundUrl = await getDownloadURL(backgroundUploadTask.snapshot.ref);  // Get the background's download URL
+        }
+
+        // Save business details in Firestore with the download URLs
+        await addDoc(collection(db, 'businesses'), {
+            business_name: businessName,
+            email: email,
+            address: address,
+            phone: phone,
+            service: service, // Save the selected service
+            uid: user.uid,
+            background: backgroundUrl, // URL of the uploaded background image
+            image_url: imageUrl,  // URL of the uploaded logo image
+        });
+
+    } catch (error) {
+        console.error("Error registering:", error);
+    }
+});
+
       event.preventDefault();
 
       const businessName = document.getElementById('business-name').value;
@@ -166,7 +220,7 @@
       const address = document.getElementById('address').value;
       const phone = document.getElementById('phone').value;
       const service = document.getElementById('service').value;
-      const file = document.getElementById('logo').files[0];
+      const image = document.getElementById('logo').files[0];
       const background = document.getElementById('background').value[0];
 
       try {
@@ -198,7 +252,7 @@
           console.error("Error registering: ", e);
           document.getElementById('message').innerText = "Error occurred during registration.";
       }
-  });
+  ;
 </script>
 
 {% endblock %}

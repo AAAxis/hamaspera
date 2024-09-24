@@ -38,7 +38,7 @@
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const businessId = doc.id; 
-                    const bannerImage = data.banner_url || 'https://via.placeholder.com/600x300'; // Fallback for banner
+                    const bannerImage = data.background || 'https://via.placeholder.com/600x300'; // Fallback for banner
                     const logoImage = data.image_url || 'https://via.placeholder.com/100'; // Fallback for logo
                     const businessItem = `
                         <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
