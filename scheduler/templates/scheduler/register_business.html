@@ -1,278 +1,200 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<style>
-    body {
-        background-color: #e9ecef; /* Light gray background */
-    }
-    #register-container {
-        background-color: #fff; /* White background for the form */
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-        color: #343a40; /* Dark text color */
-    }
-    h4 {
-        color: #495057; /* Medium dark text color for steps */
-    }
-    .btn-primary {
-        background-color: #007bff; /* Bootstrap primary color */
-        border-color: #007bff;
-    }
-    .btn-primary:hover {
-        background-color: #0056b3; /* Darker on hover */
-        border-color: #0056b3;
-    }
-    .btn-secondary {
-        background-color: #6c757d; /* Bootstrap secondary color */
-        border-color: #6c757d;
-    }
-    .btn-secondary:hover {
-        background-color: #5a6268; /* Darker on hover */
-        border-color: #545b62;
-    }
-    .form-control, .form-select {
-        border-radius: 5px; /* Rounded corners for inputs */
-        border: 1px solid #ced4da; /* Border color */
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #80bdff; /* Bootstrap focus color */
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Bootstrap shadow effect */
-    }
-    .invalid-feedback {
-        font-size: 0.9rem;
-        color: #dc3545; /* Bootstrap danger color */
-    }
-    #message {
-        color: #28a745; /* Success color */
-        font-weight: bold;
-    }
-    .progress {
-        height: 20px;
-    }
-</style>
 
-<div id="register-container" class="container mt-5">
-    <h2 class="text-center mb-4">Business Registration</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<div id="register-container" class="container mt-5 max-w-md">
+  <h1 class="text-4xl dark:text-white mb-4">Business Registration</h1>
+  <div class="row justify-content-center ">
+      <div class="col-md-6">
 
-            <!-- Step 1: Basic Info -->
-            <form id="step-1" class="needs-validation" novalidate style="display: block;">
-                <h4>Step 1: Basic Info</h4>
-                <div class="form-group mb-3">
-                    <input type="text" id="business-name" class="form-control" placeholder="Business Name" required>
-                    <div class="invalid-feedback">Please enter your business name.</div>
-                </div>
+          <!-- Step 1: Basic Info -->
+          <form id="step-1" class="needs-validation mb-4 max-w-sm" novalidate style="display: block;">
+              <h3 class="text-2xl dark:text-white mb-4">Step 1: <mark>Basic Info</mark></h3>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="business-name" class="block text-sm font-medium mt-4 dark:text-white">Business Name</label>
+                  <input type="text" id="business-name" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Business Name" required>
+                  <h5 class="text-sm text-gray-500 mt-2">Please enter your business name.</h5>
+              </div>
 
-                <div class="form-group mb-3">
-                    <input type="email" id="email" class="form-control" placeholder="Email" required>
-                    <div class="invalid-feedback">Please enter a valid email address.</div>
-                </div>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="email" class="block text-sm font-medium mt-4 dark:text-white">Email</label>
+                  <input type="email" id="email" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="you@site.com" required>
+                  <h5 class="text-sm text-gray-500 mt-2">Please enter a valid email address.</h5>
+              </div>
 
-                <div class="form-group mb-3">
-                    <input type="password" id="password" class="form-control" placeholder="Password" required>
-                    <div class="invalid-feedback">Please enter your password.</div>
-                </div>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="password" class="block text-sm font-medium mt-4 dark:text-white">Password</label>
+                  <input type="password" id="password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Password" required>
+                  <h5 class="text-sm text-gray-500 mt-2">Please enter your password.</h5>
+              </div>
 
-                <button type="button" class="btn btn-primary w-100" onclick="nextStep(1)">Next</button>
-            </form>
+              <button type="button" class="btn btn-primary w-100" onclick="nextStep(1)">Next ></button>
+          </form>
 
-            <!-- Step 2: Address & Phone -->
-            <form id="step-2" class="needs-validation" novalidate style="display: none;">
-                <h4>Step 2: Address & Phone</h4>
-                <div class="form-group mb-3">
-                    <input type="text" id="address" class="form-control" placeholder="Address" required>
-                    <div class="invalid-feedback">Please enter your address.</div>
-                </div>
+          <!-- Step 2: Address & Phone -->
+          <form id="step-2" class="needs-validation" novalidate style="display: none;">
+              <h3 class="text-2xl dark:text-white mb-4">Step 2: <mark>Address & Phone</mark></h3>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="address" class="block text-sm font-medium mb-2 dark:text-white">Address</label>
+                  <input type="text" id="address" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Address" required>
+                  <h5 class="text-sm text-gray-500 mt-2">Please enter your address.</h5>
+              </div>
 
-                <div class="form-group mb-3">
-                    <input type="text" id="phone" class="form-control" placeholder="Phone" required>
-                    <div class="invalid-feedback">Please enter your phone number.</div>
-                </div>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="phone" class="block text-sm font-medium mb-2 dark:text-white">Phone</label>
+                  <input type="text" id="phone" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Phone" required>
+                  <h5 class="text-sm text-gray-500 mt-2">Please enter your phone number.</h5>
+              </div>
 
-                <!-- Business Type -->
-                <div class="form-group mb-3">
-                    <select id="service" class="form-select" required>
-                        <option value="" disabled selected>Select a Service</option>
-                        <option value="Hair Cut">Hair Cut</option>
-                        <option value="Nail Salon">Nail Salon</option>
-                        <option value="Spa">Spa</option>
-                        <option value="Massage">Massage</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div class="invalid-feedback">Please select a service.</div>
-                </div>
+              <!-- Business Type -->
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="service" class="block text-sm font-medium mb-2 dark:text-white">Service</label>
+                  <select id="service" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" required>
+                      <option value="" disabled selected>Select a Service</option>
+                      <option value="Barber Shop">Barber Shop</option>
+                      <option value="Nail Salon">Nail Salon</option>
+                      <option value="Spa">Spa</option>
+                  </select>
+                  <h5 class="text-sm text-gray-500 mt-2">Please select a service.</h5>
+              </div>
 
-                <button type="button" class="btn btn-secondary w-100" onclick="prevStep(2)">Back</button>
-                <button type="button" class="btn btn-primary w-100" onclick="nextStep(2)">Next</button>
-            </form>
+              <button type="button" class="btn btn-secondary text-gray-500 mt-2" onclick="prevStep(2)"> < Previous |</button>
+              <button type="button" class="btn btn-primary w-100 mt-2" onclick="nextStep(2)">Next ></button>
+          </form>
 
-            <!-- Step 3: Logo & Background -->
-            <form id="step-3" class="needs-validation" novalidate style="display: none;">
-                <h4>Step 3: Logo & Background</h4>
-                <div class="form-group mb-3">
-                    <label for="logo">Upload Logo</label>
-                    <input type="file" id="logo" class="form-control" accept="image/*" required onchange="uploadImage('logo')">
-                    <div class="invalid-feedback">Please upload your logo.</div>
-                </div>
-                <div class="progress mb-3" id="logo-progress" style="display: none;">
-                    <div class="progress-bar" role="progressbar" id="logo-progress-bar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                </div>
+          <!-- Step 3: Upload Images -->
+          <form id="step-3" class="needs-validation" novalidate style="display: none;">
+              <h3 class="text-2xl dark:text-white mb-4">Step 3: <mark>Upload Images</mark></h3>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="logo" class="block text-sm font-medium mb-2 dark:text-white">Upload Logo</label>
+                  <input type="file" id="logo" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" accept="image/*" onchange="uploadImage('logo')">
+                  <div id="logo-progress" class="progress mt-2" style="display: none;">
+                      <div id="logo-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                  </div>
+              </div>
 
-                <div class="form-group mb-3">
-                    <label for="background">Upload Background</label>
-                    <input type="file" id="background" class="form-control" accept="image/*" required onchange="uploadImage('background')">
-                    <div class="invalid-feedback">Please upload a background image.</div>
-                </div>
-                <div class="progress mb-3" id="background-progress" style="display: none;">
-                    <div class="progress-bar" role="progressbar" id="background-progress-bar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                </div>
+              <div class="form-group mb-3 max-w-sm">
+                  <label for="background" class="block text-sm font-medium mb-2 dark:text-white">Upload Background Image</label>
+                  <input type="file" id="background" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" accept="image/*" onchange="uploadImage('background')">
+                  <div id="background-progress" class="progress mt-2" style="display: none;">
+                      <div id="background-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                  </div>
+              </div>
 
-                <button type="button" class="btn btn-secondary w-100" onclick="prevStep(3)">Back</button>
-                <button type="submit" class="btn btn-primary w-100">Complete Registration</button>
-            </form>
+              <button type="button" class="btn btn-secondary text-gray-500 mt-2" onclick="prevStep(3)"> < Previous |</button>
+              <button type="submit" class="btn btn-primary w-100 mt-2"><mark>Submit</mark></button>
+          </form>
 
-            <p id="message" class="text-center mt-3"></p>
-        </div>
-    </div>
+          <div id="message" class="mt-3"></div>
+      </div>
+  </div>
 </div>
 
 <script type="module">
-    // Firebase SDK Imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+  // Firebase SDK Imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        measurementId: "G-4VS048B47G"
-    };
+  // Firebase configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+      authDomain: "barbershop-77353.firebaseapp.com",
+      projectId: "barbershop-77353",
+      storageBucket: "barbershop-77353.appspot.com",
+      messagingSenderId: "1018170430611",
+      appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+      measurementId: "G-4VS048B47G"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const storage = getStorage(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
-    // Step Navigation Functions
-    window.nextStep = function(currentStep) {
-        const nextStep = currentStep + 1;
-        document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
-        document.getElementById(`step-${nextStep}`).style.display = 'block'; // Show next step
-    }
+  // Step Navigation Functions
+  window.nextStep = function(currentStep) {
+      const nextStep = currentStep + 1;
+      document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
+      document.getElementById(`step-${nextStep}`).style.display = 'block'; // Show next step
+  }
 
-    window.prevStep = function(currentStep) {
-        const prevStep = currentStep - 1;
-        document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
-        document.getElementById(`step-${prevStep}`).style.display = 'block'; // Show previous step
-    }
+  window.prevStep = function(currentStep) {
+      const prevStep = currentStep - 1;
+      document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
+      document.getElementById(`step-${prevStep}`).style.display = 'block'; // Show previous step
+  }
 
-    // Upload Image with Progress
-    async function uploadImage(type) {
-        const fileInput = document.getElementById(type);
-        const file = fileInput.files[0];
+  // Function to upload images with progress tracking
+  window.uploadImage = function(type) {
+      const fileInput = document.getElementById(type);
+      const file = fileInput.files[0];
 
-        if (file) {
-            const storageRef = ref(storage, `uploads/${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+      if (file) {
+          const storageRef = ref(storage, `uploads/${file.name}`);
+          const uploadTask = uploadBytesResumable(storageRef, file);
 
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                const progressBar = document.getElementById(`${type}-progress-bar`);
-                const progressContainer = document.getElementById(`${type}-progress`);
+          uploadTask.on('state_changed', (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              const progressBar = document.getElementById(`${type}-progress-bar`);
+              const progressContainer = document.getElementById(`${type}-progress`);
 
-                progressContainer.style.display = 'block'; // Show progress bar
-                progressBar.style.width = `${progress}%`;
-                progressBar.innerText = `${Math.round(progress)}%`;
-            }, (error) => {
-                console.error('Upload error:', error);
-            }, async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                console.log('File available at', downloadURL);
-                // Save the download URL if needed
-            });
-        }
-    }
+              progressContainer.style.display = 'block'; // Show progress bar
+              progressBar.style.width = `${progress}%`;
+              progressBar.innerText = `${Math.round(progress)}%`;
+          }, (error) => {
+              console.error('Upload error:', error);
+              alert('An error occurred while uploading. Please try again.');
+          }, async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              console.log('File available at', downloadURL);
+              // Optionally save the download URL in Firestore or another database
+          });
+      } else {
+          alert('Please select a file to upload.');
+      }
+  }
 
-     // Function to upload images with progress tracking
-     window.uploadImage = function(type) {
-        const fileInput = document.getElementById(type);
-        const file = fileInput.files[0];
+  // Handle form submission for Step 3
+  document.getElementById('step-3').addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-        if (file) {
-            const storageRef = ref(storage, `uploads/${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+      const businessName = document.getElementById('business-name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+      const service = document.getElementById('service').value;
 
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                const progressBar = document.getElementById(`${type}-progress-bar`);
-                const progressContainer = document.getElementById(`${type}-progress`);
+      try {
+          // Create user in Firebase Authentication
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
 
-                progressContainer.style.display = 'block'; // Show progress bar
-                progressBar.style.width = `${progress}%`;
-                progressBar.innerText = `${Math.round(progress)}%`;
-            }, (error) => {
-                console.error('Upload error:', error);
-                alert('An error occurred while uploading. Please try again.');
-            }, async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                console.log('File available at', downloadURL);
-                // Optionally save the download URL in Firestore or another database
-            });
-        } else {
-            alert('Please select a file to upload.');
-        }
-    }
+          // Send email verification
+          await sendEmailVerification(user);
+          document.getElementById('message').innerText = "A verification email has been sent to your email address.";
 
+          // Save business details in Firestore
+          await addDoc(collection(db, 'businesses'), {
+              business_name: businessName,
+              email: email,
+              address: address,
+              phone: phone,
+              service: service, // Save the selected service
+              uid: user.uid,
+              // Optionally save logo and background URLs if needed
+          });
 
-    // Handle form submission for Step 3
-    document.getElementById('step-3').addEventListener('submit', async (event) => {
-        event.preventDefault();
+          localStorage.setItem('userId', user.uid);
+          window.location.href = '/login';
 
-        const businessName = document.getElementById('business-name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const address = document.getElementById('address').value;
-        const phone = document.getElementById('phone').value;
-        const service = document.getElementById('service').value;
-
-        try {
-            // Create user in Firebase Authentication
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Send email verification
-            await sendEmailVerification(user);
-            document.getElementById('message').innerText = "A verification email has been sent to your email address.";
-
-            // Save business details in Firestore
-            await addDoc(collection(db, 'businesses'), {
-                business_name: businessName,
-                email: email,
-                address: address,
-                phone: phone,
-                service: service, // Save the selected service
-                uid: user.uid,
-                // Optionally save logo and background URLs if needed
-            });
-
-            localStorage.setItem('userId', user.uid);
-            window.location.href = '/login';
-
-        } catch (e) {
-            console.error("Error registering: ", e);
-            document.getElementById('message').innerText = "Error occurred during registration.";
-        }
-    });
+      } catch (e) {
+          console.error("Error registering: ", e);
+          document.getElementById('message').innerText = "Error occurred during registration.";
+      }
+  });
 </script>
 
 {% endblock %}
