@@ -166,6 +166,8 @@
       const address = document.getElementById('address').value;
       const phone = document.getElementById('phone').value;
       const service = document.getElementById('service').value;
+      const file = document.getElementById('logo').files[0];
+      const background = document.getElementById('background').value[0];
 
       try {
           // Create user in Firebase Authentication
@@ -184,6 +186,8 @@
               phone: phone,
               service: service, // Save the selected service
               uid: user.uid,
+              background: background,
+              image_url: image,
               // Optionally save logo and background URLs if needed
           });
 
