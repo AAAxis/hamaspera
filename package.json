@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "firebase": "^10.13.2"
+    "firebase": "^10.13.2",
+    "preline": "^2.5.0"
   }
 }
