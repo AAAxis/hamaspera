@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Edit Working Hours</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="h-full font-sans text-gray-800">
+    <div class="min-h-full">
+        <!-- Navigation Bar -->
+        <nav class="bg-gray-800">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <!-- Left Side -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <a href="/dashboard" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</a>
+                                <a href="/edit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Edit Working Hours</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Side -->
+                    <div class="hidden md:flex items-center">
+                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
+                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Heading -->
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Edit Working Hours</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <form id="editWorkingHoursForm">
+                        <div class="mb-4">
+                            <label for="mondayHours" class="block text-sm font-medium text-gray-700">Monday:</label>
+                            <input type="text" id="mondayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="tuesdayHours" class="block text-sm font-medium text-gray-700">Tuesday:</label>
+                            <input type="text" id="tuesdayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="wednesdayHours" class="block text-sm font-medium text-gray-700">Wednesday:</label>
+                            <input type="text" id="wednesdayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="thursdayHours" class="block text-sm font-medium text-gray-700">Thursday:</label>
+                            <input type="text" id="thursdayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="fridayHours" class="block text-sm font-medium text-gray-700">Friday:</label>
+                            <input type="text" id="fridayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="saturdayHours" class="block text-sm font-medium text-gray-700">Saturday:</label>
+                            <input type="text" id="saturdayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="sundayHours" class="block text-sm font-medium text-gray-700">Sunday:</label>
+                            <input type="text" id="sundayHours" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 9 AM - 5 PM" />
+                        </div>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Update Working Hours</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, query, where, getDocs, collection, updateDoc, doc, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get user ID from localStorage
+        const userId = localStorage.getItem('userId');
+
+        // Display user ID
+        if (userId) {
+            document.getElementById('user-id').innerText = userId;
+            fetchWorkingHours(userId);
+        } else {
+            console.error("User ID not found in localStorage.");
+        }
+
+        /**
+         * Fetches working hours for the given userId and populates the form.
+         * @param {string} userId - The ID of the user.
+         */
+         async function fetchWorkingHours(userId) {
+    try {
+        // Create a query to find the document where the 'uid' field matches the userId
+        const q = query(collection(db, "businesses"), where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Assuming there's only one document per user ID
+            const docSnap = querySnapshot.docs[0];
+            const businessRef = doc(db, "businesses", docSnap.id);
+            const workingHoursRef = collection(businessRef, "workingHours");
+            const workingHoursSnapshot = await getDocs(workingHoursRef);
+
+            // Populate form with the latest working hours from the subcollection
+            if (!workingHoursSnapshot.empty) {
+                const latestHoursDoc = workingHoursSnapshot.docs[0].data(); // Get the first document's data
+                document.getElementById('mondayHours').value = latestHoursDoc.monday || '';
+                document.getElementById('tuesdayHours').value = latestHoursDoc.tuesday || '';
+                document.getElementById('wednesdayHours').value = latestHoursDoc.wednesday || '';
+                document.getElementById('thursdayHours').value = latestHoursDoc.thursday || '';
+                document.getElementById('fridayHours').value = latestHoursDoc.friday || '';
+                document.getElementById('saturdayHours').value = latestHoursDoc.saturday || '';
+                document.getElementById('sundayHours').value = latestHoursDoc.sunday || '';
+            } else {
+                console.log(`No working hours found for user ID: ${userId}`);
+            }
+        } else {
+            console.error(`No business document found for user ID: ${userId}`);
+            alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
+        }
+    } catch (error) {
+        console.error('Error fetching working hours:', error);
+        alert('Error fetching working hours. Please check the console for more details.');
+    }
+}
+
+   // Handle form submission for adding/updating working hours
+document.getElementById('editWorkingHoursForm').onsubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const workingHours = {
+        monday: document.getElementById('mondayHours').value,
+        tuesday: document.getElementById('tuesdayHours').value,
+        wednesday: document.getElementById('wednesdayHours').value,
+        thursday: document.getElementById('thursdayHours').value,
+        friday: document.getElementById('fridayHours').value,
+        saturday: document.getElementById('saturdayHours').value,
+        sunday: document.getElementById('sundayHours').value,
+    };
+
+    try {
+        // Create a query to find the document where the 'uid' field matches the userId
+        const q = query(collection(db, "businesses"), where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const businessRef = doc(db, "businesses", querySnapshot.docs[0].id); // Get the document ID from the querySnapshot
+
+            // Create or update working hours in the "workingHours" subcollection
+            const workingHoursRef = collection(businessRef, "workingHours");
+            await addDoc(workingHoursRef, workingHours); // Adding new document for working hours
+
+            alert('Working hours added successfully!');
+        } else {
+            console.error(`No business document found for user ID: ${userId}`);
+            alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
+        }
+    } catch (error) {
+        console.error('Error adding working hours:', error);
+        alert('Error adding working hours.');
+    }
+};
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
+        function logout() {
+            localStorage.removeItem('userId');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

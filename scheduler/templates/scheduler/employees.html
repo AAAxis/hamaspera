@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Add Employees</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="h-full font-sans text-gray-800">
+    <div class="min-h-full">
+        <!-- Navigation Bar -->
+        <nav class="bg-gray-800">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <!-- Left Side -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <a href="/dashboard" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</a>
+                                <a href="/add-employee" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Add Employee</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Side -->
+                    <div class="hidden md:flex items-center">
+                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
+                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Heading -->
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Add Employee</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <form id="addEmployeeForm" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="employeeName" class="block text-sm font-medium text-gray-700">Name:</label>
+                            <input type="text" id="employeeName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Employee Name" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="employeePhone" class="block text-sm font-medium text-gray-700">Phone:</label>
+                            <input type="tel" id="employeePhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Phone Number" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="employeeImage" class="block text-sm font-medium text-gray-700">Profile Image:</label>
+                            <input type="file" id="employeeImage" accept="image/*" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Add Employee</button>
+                    </form>
+                    <div id="uploadProgressContainer" class="hidden mt-4">
+                        <div class="w-full bg-gray-200 rounded-full">
+                            <div id="uploadProgress" class="bg-indigo-600 text-xs font-medium text-white text-center rounded-full" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+        import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const userId = localStorage.getItem('userId');
+
+        if (userId) {
+            document.getElementById('user-id').innerText = userId;
+        } else {
+            console.error("User ID not found in localStorage.");
+        }
+
+        document.getElementById('addEmployeeForm').onsubmit = async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const employeeName = document.getElementById('employeeName').value;
+            const employeePhone = document.getElementById('employeePhone').value;
+            const employeeImageFile = document.getElementById('employeeImage').files[0];
+
+            const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+            const uploadProgress = document.getElementById('uploadProgress');
+            uploadProgressContainer.classList.remove('hidden'); // Show progress bar
+
+            try {
+                // Upload image to Firebase Storage
+                const imageRef = ref(storage, `employees/${employeeImageFile.name}`);
+                const uploadTask = uploadBytesResumable(imageRef, employeeImageFile);
+
+                uploadTask.on('state_changed', (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploadProgress.style.width = progress + '%';
+                    uploadProgress.innerText = Math.round(progress) + '%';
+                });
+
+                await uploadTask; // Wait for upload to complete
+
+                const imageUrl = await getDownloadURL(imageRef);
+
+                // Create a new employee document in the "employees" collection
+                await addDoc(collection(db, "employees"), {
+                    name: employeeName,
+                    phone: employeePhone,
+                    imageUrl: imageUrl,
+                    businessId: userId,
+                });
+
+                alert('Employee added successfully!');
+                document.getElementById('addEmployeeForm').reset();
+                uploadProgress.style.width = '0%'; // Reset progress
+                uploadProgress.innerText = '0%'; // Reset progress text
+                uploadProgressContainer.classList.add('hidden'); // Hide progress bar
+            } catch (error) {
+                console.error('Error adding employee:', error);
+                alert('Error adding employee. Please check the console for more details.');
+            }
+        };
+
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
+        function logout() {
+            localStorage.removeItem('userId');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

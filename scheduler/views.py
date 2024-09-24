@@ -105,6 +105,23 @@ class EditView(TemplateView):
         context = super().get_context_data(**kwargs)
         return context
     
+            #     API to get available slots
+class EmployeesView(TemplateView):
+    template_name = "scheduler/employees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+
+            #     API to get available slots
+class HoursView(TemplateView):
+    template_name = "scheduler/working_hours.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
 class LoginView(TemplateView):
     template_name = "scheduler/login_business.html"
 
