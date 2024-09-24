@@ -89,6 +89,7 @@
                                 <th class="px-4 py-2">Email</th>
                                 <th class="px-4 py-2">Phone</th>
                                 <th class="px-4 py-2">Service</th>
+                                <th class="px-4 py-2">Action</th>
                         
                             </tr>
                         </thead>
@@ -245,14 +246,18 @@
                         const businessImage = data.image_url || "https://via.placeholder.com/60";
 
                         const businessRow = `
-                            <tr data-id="${docSnap.id}">
-                                <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full"></td>
-                                <td class="px-4 py-2">${data.business_name}</td>
-                                <td class="px-4 py-2">${data.address}</td>
-                                <td class="px-4 py-2">${data.email}</td>
-                                <td class="px-4 py-2">${data.phone}</td>
-                                <td class="px-4 py-2">${data.service}</td>
-                            </tr>
+                      <tr data-id="${docSnap.id}">
+    <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full"></td>
+    <td class="px-4 py-2">${data.business_name}</td>
+    <td class="px-4 py-2">${data.address}</td>
+    <td class="px-4 py-2">${data.email}</td>
+    <td class="px-4 py-2">${data.phone}</td>
+    <td class="px-4 py-2">${data.service}</td>
+    <td class="px-4 py-2">
+        <a href="edit-business.html?businessId=${docSnap.id}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>
+    </td>
+</tr>
+
                         `;
 
                         businessTableBody.innerHTML += businessRow;
