@@ -11,6 +11,7 @@ import {
   addDoc,
   deleteDoc,
   setDoc,
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import {
   getStorage,
@@ -143,3 +144,109 @@ document.getElementById('addEmployeeButton').onclick = () => {
 };
 
 document.querySelector('#employeeModal button[type="button"]').onclick = closeEmployeeModal;
+// Load Employees
+async function loadEmployees() {
+    const employeesTable = document.getElementById('employeesTable');
+    employeesTable.innerHTML = ''; // Clear table
+    const q = query(collection(db, 'employees'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    for (const docSnap of snapshot.docs) {
+        const employee = docSnap.data();
+        const serviceDoc = await getDoc(doc(db, 'services', employee.employee_services));
+        const serviceName = serviceDoc.exists() ? serviceDoc.data().name : 'Service not found';
+        const employeeRow = `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <img src="${employee.image}" alt="${employee.name}" class="h-10 w-10 rounded-full">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${serviceName}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${docSnap.id}')">Delete</button>
+                </td>
+            </tr>
+        `;
+        employeesTable.innerHTML += employeeRow;
+    }
+};
+
+// ... existing imports and Firebase initialization ...
+
+// Add Employee Functionality
+document.getElementById('addEmployeeForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const employeeName = document.getElementById('employeeName').value;
+  const employeePhone = document.getElementById('employeePhone').value;
+  const employeeImageFile = document.getElementById('employeeImage').files[0];
+  const employeeServicesSelect = document.getElementById('employeeServices');
+  const selectedServices = Array.from(employeeServicesSelect.selectedOptions).map(option => option.value);
+
+  if (selectedServices.length === 0) {
+      alert('Please select at least one service.');
+      return;
+  }
+
+  const storageRef = ref(storage, `employees/${employeeImageFile.name}`);
+  const uploadTask = uploadBytesResumable(storageRef, employeeImageFile);
+
+  // Show upload progress
+  document.getElementById('uploadProgressContainer').classList.remove('hidden');
+  uploadTask.on('state_changed', 
+      (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          document.getElementById('uploadProgress').style.width = `${progress}%`;
+          document.getElementById('uploadProgress').innerText = `${Math.round(progress)}%`;
+      }, 
+      (error) => {
+          console.error(error);
+          alert('Error uploading image.');
+      }, 
+      async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db, 'employees'), {
+              name: employeeName,
+              phone: employeePhone,
+              image: downloadURL,
+              employee_services: selectedServices, // Store as array
+              userId: userId
+          });
+          loadEmployees(); // Refresh employee list
+          document.getElementById('employeeModal').classList.add('hidden');
+          document.getElementById('addEmployeeForm').reset();
+          document.getElementById('uploadProgressContainer').classList.add('hidden');
+          document.getElementById('uploadProgress').style.width = '0%';
+          document.getElementById('uploadProgress').innerText = '0%';
+      }
+  );
+};
+
+// Load Employees with Multiple Services
+const loadEmployees = async () => {
+  const employeesTable = document.getElementById('employeesTable');
+  employeesTable.innerHTML = ''; // Clear table
+  const q = query(collection(db, 'employees'), where('userId', '==', userId));
+  const snapshot = await getDocs(q);
+  snapshot.forEach(async (docSnap) => {
+      const employee = docSnap.data();
+      const serviceNames = await Promise.all(employee.employee_services.map(async (serviceId) => {
+          const serviceDoc = await getDoc(doc(db, 'services', serviceId));
+          return serviceDoc.exists() ? serviceDoc.data().name : 'Service not found';
+      }));
+      const employeeRow = `
+          <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <img src="${employee.image}" alt="${employee.name}" class="h-10 w-10 rounded-full">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${serviceNames.join(', ')}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <button class="text-blue-600 hover:text-blue-900 mr-2" onclick="editEmployee('${docSnap.id}')">Edit</button>
+                  <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${docSnap.id}')">Delete</button>
+              </td>
+          </tr>
+      `;
+      employeesTable.innerHTML += employeeRow;
+  });
+};

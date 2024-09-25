@@ -64,33 +64,36 @@
             </div>
         </main>
 
-        <!-- Add Employee Modal -->
+        <!-- Add/Edit Employee Modal -->
         <div id="employeeModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-lg shadow-lg w-96 p-6">
-                <h2 class="text-lg font-bold mb-4">Add Employee</h2>
+                <h2 class="text-lg font-bold mb-4" id="employeeModalTitle">Add Employee</h2>
                 <form id="addEmployeeForm" enctype="multipart/form-data">
+                    <!-- Hidden input to store employee ID when editing -->
+                    <input type="hidden" id="employeeId" value="" />
+                    
                     <div class="mb-4">
                         <label for="employeeName" class="block text-sm font-medium text-gray-700">Name:</label>
-                        <input type="text" id="employeeName" required class="mt-4 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" placeholder="Employee Name" />
+                        <input type="text" id="employeeName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" placeholder="Employee Name" />
                     </div>
                     <div class="mb-4">
                         <label for="employeePhone" class="block text-sm font-medium text-gray-700">Phone:</label>
-                        <input type="tel" id="employeePhone" required class="mt-4 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" placeholder="Phone Number" />
+                        <input type="tel" id="employeePhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" placeholder="Phone Number" />
                     </div>
                     <div class="mb-4">
                         <label for="employeeImage" class="block text-sm font-medium text-gray-700">Profile Image:</label>
-                        <input type="file" id="employeeImage" accept="image/*" required class="mt-4 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" />
+                        <input type="file" id="employeeImage" accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black" />
+                        <!-- Note: Image is optional when editing -->
                     </div>
                     <div class="mb-4">
                         <label for="employeeServices" class="block text-sm font-medium text-gray-700">Services:</label>
-                        <select id="employeeServices" required class="mt-4 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black">
-                            <option value="">Select Service</option>
+                        <select id="employeeServices" multiple required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-black">
                             <!-- Service options will be populated here -->
                         </select>
                     </div>
                     <div class="flex justify-end">
                         <button type="button" class="mr-2 inline-flex justify-center py-2 px-4 bg-gray-300 text-gray-700 font-medium rounded-md" id="closeEmployeeModalBtn">Cancel</button>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Add Employee</button>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md" id="submitEmployeeButton">Add Employee</button>
                     </div>
                 </form>
                 <div id="uploadProgressContainer" class="hidden mt-4">
@@ -162,7 +165,7 @@
     <!-- Scripts -->
     <script type="module">  
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         // Firebase configuration
@@ -181,7 +184,6 @@
         const storage = getStorage(app);
         const userId = localStorage.getItem('userId');
 
-
         if (!userId) {
             alert("User ID not found in localStorage.");
             window.location.href = "/";
@@ -193,8 +195,14 @@
             employeesTable.innerHTML = ''; // Clear table
             const q = query(collection(db, 'employees'), where('userId', '==', userId));
             const snapshot = await getDocs(q);
-            snapshot.forEach((doc) => {
-                const employee = doc.data();
+            for (const docSnap of snapshot.docs) {
+                const employee = docSnap.data();
+                let serviceNames = 'None';
+                if (employee.employee_services && employee.employee_services.length > 0) {
+                    const servicePromises = employee.employee_services.map(serviceId => getDoc(doc(db, 'services', serviceId)));
+                    const serviceDocs = await Promise.all(servicePromises);
+                    serviceNames = serviceDocs.map(doc => doc.exists() ? doc.data().name : 'Unknown').join(', ');
+                }
                 const employeeRow = `
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -202,16 +210,15 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${serviceNames}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <button class="text-blue-600 hover:text-blue-900" onclick="editEmployee('${doc.id}')">Edit</button>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${doc.id}')">Delete</button>
+                            <button class="text-blue-600 hover:text-blue-900 mr-2" onclick="editEmployee('${docSnap.id}')">Edit</button>
+                            <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${docSnap.id}')">Delete</button>
                         </td>
                     </tr>
                 `;
                 employeesTable.innerHTML += employeeRow;
-            });
+            }
         };
 
         // Load Services
@@ -238,7 +245,7 @@
         // Load Services for Employee Modal
         const loadServicesForEmployeeModal = async () => {
             const employeeServicesSelect = document.getElementById('employeeServices');
-            employeeServicesSelect.innerHTML = '<option value="">Select Service</option>'; // Clear previous options
+            employeeServicesSelect.innerHTML = ''; // Clear previous options
             const q = query(collection(db, 'services'), where('userId', '==', userId));
             const snapshot = await getDocs(q);
             snapshot.forEach((doc) => {
@@ -250,6 +257,21 @@
             });
         };
 
+        // Load Employees for Service Modal (if needed)
+        const loadEmployeesForServiceModal = async () => {
+            const serviceEmployeesSelect = document.getElementById('serviceEmployees');
+            serviceEmployeesSelect.innerHTML = '<option value="">Select Employee</option>'; // Clear previous options
+            const q = query(collection(db, 'employees'), where('userId', '==', userId));
+            const snapshot = await getDocs(q);
+            snapshot.forEach((doc) => {
+                const employee = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = employee.name;
+                serviceEmployeesSelect.appendChild(option);
+            });
+        };
+
         // Add Employee Modal
         document.getElementById('addEmployeeButton').onclick = () => {
             document.getElementById('employeeModal').classList.remove('hidden');
@@ -257,75 +279,218 @@
         };
         document.getElementById('closeEmployeeModalBtn').onclick = () => {
             document.getElementById('employeeModal').classList.add('hidden');
-            document.getElementById('addEmployeeForm').reset();
+            const form = document.getElementById('addEmployeeForm');
+            form.reset();
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeModalTitle').innerText = 'Add Employee';
+            document.getElementById('submitEmployeeButton').innerText = 'Add Employee';
+            document.getElementById('uploadProgressContainer').classList.add('hidden');
         };
 
         // Add Service Modal
         document.getElementById('addServiceButton').onclick = () => {
             document.getElementById('serviceModal').classList.remove('hidden');
-            loadEmployees();
+            loadEmployeesForServiceModal();
         };
         document.getElementById('closeServiceModalBtn').onclick = () => {
             document.getElementById('serviceModal').classList.add('hidden');
             document.getElementById('addServiceForm').reset();
         };
 
-        // Add Employee Functionality
+        // Add Employee Functionality (Add/Edit)
         document.getElementById('addEmployeeForm').onsubmit = async (e) => {
             e.preventDefault();
+            const employeeId = document.getElementById('employeeId').value;
             const employeeName = document.getElementById('employeeName').value;
             const employeePhone = document.getElementById('employeePhone').value;
             const employeeImageFile = document.getElementById('employeeImage').files[0];
-            const employeeServices = document.getElementById('employeeServices').value;
-            const storageRef = ref(storage, `employees/${employeeImageFile.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, employeeImageFile);
+            const employeeServices = Array.from(document.getElementById('employeeServices').selectedOptions).map(option => option.value);
 
-            uploadTask.on('state_changed', null, (error) => {
-                console.error(error);
-            }, async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                await addDoc(collection(db, 'employees'), {
+            if (employeeId) {
+                // Edit existing employee
+                let downloadURL = null;
+                if (employeeImageFile) {
+                    // If a new image is selected, upload it
+                    const storageRef = ref(storage, `employees/${employeeImageFile.name}`);
+                    const uploadTask = uploadBytesResumable(storageRef, employeeImageFile);
+
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed', 
+                            (snapshot) => {
+                                // Optional: Handle upload progress
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                document.getElementById('uploadProgressContainer').classList.remove('hidden');
+                                document.getElementById('uploadProgress').style.width = `${progress}%`;
+                                document.getElementById('uploadProgress').innerText = `${Math.round(progress)}%`;
+                            }, 
+                            (error) => {
+                                console.error(error);
+                                reject(error);
+                            }, 
+                            async () => {
+                                downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                                resolve();
+                            }
+                        );
+                    });
+                }
+
+                // Prepare the updated data
+                const updatedData = {
                     name: employeeName,
                     phone: employeePhone,
-                    image: downloadURL,
                     employee_services: employeeServices,
                     userId: userId
-                });
+                };
+                if (downloadURL) {
+                    updatedData.image = downloadURL;
+                }
+
+                // Update Firestore
+                await updateDoc(doc(db, 'employees', employeeId), updatedData);
                 loadEmployees(); // Refresh employee list
                 document.getElementById('employeeModal').classList.add('hidden');
-            });
+                document.getElementById('addEmployeeForm').reset();
+                document.getElementById('uploadProgressContainer').classList.add('hidden');
+                document.getElementById('employeeModalTitle').innerText = 'Add Employee';
+                document.getElementById('submitEmployeeButton').innerText = 'Add Employee';
+            } else {
+                // Add new employee
+                if (!employeeImageFile) {
+                    alert("Please upload an employee image.");
+                    return;
+                }
+                const storageRef = ref(storage, `employees/${employeeImageFile.name}`);
+                const uploadTask = uploadBytesResumable(storageRef, employeeImageFile);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Optional: Handle upload progress
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        document.getElementById('uploadProgressContainer').classList.remove('hidden');
+                        document.getElementById('uploadProgress').style.width = `${progress}%`;
+                        document.getElementById('uploadProgress').innerText = `${Math.round(progress)}%`;
+                    }, 
+                    (error) => {
+                        console.error(error);
+                    }, 
+                    async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        await addDoc(collection(db, 'employees'), {
+                            name: employeeName,
+                            phone: employeePhone,
+                            image: downloadURL,
+                            employee_services: employeeServices, // Store as array
+                            userId: userId
+                        });
+                        loadEmployees(); // Refresh employee list
+                        document.getElementById('employeeModal').classList.add('hidden');
+                        document.getElementById('addEmployeeForm').reset();
+                        document.getElementById('uploadProgressContainer').classList.add('hidden');
+                    }
+                );
+            }
         };
 
         // Add Service Functionality
         document.getElementById('addServiceForm').onsubmit = async (e) => {
             e.preventDefault();
             const serviceName = document.getElementById('serviceName').value;
-            const servicePrice = parseFloat(document.getElementById('servicePrice').value);
+            const servicePrice = document.getElementById('servicePrice').value;
+            const serviceEmployees = Array.from(document.getElementById('serviceEmployees').selectedOptions).map(option => option.value);
+            const serviceImageFile = document.getElementById('serviceImage').files[0];
 
-            await addDoc(collection(db, 'services'), {
-                name: serviceName,
-                price: servicePrice,
-                userId: userId
-            });
-            loadServices(); // Refresh service list
-            document.getElementById('serviceModal').classList.add('hidden');
+            if (!serviceImageFile) {
+                alert("Please upload a service image.");
+                return;
+            }
+            const storageRef = ref(storage, `services/${serviceImageFile.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, serviceImageFile);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Optional: Handle upload progress
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('editUploadProgressContainer').classList.remove('hidden');
+                    document.getElementById('editUploadProgress').style.width = `${progress}%`;
+                    document.getElementById('editUploadProgress').innerText = `${Math.round(progress)}%`;
+                }, 
+                (error) => {
+                    console.error(error);
+                }, 
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    await addDoc(collection(db, 'services'), {
+                        name: serviceName,
+                        price: servicePrice,
+                        employees: serviceEmployees,
+                        image: downloadURL,
+                        userId: userId
+                    });
+                    loadServices(); // Refresh service list
+                    document.getElementById('serviceModal').classList.add('hidden');
+                    document.getElementById('addServiceForm').reset();
+                    document.getElementById('editUploadProgressContainer').classList.add('hidden');
+                }
+            );
         };
 
         // Delete Employee
-        window.deleteEmployee = async (id) => {
-            await deleteDoc(doc(db, 'employees', id));
-            loadEmployees();
+        const deleteEmployee = async (employeeId) => {
+            await deleteDoc(doc(db, 'employees', employeeId));
+            loadEmployees(); // Refresh employee list
+            alert('Employee deleted successfully');
         };
 
         // Delete Service
-        window.deleteService = async (id) => {
-            await deleteDoc(doc(db, 'services', id));
-            loadServices();
+        const deleteService = async (serviceId) => {
+            await deleteDoc(doc(db, 'services', serviceId));
+            loadServices(); // Refresh service list
+            alert('Service deleted successfully');
+        };  
+
+        // Edit Employee
+        const editEmployee = async (employeeId) => {
+            document.getElementById('employeeModal').classList.remove('hidden');
+            document.getElementById('employeeModalTitle').innerText = 'Edit Employee';
+            document.getElementById('submitEmployeeButton').innerText = 'Save Changes';
+            const employeeDoc = await getDoc(doc(db, 'employees', employeeId));
+            if (employeeDoc.exists()) {
+                const employee = employeeDoc.data();
+                document.getElementById('employeeId').value = employeeId;
+                document.getElementById('employeeName').value = employee.name;
+                document.getElementById('employeePhone').value = employee.phone;
+                document.getElementById('employeeImage').value = employee.image;
+                document.getElementById('employeeServices').value = employee.employee_services;
+            }
         };
 
-        // Initial load
+        // Edit Service
+        const editService = async (serviceId) => {  
+            document.getElementById('serviceModal').classList.remove('hidden');
+            document.getElementById('serviceModalTitle').innerText = 'Edit Service';
+            document.getElementById('submitServiceButton').innerText = 'Save Changes';
+            const serviceDoc = await getDoc(doc(db, 'services', serviceId));
+            if (serviceDoc.exists()) {
+                const service = serviceDoc.data();
+                document.getElementById('serviceId').value = serviceId;
+                document.getElementById('serviceName').value = service.name;
+                document.getElementById('servicePrice').value = service.price;
+                document.getElementById('serviceEmployees').value = service.employees;
+                document.getElementById('serviceImage').value = service.image;
+            }
+        };
+
+        // Logout
+        document.getElementById('logoutButton').onclick = () => {
+            localStorage.removeItem('userId');
+            window.location.href = "/";
+        };
+
+        // Initialize the app
         loadEmployees();
         loadServices();
     </script>
 </body>
 </html>
+    
