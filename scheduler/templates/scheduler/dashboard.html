@@ -371,9 +371,10 @@ async function fetchEmployees() {
     }
 
     try {
-        // Query the employees collection directly
+        // Query the employees collection filtered by userId
         const employeesCollection = collection(db, "employees");
-        const employeesSnapshot = await getDocs(employeesCollection);
+        const q = query(employeesCollection, where("businessId", "==", userId)); // Filter by userId
+        const employeesSnapshot = await getDocs(q);
         
         const employeesTableBody = document.getElementById('employees-table-body');
         employeesTableBody.innerHTML = ''; // Clear existing entries
@@ -387,17 +388,15 @@ async function fetchEmployees() {
 
                 const employeeRow = `
                     <tr>
-                          <td class="px-4 py-2">
+                        <td class="px-4 py-2">
                             <img src="${employeeData.imageUrl || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover" />
                         </td>
                         <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
                         <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
-                      
                         <td class="px-4 py-2">
-<button onclick="deleteEmployee('${employeeId}')" class="text-red-500 hover:text-red-700">
-    Delete
-</button>
-
+                            <button onclick="deleteEmployee('${employeeId}')" class="text-red-500 hover:text-red-700">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -408,7 +407,6 @@ async function fetchEmployees() {
         console.error('Error fetching employees:', error);
     }
 }
-
 
 
 // Function to delete an employee
