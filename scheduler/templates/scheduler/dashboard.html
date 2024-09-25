@@ -76,7 +76,7 @@
             <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 text-white hidden" id="uploadingStatus">
                 <p>Uploading...</p>
             </div>
-            <div id="backgroundImage" class="w-full h-full bg-center bg-cover" style="background-image: url('default-background.jpg');"></div>
+            <div id="backgroundImage" class="w-full h-full bg-center bg-cover"></div>
             <button class="absolute bottom-4 bg-blue-500 text-white py-2 px-4 rounded" id="uploadButton">
                 Upload
             </button>
@@ -509,12 +509,7 @@ function handleFileInput(event) {
     }
 }
 
-// Attach the file input change event listener (assuming you have an <input type="file" id="fileInput">)
-document.getElementById('fileInput').addEventListener('change', handleFileInput);
 
-
-// Attach the file input change event listener (assuming you have an <input type="file" id="fileInput">)
-document.getElementById('fileInput').addEventListener('change', handleFileInput);
 
         // Fetch employee data on page load
         if (userId) {
