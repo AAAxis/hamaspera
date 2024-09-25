@@ -144,6 +144,7 @@ document.getElementById('addEmployeeButton').onclick = () => {
 };
 
 document.querySelector('#employeeModal button[type="button"]').onclick = closeEmployeeModal;
+
 // Load Employees
 async function loadEmployees() {
     const employeesTable = document.getElementById('employeesTable');
@@ -170,8 +171,6 @@ async function loadEmployees() {
         employeesTable.innerHTML += employeeRow;
     }
 };
-
-// ... existing imports and Firebase initialization ...
 
 // Add Employee Functionality
 document.getElementById('addEmployeeForm').onsubmit = async (e) => {
@@ -250,3 +249,59 @@ const loadEmployees = async () => {
       employeesTable.innerHTML += employeeRow;
   });
 };
+
+async function fetchServices(barbershopId) {
+  const serviceSelect = document.getElementById('serviceSelect');
+  try {
+      const q = query(collection(db, 'services'), where('barbershopId', '==', barbershopId));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const option = document.createElement('option');
+          option.value = data.name;
+          option.textContent = data.name;
+          serviceSelect.appendChild(option);
+      });
+  } catch (e) {
+      console.error("Error fetching services: ", e);
+  }
+}
+
+// Call fetchServices when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const barbershopId = "{{ barbershop_id }}"; // This ID should be passed from the URL or context
+  if (barbershopId) {
+      fetchServices(barbershopId);
+  } else {
+      console.error("Barbershop ID not provided.");
+  }
+});
+
+// Add event listener to the service form
+document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const selectedService = document.getElementById('serviceSelect').value;
+    const bookingDate = document.getElementById('bookingDate').value;
+    const bookingTime = document.getElementById('bookingTime').value;
+
+    // Here you would typically make an API call to book the service
+    // For example:
+    const response = await fetch('/api/bookService', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ service: selectedService, date: bookingDate, time: bookingTime })
+    });
+    const data = await response.json();
+    console.log(data);
+});
+
+  
+
+
+
+
+
+
+

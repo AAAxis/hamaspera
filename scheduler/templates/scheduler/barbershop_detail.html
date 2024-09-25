@@ -5,14 +5,23 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex flex-col md:flex-row md:items-start">
             <!-- Left: Barbershop Info -->
-            <div class="md:w-1/2 mb-6 md:mb-0">
-                <img id="imageUrl" alt="Business Image" class="w-full h-64 object-cover rounded-md shadow">
+            <div class="md:w-1/2 mb-6 md:mb-0 relative">
+                <!-- Background Image with logo overlay -->
+                <div class="relative">
+                    <!-- Keep the original proportions for the background image -->
+                    <img id="background" alt="Business Background" class="w-full h-64 object-cover rounded-md shadow">
+                    <!-- Logo overlay -->
+                    <div class="absolute inset-0 flex justify-center items-center">
+                        <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
+                    </div>
+                </div>
                 <div class="mt-6">
                     <h1 class="text-3xl font-bold text-gray-800 mb-4" id="businessName">Business Name</h1>
-                    <p class="text-lg text-gray-600"><strong>Address:</strong> <span id="address">123 Barbershop Street</span></p>
-                    <p class="text-lg text-gray-600"><strong>Email:</strong> <span id="email">barber@shop.com</span></p>
-                    <p class="text-lg text-gray-600"><strong>Phone:</strong> <span id="phone">123-456-7890</span></p>
-                    <p class="text-lg text-gray-600"><strong>Service:</strong> <span id="service">Haircut, Shaving</span></p>
+                    <p class="text-lg text-gray-600"><strong>Address:</strong> <span id="address" class="text-gray-600">n/a</span></p>
+                    <p class="text-lg text-gray-600"><strong>Email:</strong> <span id="email" class="text-gray-600">n/a</span></p>
+                    <p class="text-lg text-gray-600"><strong>Phone:</strong> <span id="phone" class="text-gray-600">n/a</span></p>
+                    <p class="text-lg text-gray-600"><strong>Service:</strong> <span id="service" class="text-gray-600">n/a</span></p>
+                    <p class="text-lg text-gray-600"><strong>Working Hours:</strong> <span id="working_hours" class="text-gray-600">n/a</span></p>
                 </div>
             </div>
 
@@ -20,6 +29,12 @@
             <div class="md:w-1/2 md:pl-10">
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Book a Service</h2>
+                    <p class="text-lg text-gray-600 mb-4">Choose a service:</p>   
+                    <form id="serviceForm" class="mb-4"> 
+                        <select id="serviceSelect" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <!-- Service options dynamically populated -->
+                        </select>
+                    </form>
                     <p class="text-lg text-gray-600 mb-4">Choose a date and time for your appointment:</p>
                     <form id="bookingForm">
                         <div class="mb-4">
@@ -37,14 +52,44 @@
         </div>
     </div>
 </div>
+
+<!-- New Block: Service Previews -->
+<div class="container mx-auto px-4 py-6">
+    <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Available Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Example Service Card -->
+        <div class="bg-gray-100 rounded-lg shadow p-4">
+            <div class="grid grid-rows-3 grid-flow-col gap-4">
+                <!-- Service Image -->
+                <div class="row-span-3">
+                    <img src="https://via.placeholder.com/150" alt="Service Image" class="w-full h-full object-cover rounded-md">
+                </div>
+                <!-- Service Name and Description -->
+                <div class="col-span-2">
+                    <h3 class="text-xl font-bold text-gray-800">Service Name</h3>
+                    <p class="text-sm text-gray-600">Short description of the service.</p>
+                </div>
+                <!-- Next Available Date -->
+                <div class="row-span-2 col-span-2">
+                    <p class="text-sm text-gray-600"><strong>Next Available:</strong> 2023-09-25</p>
+                    <!-- Book Now Button -->
+                    <button class="bg-indigo-600 text-white py-2 px-4 rounded-lg mt-2 hover:bg-indigo-500 transition-colors">Book Now</button>
+                </div>
+            </div>
+            </div>
+            <!-- Repeat more service cards as needed -->
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    // Firebase configuration (same as in schedule.html and dashboard.html)
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
         authDomain: "barbershop-77353.firebaseapp.com",
@@ -71,7 +116,25 @@
                 document.getElementById('email').innerText = data.email;
                 document.getElementById('phone').innerText = data.phone;
                 document.getElementById('service').innerText = data.service;
-                document.getElementById('imageUrl').src = data.image_url || 'https://via.placeholder.com/600x300';
+                document.getElementById('image_url').src = data.image_url || 'https://via.placeholder.com/600x300';
+                document.getElementById('background').src = data.background || 'https://via.placeholder.com/600x300';
+
+                // Get today's day of the week 
+                const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                const today = new Date().getDay();
+                const todayWorkingHours = data.working_hours[daysOfWeek[today]];
+
+                if (todayWorkingHours.working) {
+                    document.getElementById('working_hours').innerText = `Open today from ${todayWorkingHours.from} to ${todayWorkingHours.to}`;
+                } else {
+                    // Find the next working day
+                    let nextWorkingDay = (today + 1) % 7;
+                    while (!data.working_hours[daysOfWeek[nextWorkingDay]].working) {
+                        nextWorkingDay = (nextWorkingDay + 1) % 7;
+                    }
+                    const nextWorkingHours = data.working_hours[daysOfWeek[nextWorkingDay]];
+                    document.getElementById('working_hours').innerText = `Closed today. Next open on ${daysOfWeek[nextWorkingDay]} from ${nextWorkingHours.from} to ${nextWorkingHours.to}`;
+                }
             } else {
                 console.error('No such document!');
             }
@@ -80,10 +143,40 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Function to fetch services for the barbershop
+    async function fetchServices(barbershopId) {
+        const serviceSelect = document.getElementById('serviceSelect');
+        const servicePreviews = document.getElementById('servicePreviews');
+        try {
+            const q = query(collection(db, 'services'), where('userId', '==', barbershopId));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const option = document.createElement('option');
+                option.value = data.name;
+                option.textContent = `${data.name} - $${data.price}`;
+                serviceSelect.appendChild(option);
+
+                // Create a preview card for the service
+                const card = document.createElement('div');
+                card.classList.add('bg-gray-100', 'rounded-lg', 'shadow', 'p-4');
+                card.innerHTML = `
+                    <img src="${data.image}" alt="${data.name}" class="w-full h-32 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">${data.name}</h3>
+                    <p class="text-sm text-gray-600">$${data.price}</p>
+                `;
+                servicePreviews.appendChild(card);
+            });
+        } catch (e) {
+            console.error("Error fetching services: ", e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
         const barbershopId = "{{ barbershop_id }}"; // This ID should be passed from the URL or context
         if (barbershopId) {
-            fetchBarbershopData(barbershopId);
+            await fetchBarbershopData(barbershopId);
+            await fetchServices(barbershopId);
         } else {
             console.error("Barbershop ID not provided.");
         }
