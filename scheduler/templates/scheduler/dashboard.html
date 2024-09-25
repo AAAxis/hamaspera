@@ -137,6 +137,25 @@
             </table>
         </div>
 
+  <!-- Services Modal -->
+<div id="servicesModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+        <h2 class="text-xl font-bold mb-4">Attach Services</h2>
+        <div id="servicesList" class="space-y-2">
+            <!-- Services will be dynamically fetched and added here -->
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button id="saveServicesButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Save
+            </button>
+            <button id="closeServicesModal" class="ml-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+
                 <!-- Working Hours Section -->
                 <div class="mt-8 flex">
                     <div class="w-full">
@@ -244,7 +263,8 @@
         return;
     }
 
-    console.log('Fetching background for UID:', userId); // Log the userId
+  
+
 
     try {
         // Create a query to find the document where the uid field matches userId
@@ -276,7 +296,9 @@
 // Call the function to fetch the background image
 fetchBackgroundImage();
 
-console.log(localStorage.getItem('userId'));
+
+
+
     // Call the function when the page loads
     window.onload = fetchBackgroundImage;
 
@@ -349,6 +371,8 @@ console.log(localStorage.getItem('userId'));
         }
 
 
+
+
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', logout);
         document.getElementById('mobileLogoutButton').addEventListener('click', logout);
@@ -368,50 +392,6 @@ console.log(localStorage.getItem('userId'));
   
 
 // Function to fetch and display employees
-async function fetchEmployees() {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return;
-    }
-
-    try {
-        // Query the employees collection filtered by userId
-        const employeesCollection = collection(db, "employees");
-        const q = query(employeesCollection, where("businessId", "==", userId)); // Filter by userId
-        const employeesSnapshot = await getDocs(q);
-        
-        const employeesTableBody = document.getElementById('employees-table-body');
-        employeesTableBody.innerHTML = ''; // Clear existing entries
-
-        if (employeesSnapshot.empty) {
-            employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-black">No employees found.</td></tr>';
-        } else {
-            employeesSnapshot.forEach((doc) => {
-                const employeeData = doc.data();
-                const employeeId = doc.id; // Get the document ID
-
-                const employeeRow = `
-                    <tr>
-                        <td class="px-4 py-2">
-                            <img src="${employeeData.imageUrl || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover" />
-                        </td>
-                        <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
-                        <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
-                        <td class="px-4 py-2">
-                            <button onclick="editEmployee('${employeeId}')" class="text-red-500 hover:text-red-700">
-                                Services
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
-            });
-        }
-    } catch (error) {
-        console.error('Error fetching employees:', error);
-    }
-}
 
 
 
@@ -453,6 +433,37 @@ const uploadBackground = document.getElementById('uploadBackground');
             }
         }
     });
+
+    async function saveImageToFirestore(imageUrl) {
+    const userId = localStorage.getItem('userId'); // Get the user ID from local storage
+
+    if (!userId) {
+        console.error('User ID not found in local storage.');
+        return;
+    }
+
+    try {
+        // Create a reference to the businesses collection
+        const businessesRef = collection(db, 'businesses');
+        // Create a query to find the document where the uid field matches userId
+        const q = query(businessesRef, where('uid', '==', userId));
+        
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            // If we found a matching document, update the first one (or handle appropriately if multiple)
+            const docRef = doc(db, 'businesses', querySnapshot.docs[0].id);
+            await updateDoc(docRef, { background: imageUrl });
+            console.log('Background image URL saved successfully:', imageUrl);
+        } else {
+            console.error('No document found for the given UID:', userId);
+        }
+    } catch (error) {
+        console.error('Error saving image URL to Firestore:', error);
+    }
+}
+
 
 // Upload the image to Firebase Storage
 async function uploadToFirebase(file) {
@@ -505,18 +516,140 @@ function handleFileInput(event) {
         }
 
   
+// Function to fetch services from Firebase Firestore where userId matches uid
+async function fetchServices(existingServices) {
+    try {
+        const servicesRef = collection(db, 'services');
+        const q = query(servicesRef, where('userId', '==', userId)); // Filter by userId
+        const querySnapshot = await getDocs(q);
 
+        const servicesList = document.getElementById('servicesList');
+        servicesList.innerHTML = ''; // Clear existing services
 
-
-    document.getElementById('addEmployees').addEventListener('click', function() {
-        // Redirect to the edit employee page
-        window.location.href = '/employees'; // Replace with the actual URL of your edit page
-    });
-
-        // Function to close the add/edit service modal
-        function closeServiceModal() {
-            document.getElementById('serviceModal').classList.add('hidden');
+        if (querySnapshot.empty) {
+            console.log("No services found for userId:", userId);
+            return;
         }
+
+        // Iterate through the documents and create checkboxes with price, image, and document ID
+        querySnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            const serviceName = serviceData.name;
+            const servicePrice = serviceData.price; // Assuming price is a field in the document
+            const serviceImage = serviceData.image; // Assuming image URL is a field in the document
+            const serviceId = doc.id; // Get document ID
+
+            const label = document.createElement('label');
+            label.className = 'flex items-center mb-2'; // Add some spacing between services
+            label.innerHTML = `
+                <input type="checkbox" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''} />
+                <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded" />
+                <span>${serviceName} - $${servicePrice}</span>
+            `;
+            servicesList.appendChild(label);
+        });
+    } catch (error) {
+        console.error("Error fetching services:", error);
+    }
+}
+
+// Function to fetch and display employees
+async function fetchEmployees() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return;
+    }
+
+    try {
+        const employeesCollection = collection(db, "employees");
+        const q = query(employeesCollection, where("businessId", "==", userId)); // Filter by userId
+        const employeesSnapshot = await getDocs(q);
+
+        const employeesTableBody = document.getElementById('employees-table-body');
+        employeesTableBody.innerHTML = ''; // Clear existing entries
+
+        if (employeesSnapshot.empty) {
+            employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-black">No employees found.</td></tr>';
+        } else {
+            employeesSnapshot.forEach((doc) => {
+                const employeeData = doc.data();
+                const employeeId = doc.id; // Get the document ID
+
+                const employeeRow = `
+                    <tr>
+                        <td class="px-4 py-2">
+                            <img src="${employeeData.imageUrl || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover" />
+                        </td>
+                        <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
+                        <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
+                        <td class="px-4 py-2">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
+                        </td>
+                    </tr>
+                `;
+                employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching employees:', error);
+    }
+}
+
+// Event listener for Attach Service buttons
+document.getElementById('employees-table-body').addEventListener('click', async (event) => {
+    if (event.target.classList.contains('attach-service-button')) {
+        const employeeId = event.target.getAttribute('data-id');
+        console.log("Opening service modal for employee ID:", employeeId); // Debugging
+
+        // Fetch the employee document to get previously attached services
+        const employeeRef = doc(db, "employees", employeeId);
+        const employeeDoc = await getDoc(employeeRef);
+        
+        // Get the existing services for the employee
+        let existingServices = [];
+        if (employeeDoc.exists()) {
+            existingServices = employeeDoc.data().services || []; // Assume services is an array
+        }
+
+        // Fetch and display services when the modal opens
+        await fetchServices(existingServices);
+        
+        // Open the modal
+        document.getElementById('servicesModal').classList.remove('hidden');
+
+        // Save button click handler
+        document.getElementById('saveServicesButton').onclick = async () => {
+            const selectedServiceIds = Array.from(document.querySelectorAll('#servicesList input[type="checkbox"]:checked')).map(input => input.value);
+            console.log("Selected service IDs for employee ID:", employeeId, selectedServiceIds); // Debugging
+
+            // Save the selected services for the employee
+            await updateDoc(employeeRef, {
+                services: selectedServiceIds // Update employee document with selected service IDs
+            });
+            alert("Services attached successfully!");
+            closeServiceModal(); // Close the modal after saving
+        };
+    }
+});
+
+// Function to close the service modal
+function closeServiceModal() {
+    document.getElementById('servicesModal').classList.add('hidden');
+}
+
+// Fetch employees on page load
+window.onload = fetchEmployees;
+// Event listener to redirect to the edit employee page
+document.getElementById('addEmployees').addEventListener('click', function() {
+    console.log("Redirecting to /employees"); // Debugging redirection
+    window.location.href = '/employees'; // Replace with the actual URL of your edit page
+});
+
+
+
+// Optionally, you could call the fetchServices() function here to trigger it on page load or modal open
+
 
     
 
@@ -534,6 +667,21 @@ function handleFileInput(event) {
                 document.getElementById(`${day}-to`).disabled = !event.target.checked;
             });
         });
+
+        // Close modal functionality (already present in your file)
+        document.getElementById('closeServicesModal').onclick = function() {
+            document.getElementById('servicesModal').classList.add('hidden');
+        };
+
+        // Add an event listener to open the modal
+        document.getElementById('manageServicesButton').addEventListener('click', function() {
+            fetchServices();
+            document.getElementById('servicesModal').classList.remove('hidden');
+        
+        });
+
+      
+
 
         // Save working hours
         document.getElementById('saveWorkingHours').addEventListener('click', async () => {
@@ -559,4 +707,5 @@ function handleFileInput(event) {
         });
     </script>
 </body>
+
 </html>
