@@ -6,18 +6,16 @@ import {
   getDocs,
   query,
   where,
-  updateDoc,
   doc,
   addDoc,
-  deleteDoc,
   setDoc,
   getDoc,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import {
-  getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  getStorage,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
 // Your Firebase configuration
@@ -277,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
 // Add event listener to the service form
 document.getElementById('serviceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -297,7 +296,38 @@ document.getElementById('serviceForm').addEventListener('submit', async (e) => {
     console.log(data);
 });
 
-  
+async function fetchAvailableSlots(barbershopId) {
+  try {
+      const slotsRef = collection(db, 'slots');
+      const q = query(slotsRef, where('barbershopId', '==', barbershopId));
+      const querySnapshot = await getDocs(q);
+
+      const slotContainer = document.getElementById('slotContainer');
+      slotContainer.innerHTML = ''; // Clear any existing slots
+
+      if (querySnapshot.empty) {
+          slotContainer.innerHTML = '<p>No available slots.</p>';
+      } else {
+          querySnapshot.forEach((doc) => {
+              const slotData = doc.data();
+              const slotElement = document.createElement('div');
+              slotElement.classList.add('slot-item');
+              slotElement.innerHTML = `
+                  <p>Date: ${slotData.date}</p>
+                  <p>Time: ${slotData.time}</p>
+              `;
+              slotContainer.appendChild(slotElement);
+          });
+      }
+  } catch (error) {
+      console.error('Error fetching slots:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const barbershopId = "{{ barbershop_id }}"; // Assuming you have the barbershop ID from the context or URL
+  fetchAvailableSlots(barbershopId);
+});
 
 
 
