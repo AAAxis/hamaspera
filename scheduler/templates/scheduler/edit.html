@@ -159,7 +159,7 @@
             const businessPhone = document.getElementById('businessPhone').value;
             const businessService = document.getElementById('businessService').value;
             const businessImage = document.getElementById('businessImage').files[0];
-            const businessBackground = document.getElementById('businessBackground').files[0];
+       
 
             try {
                 const q = query(collection(db, "businesses"), where("uid", "==", userId));
@@ -200,30 +200,6 @@
                         });
                     }
 
-                    // Upload background image if a new one is selected
-                    if (businessBackground) {
-                        const storageRef = ref(storage, `backgrounds/${userId}/${businessBackground.name}`);
-                        const uploadTask = uploadBytesResumable(storageRef, businessBackground);
-
-                        uploadTask.on('state_changed', (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            document.getElementById('backgroundUploadProgress').value = progress;
-                            document.getElementById('backgroundUploadProgress').classList.remove('hidden');
-                            document.getElementById('backgroundUploadStatus').innerText = `${progress.toFixed(0)}% uploaded`;
-                            document.getElementById('backgroundUploadStatus').classList.remove('hidden');
-                        }, (error) => {
-                            console.error('Upload error:', error);
-                            alert('Error uploading background image. Please check the console for more details.');
-                        }, async () => {
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            await updateDoc(docRef, { background: downloadURL });
-                            alert('Business updated successfully!');
-                            location.reload();
-                        });
-                    } else {
-                        alert('Business updated successfully without background image!');
-                        location.reload();
-                    }
                 } else {
                     console.error(`No business document found for user ID: ${userId}`);
                     alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
