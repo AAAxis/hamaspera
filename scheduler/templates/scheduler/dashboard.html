@@ -71,8 +71,17 @@
                 <div id="greeting" class="text-lg text-gray-700"></div>
             </div>
         </header>
-
-        <!-- Main Content -->
+        <div class="relative w-full h-96 bg-gray-300 flex justify-center items-center cursor-pointer" id="uploadBackground">
+            <input type="file" id="backgroundImageInput" class="hidden" accept="image/*">
+            <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 text-white hidden" id="uploadingStatus">
+                <p>Uploading...</p>
+            </div>
+            <div id="backgroundImage" class="w-full h-full bg-center bg-cover" style="background-image: url('default-background.jpg');"></div>
+            <button class="absolute bottom-4 bg-blue-500 text-white py-2 px-4 rounded" id="uploadButton">
+                Upload
+            </button>
+        </div>
+        
         <main>
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <!-- Business Data Section -->
@@ -201,6 +210,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, updateDoc, doc, addDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+        import { getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         // Your Firebase configuration
         const firebaseConfig = {
@@ -220,6 +230,49 @@
         // Get user info from localStorage
         const userId = localStorage.getItem('userId');
         const userEmail = localStorage.getItem('email') || 'User';
+        async function fetchBackgroundImage() {
+    const userId = localStorage.getItem('userId'); // This is the uid you want to find
+
+    if (!userId) {
+        console.error('UID not found in local storage.');
+        return;
+    }
+
+    console.log('Fetching background for UID:', userId); // Log the userId
+
+    try {
+        // Create a query to find the document where the uid field matches userId
+        const businessesCollection = collection(db, 'businesses');
+        const q = query(businessesCollection, where('uid', '==', userId));
+        
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // If we found a matching document
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data();
+                const background = userData.background || 'path/to/your/default-background.jpg'; // Fallback image
+                
+                // Set the background image
+                backgroundImage.style.backgroundImage = `url('${background}')`;
+            });
+        } else {
+            console.error('No document found for the given UID:', userId);
+            // Optionally set a default image if no document is found
+            backgroundImage.style.backgroundImage = `url('path/to/your/default-background.jpg')`;
+        }
+    } catch (error) {
+        console.error('Error fetching background image:', error);
+    }
+}
+
+// Call the function to fetch the background image
+fetchBackgroundImage();
+
+console.log(localStorage.getItem('userId'));
+    // Call the function when the page loads
+    window.onload = fetchBackgroundImage;
 
         // Set greeting
         const greetingElement = document.getElementById('greeting');
@@ -378,6 +431,74 @@ window.deleteEmployee = async function(employeeId) {
     }
 };
 
+
+
+
+const uploadBackground = document.getElementById('uploadBackground');
+    const backgroundImageInput = document.getElementById('backgroundImageInput');
+    const backgroundImage = document.getElementById('backgroundImage');
+    const uploadButton = document.getElementById('uploadButton');
+    const uploadingStatus = document.getElementById('uploadingStatus');
+
+    // On clicking the background or button, trigger file input
+    uploadButton.addEventListener('click', () => {
+        backgroundImageInput.click();
+    });
+
+    // On file selection, handle image upload to Firebase and preview
+    backgroundImageInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Show the uploading status
+            uploadingStatus.classList.remove('hidden');
+
+            try {
+                // Upload the file to Firebase Storage
+                const imageUrl = await uploadToFirebase(file);
+
+                // Set the uploaded image as background
+                backgroundImage.style.backgroundImage = `url('${imageUrl}')`;
+
+                // Save the image URL to Firestore with matching UID from local storage
+                await saveImageToFirestore(imageUrl);
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('Error uploading image. Please try again.');
+            } finally {
+                // Hide the uploading status after completion
+                uploadingStatus.classList.add('hidden');
+            }
+        }
+    });
+
+    // Upload the image to Firebase Storage
+    async function uploadToFirebase(file) {
+        const storageRef = storage.ref();
+        const fileRef = storageRef.child(`backgrounds/${file.name}`);
+        const snapshot = await fileRef.put(file);
+
+        // Get the download URL
+        const downloadURL = await snapshot.ref.getDownloadURL();
+        return downloadURL;
+    }
+
+    // Save image URL to Firestore collection where UID matches local storage
+    async function saveImageToFirestore(imageUrl) {
+        // Get the UID from local storage
+        const uid = localStorage.getItem('uid');
+        if (!uid) {
+            throw new Error('User UID not found in local storage.');
+        }
+
+        // Update the Firestore collection document with the matching UID
+        const userDocRef = db.collection('business').doc(uid);
+        await userDocRef.update({
+            backgroundImageUrl: imageUrl
+        });
+
+        console.log('Background image URL saved to Firestore');
+    }
 
 
         // Fetch employee data on page load
