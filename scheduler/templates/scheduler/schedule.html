@@ -1,8 +1,8 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<h2 class="text-center text-gray-800 font-bold text-3xl my-8">Available Barbershops</h2>
-<div id="business-list" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+<h2 class="text-center text-gray-800 font-bold text-3xl my-4 mb-8">Available Barbershops in <span class="text-yellow-400">Tel-<mark class="bg-yellow-400 text-black backdrop-blur-sm">Aviv</mark></span></h2>
+<div id="business-list" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-4">
     <!-- Barbershop cards will be dynamically loaded here -->
 </div>
 
@@ -41,21 +41,27 @@
                     const bannerImage = data.background || 'https://via.placeholder.com/600x300'; // Fallback for banner
                     const logoImage = data.image_url || 'https://via.placeholder.com/100'; // Fallback for logo
                     const businessItem = `
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                        <div class="backdrop-blur-xl bg-white bg-opacity-50 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <!-- Top half: Banner and Logo -->
-                            <div class="relative">
+                            <div class="relative shadow-xl rounded-xl">
                                 <img class="w-full h-48 object-cover" src="${bannerImage}" alt="${data.business_name}">
-                                <div class="absolute inset-0 flex justify-center items-center">
-                                    <img src="${logoImage}" alt="${data.business_name}" class="w-24 h-24 rounded-full border-4 border-white object-cover">
+                                <div class="absolute inset-0 flex justify-center items-center backdrop-blur-sm bg-black bg-opacity-40">
+                                    <img src="${logoImage}" alt="${data.business_name}" class="w-36 h-36 rounded-full object-cover">
                                 </div>
                             </div>
 
                             <!-- Bottom half: Business Info -->
-                            <div class="p-6 text-center">
+                            <div class="p-6 text-center backdrop-blur-xl bg-white bg-opacity-80">
                                 <h3 class="text-xl font-bold text-gray-800 mb-2">${data.business_name}</h3>
                                 <p class="text-sm text-gray-600 mb-1">Address: ${data.address}</p>
+                                <p class="text-sm text-gray-600 mb-1">Phone: ${data.phone}</p>
                                 <p class="text-sm text-gray-600">Availability: Open</p>
-                                <a href="/barbershop/${businessId}/" class="mt-4 inline-block bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-indigo-500 transition-colors">Book</a>
+                                <a href="/barbershop/${businessId}/" class="mt-4 inline-block bg-black shadow-lg text-white font-semibold px-4 py-2 rounded-lg shadow hover:shadow-xl hover:bg-yellow-300 transition-colors">Book Now</a>
+                            </div>
+                            <div class="bg-gray-100 border-t rounded-b-xl py-3 px-4 md:py-4 md:px-5">
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Last updated 5 mins ago
+                                </p>
                             </div>
                         </div>
                     `;
