@@ -563,7 +563,7 @@ async function fetchEmployees() {
 
     try {
         const employeesCollection = collection(db, "employees");
-        const q = query(employeesCollection, where("businessId", "==", userId)); // Filter by userId
+        const q = query(employeesCollection, where("userId", "==", userId)); // Filter by userId
         const employeesSnapshot = await getDocs(q);
 
         const employeesTableBody = document.getElementById('employees-table-body');
