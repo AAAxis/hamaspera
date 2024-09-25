@@ -130,3 +130,16 @@ document.getElementById('saveWorkingHours').addEventListener('click', async () =
         alert('Error updating working hours.');
     }
 });
+
+// Function to close the Add Employee modal
+function closeEmployeeModal() {
+    document.getElementById('employeeModal').classList.add('hidden');
+    document.getElementById('addEmployeeForm').reset();
+}
+
+// Attach the closeEmployeeModal function to the Cancel button
+document.getElementById('addEmployeeButton').onclick = () => {
+    document.getElementById('employeeModal').classList.remove('hidden');
+};
+
+document.querySelector('#employeeModal button[type="button"]').onclick = closeEmployeeModal;
