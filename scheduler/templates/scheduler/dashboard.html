@@ -18,8 +18,7 @@
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Address</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Email</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Service</th>
-                                <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Action</th>
+                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Business Type</th>
                             </tr>
                         </thead>
                         <tbody id="business-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
@@ -33,9 +32,10 @@
 
     <!-- Workers Data Section -->
     <div class="mb-4 mt-8">
-        <h2 class="text-4xl font-bold text-gray-900">Workers Info / <button id="addEmployeeButton" class="mt-4 bg-white hover:bg-green-100 text-black text-sm py-2 px-4 rounded-lg">
+        <h2 class="text-4xl font-bold text-gray-900">Workers Info</h2>
+        <a href="/employees" class="mt-4 bg-white hover:bg-green-100 text-black text-sm py-2 px-4 rounded-lg">
             Add Employee
-        </button></h2>
+        </a>
     </div>
 
     <div class="flex flex-col shadow-md">
@@ -48,7 +48,7 @@
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Image</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Name</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Service</th>
+                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
                             </tr>
                         </thead>
                         <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
@@ -170,34 +170,31 @@
         try {
             const q = query(collection(db, 'employees'), where('userId', '==', userId));
             const snapshot = await getDocs(q);
-            const employeesTableBody = document.getElementById('employees-table-body');
-            employeesTableBody.innerHTML = ''; // Clear table
+            const employeesTable = document.getElementById('employees-table-body');
+            employeesTable.innerHTML = ''; // Clear table
 
-            snapshot.forEach(async (docSnap) => {
-                const employee = docSnap.data();
-                const serviceNames = await Promise.all(employee.employee_services.map(async (serviceId) => {
-                    const serviceDoc = await getDoc(doc(db, 'services', serviceId));
-                    return serviceDoc.exists() ? serviceDoc.data().name : 'Service not found';
-                }));
+            snapshot.forEach(doc => {
+                const employee = doc.data();
                 const employeeRow = `
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <img src="${employee.image}" alt="${employee.name}" class="h-10 w-10 rounded-full">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                            <img src="${employee.image}" alt="${employee.name}" class="h-10 w-10 rounded-full mx-auto">
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${serviceNames.join(', ')}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${docSnap.id}')">Delete</button>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${employee.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${employee.phone}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${employee.services}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                            <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${doc.id}')">Delete</button>
                         </td>
                     </tr>
                 `;
-                employeesTableBody.innerHTML += employeeRow;
+                employeesTable.innerHTML += employeeRow;
             });
         } catch (error) {
             console.error('Error loading employees:', error);
         }
     }
+
 
     // Load Services
     async function loadServices() {
