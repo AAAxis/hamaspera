@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
 <html lang="en" class="h-full bg-gray-100">
 <head>
     <meta charset="UTF-8">
@@ -8,227 +10,207 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body class="h-full font-sans text-gray-800">
     <div class="min-h-full">
         <!-- Navigation Bar -->
-        <nav class="bg-gray-800">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <!-- Left Side -->
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
-                        </div>
-                        <div class="hidden md:block">
-                            <div class="ml-10 flex items-baseline space-x-4">
-                                <a href="/dashboard" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
-                                <a href="/edit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Edit Business</a>
-                                
-                                <!-- Add more navigation links if needed -->
+        <div class="container mx-auto px-4 py-6 md:py-12 md:px-8">
+            <nav>
+                <div class="bg-white shadow-md mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex h-16 items-center justify-between">
+                        <!-- Left Side -->
+                        <div class="flex items-center">
+                            <div class="hidden md:block">
+                                <div class="border-b-2 border-gray-200 dark:border-neutral-700">
+                                    <nav class="-mb-0.5 flex gap-x-6">
+                                        <a href="/dashboard" class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:text-neutral-500 dark:hover:text-blue-500 dark:focus:text-blue-500 active" aria-current="page">Dashboard</a>
+                                        <a href="/edit" class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:text-neutral-500 dark:hover:text-blue-500 dark:focus:text-blue-500" aria-current="page">Edit Business</a>
+                                        <a href="/employees" class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:text-neutral-500 dark:hover:text-blue-500 dark:focus:text-blue-500" aria-current="page">Manage</a>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
+                        <!-- Right Side -->
+                        <div class="hidden md:flex items-center">
+                            <!-- Client ID Display -->
+                            <p class="mr-4 text-gray-800 dark:text-white"><strong>ID:</strong> <span id="user-id"></span></p>
+                            <!-- Logout Button -->
+                            <a href="/logout" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                                <i class="fas fa-sign-out-alt"></i> Logout <span class="sr-only">Logout</span>
+                            </a>
+                        </div>
+                        <!-- Mobile Menu Button -->
+                        <div class="-mr-2 flex md:hidden">
+                            <button type="button" class="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-800 hover:bg-gray-50 hover:text-gray-600 focus:outline-none dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
+                                <span class="sr-only">Open main menu</span>
+                                <i class="fas fa-bars block h-6 w-6"></i>
+                                <i class="fas fa-times hidden h-6 w-6"></i>
+                            </button>
+                        </div>
                     </div>
-                    <!-- Right Side -->
-                    <div class="hidden md:flex items-center">
-                        <!-- Client ID Display -->
-                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
-                        <!-- Logout Button -->
-                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                </div>
+                <!-- Mobile Menu -->
+                <div class="md:hidden hidden" id="mobile-menu">
+                    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                        <a href="/dashboard" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 bg-white hover:bg-gray-50 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700" aria-current="page">Dashboard</a>
+                        <a href="/edit" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 bg-white hover:bg-gray-50 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700">Edit Business</a>
+                        <a href="/employees" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 bg-white hover:bg-gray-50 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700">Manage</a>
+                    </div>
+                    <div class="pt-4 pb-3 border-t border-gray-200 dark:border-neutral-700">
+                        <div class="flex items-center px-5">
+                            <!-- Mobile Client ID -->
+                            <p class="text-gray-800 dark:text-white"><strong>ID:</strong> <span id="mobile-user-id"></span></p>
+                            <!-- Mobile Logout Button -->
+                            <a href="/logout" class="ml-auto py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                                <i class="fas fa-sign-out-alt"></i> Logout <span class="sr-only">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Business Data Section -->
+            <div class="mb-4 mt-8">
+                <h2 class="text-4xl font-bold text-gray-900">Business Info</h2>
+            </div>
+            <div class="flex flex-col shadow-md">
+                <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
+                    <div class="p-1.5 min-w-full inline-block align-middle">
+                                               <div class="overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Logo</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Business Name</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Address</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Email</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Service</th>
+                                        <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="business-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
+                                    <!-- Business items will be dynamically inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workers Data Section -->
+            <div class="mb-4 mt-8">
+                <h2 class="text-4xl font-bold text-gray-900">Workers Info</h2>
+            </div>
+            <div class="flex flex-col shadow-md">
+                <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
+                    <div class="p-1.5 min-w-full inline-block align-middle">
+                        <div class="overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Image</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Name</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Service</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
+                                    <!-- Employee items will be dynamically inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Modal -->
+            <div id="servicesModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                    <h2 class="text-xl font-bold mb-4">Attach Services</h2>
+                    <div id="servicesList" class="space-y-2">
+                        <!-- Services will be dynamically fetched and added here -->
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="saveServicesButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Save
                         </button>
-                    </div>
-                    <!-- Mobile Menu Button -->
-                    <div class="-mr-2 flex md:hidden">
-                        <button type="button" class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
-                            <span class="sr-only">Open main menu</span>
-                            <i class="fas fa-bars block h-6 w-6"></i>
-                            <i class="fas fa-times hidden h-6 w-6"></i>
+                        <button id="closeServicesModal" class="ml-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded">
+                            Close
                         </button>
                     </div>
                 </div>
             </div>
-            <!-- Mobile Menu -->
-            <div class="md:hidden hidden" id="mobile-menu">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="/dashboard" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900 hover:bg-gray-700" aria-current="page">Dashboard</a>
-                    <a href="/edit" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900 hover:bg-gray-700">Edit Business</a>
-                    <a href="/employees" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900 hover:bg-gray-700">Manage</a>
-                </div>
-                <div class="pt-4 pb-3 border-t border-gray-700">
-                    <div class="flex items-center px-5">
-                        <!-- Mobile Client ID -->
-                        <p class="text-white"><strong>ID:</strong> <span id="mobile-user-id"></span></p>
-                        <!-- Mobile Logout Button -->
-                        <button id="mobileLogoutButton" class="ml-auto bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
+
+            <!-- Working Hours Section -->
+            <div class="mt-8 flex">
+                <div class="w-full">
+                    <h2 class="text-2xl font-bold text-gray-900">Update Working Hours</h2>
+                    <ul class="max-w-xs flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Monday
+                            <input type="checkbox" id="monday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="monday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="monday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Tuesday
+                            <input type="checkbox" id="tuesday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="tuesday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="tuesday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Wednesday
+                            <input type="checkbox" id="wednesday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="wednesday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="wednesday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Thursday
+                            <input type="checkbox" id="thursday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="thursday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="thursday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Friday
+                            <input type="checkbox" id="friday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="friday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="friday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Saturday
+                            <input type="checkbox" id="saturday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="saturday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="saturday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                        <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                            Sunday
+                            <input type="checkbox" id="sunday-working" class="ml-auto">
+                            <div class="flex gap-x-2">
+                                <input type="time" id="sunday-from" class="py-1 px-2 border rounded" disabled>
+                                <input type="time" id="sunday-to" class="py-1 px-2 border rounded" disabled>
+                            </div>
+                        </li>
+                    </ul>
+                    <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Working Hours</button>
                 </div>
             </div>
-        </nav>
-
-        
-
-        <!-- Page Heading -->
-        <header class="bg-white shadow">
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Admin Dashboard</h1>
-                <div id="greeting" class="text-lg text-gray-700"></div>
-            </div>
-        </header>
-        <div class="relative w-full h-96 bg-gray-300 flex justify-center items-center cursor-pointer" id="uploadBackground">
-            <input type="file" id="backgroundImageInput" class="hidden" accept="image/*">
-            <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 text-white hidden" id="uploadingStatus">
-                <p>Uploading...</p>
-            </div>
-            <div id="backgroundImage" class="w-full h-full bg-center bg-cover"></div>
-            <button class="absolute bottom-4 bg-blue-500 text-white py-2 px-4 rounded" id="uploadButton">
-                Upload
-            </button>
-        </div>
-        
-        <main>
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                <!-- Business Data Section -->
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
-                </div>
-                <div id="business-data" class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Logo</th>
-                                <th class="px-4 py-2">Business Name</th>
-                                <th class="px-4 py-2">Address</th>
-                                <th class="px-4 py-2">Email</th>
-                                <th class="px-4 py-2">Phone</th>
-                                <th class="px-4 py-2">Service</th>
-                                <th class="px-4 py-2">Action</th>
-                        
-                            </tr>
-                        </thead>
-                        <tbody id="business-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Business items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-                   <!-- Employees Data Section -->
-                   <div id="employees-data" class="mt-8 overflow-x-auto rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-900">My Employees</h2>
-                        <button id="addEmployees" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-pen"></i> Manage
-                        </button>
-                    </div>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Image</th>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Phone</th>
-                                <th class="px-4 py-2">Service</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200">
-
-                 <!-- Employee items will be dynamically inserted here -->
-                </tbody>
-            </table>
-        </div>
-
-  <!-- Services Modal -->
-<div id="servicesModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-        <h2 class="text-xl font-bold mb-4">Attach Services</h2>
-        <div id="servicesList" class="space-y-2">
-            <!-- Services will be dynamically fetched and added here -->
-        </div>
-        <div class="mt-4 flex justify-end">
-            <button id="saveServicesButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Save
-            </button>
-            <button id="closeServicesModal" class="ml-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded">
-                Close
-            </button>
         </div>
     </div>
-</div>
-
-
-                <!-- Working Hours Section -->
-                <div class="mt-8 flex">
-                    <div class="w-full">
-                        <h2 class="text-2xl font-bold text-gray-900">Update Working Hours</h2>
-                        <ul class="max-w-xs flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Monday
-                                <input type="checkbox" id="monday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="monday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="monday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Tuesday
-                                <input type="checkbox" id="tuesday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="tuesday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="tuesday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Wednesday
-                                <input type="checkbox" id="wednesday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="wednesday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="wednesday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Thursday
-                                <input type="checkbox" id="thursday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="thursday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="thursday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Friday
-                                <input type="checkbox" id="friday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="friday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="friday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Saturday
-                                <input type="checkbox" id="saturday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="saturday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="saturday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Sunday
-                                <input type="checkbox" id="sunday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="sunday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="sunday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                        </ul>
-                        <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Working Hours</button>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-
-
-
 
     <!-- Scripts -->
     <script type="module">
@@ -255,52 +237,47 @@
         // Get user info from localStorage
         const userId = localStorage.getItem('userId');
         const userEmail = localStorage.getItem('email') || 'User';
+
         async function fetchBackgroundImage() {
-    const userId = localStorage.getItem('userId'); // This is the uid you want to find
+            const userId = localStorage.getItem('userId'); // This is the uid you want to find
 
-    if (!userId) {
-        console.error('UID not found in local storage.');
-        return;
-    }
+            if (!userId) {
+                console.error('UID not found in local storage.');
+                return;
+            }
 
-  
-
-
-    try {
-        // Create a query to find the document where the uid field matches userId
-        const businessesCollection = collection(db, 'businesses');
-        const q = query(businessesCollection, where('uid', '==', userId));
-        
-        // Execute the query
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            // If we found a matching document
-            querySnapshot.forEach((doc) => {
-                const userData = doc.data();
-                const background = userData.background || 'path/to/your/default-background.jpg'; // Fallback image
+            try {
+                // Create a query to find the document where the uid field matches userId
+                const businessesCollection = collection(db, 'businesses');
+                const q = query(businessesCollection, where('uid', '==', userId));
                 
-                // Set the background image
-                backgroundImage.style.backgroundImage = `url('${background}')`;
-            });
-        } else {
-            console.error('No document found for the given UID:', userId);
-            // Optionally set a default image if no document is found
-            backgroundImage.style.backgroundImage = `url('path/to/your/default-background.jpg')`;
+                // Execute the query
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    // If we found a matching document
+                    querySnapshot.forEach((doc) => {
+                        const userData = doc.data();
+                        const background = userData.background || 'path/to/your/default-background.jpg'; // Fallback image
+                        
+                        // Set the background image
+                        backgroundImage.style.backgroundImage = `url('${background}')`;
+                    });
+                } else {
+                    console.error('No document found for the given UID:', userId);
+                    // Optionally set a default image if no document is found
+                    backgroundImage.style.backgroundImage = `url('path/to/your/default-background.jpg')`;
+                }
+            } catch (error) {
+                console.error('Error fetching background image:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error fetching background image:', error);
-    }
-}
 
-// Call the function to fetch the background image
-fetchBackgroundImage();
+        // Call the function to fetch the background image
+        fetchBackgroundImage();
 
-
-
-
-    // Call the function when the page loads
-    window.onload = fetchBackgroundImage;
+        // Call the function when the page loads
+        window.onload = fetchBackgroundImage;
 
         // Set greeting
         const greetingElement = document.getElementById('greeting');
@@ -322,7 +299,6 @@ fetchBackgroundImage();
             document.getElementById('user-id').innerText = userId;
             document.getElementById('mobile-user-id').innerText = userId;
             fetchBusinessData(userId);
-  
         } else {
             console.error("User ID not found in localStorage.");
         }
@@ -345,18 +321,17 @@ fetchBackgroundImage();
                         const businessImage = data.image_url || "https://via.placeholder.com/60";
 
                         const businessRow = `
-                      <tr data-id="${docSnap.id}">
-    <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full"></td>
-    <td class="px-4 py-2">${data.business_name}</td>
-    <td class="px-4 py-2">${data.address}</td>
-    <td class="px-4 py-2">${data.email}</td>
-    <td class="px-4 py-2">${data.phone}</td>
-    <td class="px-4 py-2">${data.service}</td>
-    <td class="px-4 py-2">
-        <a href="/edit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>
-    </td>
-</tr>
-
+                            <tr data-id="${docSnap.id}" class="text-center">
+                                <td class="px-4 py-2"><img src="${businessImage}" alt="${data.business_name}" class="h-10 w-10 rounded-full mx-auto"></td>
+                                <td class="px-4 py-2">${data.business_name}</td>
+                                <td class="px-4 py-2">${data.address}</td>
+                                <td class="px-4 py-2">${data.email}</td>
+                                <td class="px-4 py-2">${data.phone}</td>
+                                <td class="px-4 py-2">${data.service}</td>
+                                <td class="px-4 py-2">
+                                    <a href="/edit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>
+                                </td>
+                            </tr>
                         `;
 
                         businessTableBody.innerHTML += businessRow;
@@ -369,9 +344,6 @@ fetchBackgroundImage();
                 document.getElementById('business-table-body').innerHTML = '<tr><td colspan="7" class="text-center text-red-500">Error loading business data.</td></tr>';
             }
         }
-
-
-
 
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', logout);
@@ -389,270 +361,104 @@ fetchBackgroundImage();
             menu.classList.toggle('hidden');
         });
 
-  
-
-// Function to fetch and display employees
-
-
-
-
-const uploadBackground = document.getElementById('uploadBackground');
-    const backgroundImageInput = document.getElementById('backgroundImageInput');
-    const backgroundImage = document.getElementById('backgroundImage');
-    const uploadButton = document.getElementById('uploadButton');
-    const uploadingStatus = document.getElementById('uploadingStatus');
-
-    // On clicking the background or button, trigger file input
-    uploadButton.addEventListener('click', () => {
-        backgroundImageInput.click();
-    });
-
-    // On file selection, handle image upload to Firebase and preview
-    backgroundImageInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            // Show the uploading status
-            uploadingStatus.classList.remove('hidden');
+        // Function to fetch and display employees
+        async function fetchEmployees() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error("User ID not found in localStorage.");
+                return;
+            }
 
             try {
-                // Upload the file to Firebase Storage
-                const imageUrl = await uploadToFirebase(file);
+                const employeesCollection = collection(db, "employees");
+                const q = query(employeesCollection, where("uid", "==", userId)); // Filter by userId
+                const employeesSnapshot = await getDocs(q);
 
-                // Set the uploaded image as background
-                backgroundImage.style.backgroundImage = `url('${imageUrl}')`;
+                const employeesTableBody = document.getElementById('employees-table-body');
+                employeesTableBody.innerHTML = ''; // Clear existing entries
 
-                // Save the image URL to Firestore with matching UID from local storage
-                await saveImageToFirestore(imageUrl);
+                if (employeesSnapshot.empty) {
+                    employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-black">No employees found.</td></tr>';
+                } else {
+                    employeesSnapshot.forEach((doc) => {
+                        const employeeData = doc.data();
+                        const employeeId = doc.id; // Get the document ID
 
+                        const employeeRow = `
+                            <tr>
+                                <td class="px-4 py-2">
+                                    <img src="${employeeData.image_url || 'https://via.placeholder.com/60'}" alt="Profile Image" class="w-10 h-10 object-cover" />
+                                </td>
+                                <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
+                                <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
+                                <td class="px-4 py-2">
+                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
+                                </td>
+                            </tr>
+                        `;
+                        employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
+                    });
+                }
             } catch (error) {
-                console.error('Error uploading image:', error);
-         
-            } finally {
-                // Hide the uploading status after completion
-                uploadingStatus.classList.add('hidden');
+                console.error('Error fetching employees:', error);
+                employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red-500">Error loading employees.</td></tr>';
             }
         }
-    });
 
-    async function saveImageToFirestore(imageUrl) {
-    const userId = localStorage.getItem('userId'); // Get the user ID from local storage
+        // Event listener for Attach Service buttons
+        document.getElementById('employees-table-body').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('attach-service-button')) {
+                const employeeId = event.target.getAttribute('data-id');
+                console.log("Opening service modal for employee ID:", employeeId); // Debugging
 
-    if (!userId) {
-        console.error('User ID not found in local storage.');
-        return;
-    }
+                // Fetch the employee document to get previously attached services
+                const employeeRef = doc(db, "employees", employeeId);
+                const employeeDoc = await getDoc(employeeRef);
+                
+                // Get the existing services for the employee
+                let existingServices = [];
+                if (employeeDoc.exists()) {
+                    existingServices = employeeDoc.data().services || []; // Assume services is an array
+                }
 
-    try {
-        // Create a reference to the businesses collection
-        const businessesRef = collection(db, 'businesses');
-        // Create a query to find the document where the uid field matches userId
-        const q = query(businessesRef, where('uid', '==', userId));
-        
-        // Execute the query
-        const querySnapshot = await getDocs(q);
-        
-        if (!querySnapshot.empty) {
-            // If we found a matching document, update the first one (or handle appropriately if multiple)
-            const docRef = doc(db, 'businesses', querySnapshot.docs[0].id);
-            await updateDoc(docRef, { background: imageUrl });
-            console.log('Background image URL saved successfully:', imageUrl);
-        } else {
-            console.error('No document found for the given UID:', userId);
-        }
-    } catch (error) {
-        console.error('Error saving image URL to Firestore:', error);
-    }
-}
+                // Fetch and display services when the modal opens
+                await fetchServices(existingServices);
+                
+                // Open the modal
+                document.getElementById('servicesModal').classList.remove('hidden');
 
+                // Save button click handler
+                document.getElementById('saveServicesButton').onclick = async () => {
+                    const selectedServiceIds = Array.from(document.querySelectorAll('#servicesList input[type="checkbox"]:checked')).map(input => input.value);
+                    console.log("Selected service IDs for employee ID:", employeeId, selectedServiceIds); // Debugging
 
-// Upload the image to Firebase Storage
-async function uploadToFirebase(file) {
-    // Create a storage reference
-    const storageRef = ref(storage, `backgrounds/${file.name}`); // Specify the path and file name
-    const uploadTask = uploadBytesResumable(storageRef, file); // Start the upload
-
-    return new Promise((resolve, reject) => {
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                // You can monitor upload progress here
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-            }, 
-            (error) => {
-                console.error('Upload failed:', error);
-                reject(error); // Reject the promise on error
-            }, 
-            async () => {
-                // Handle successful uploads on complete
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                console.log('File available at', downloadURL);
-                resolve(downloadURL); // Resolve the promise with the download URL
+                    // Save the selected services for the employee
+                    await updateDoc(employeeRef, {
+                        services: selectedServiceIds // Update employee document with selected service IDs
+                    });
+                    alert("Services attached successfully!");
+                    closeServiceModal(); // Close the modal after saving
+                };
             }
-        );
-    });
-}
-
-// Function to handle file input change
-function handleFileInput(event) {
-    const file = event.target.files[0]; // Get the selected file
-    if (file) {
-        uploadImage(file); // Call the upload function
-    } else {
-        console.error('No file selected');
-    }
-}
-
-
-
-        // Fetch employee data on page load
-        if (userId) {
-            fetchEmployees(userId);
-
-        }
-
-        // Fetch business data on page load
-        if (userId) {
-            fetchBusinessData(userId);
-        }
-
-  
-// Function to fetch services from Firebase Firestore where userId matches uid
-async function fetchServices(existingServices) {
-    try {
-        const servicesRef = collection(db, 'services');
-        const q = query(servicesRef, where('userId', '==', userId)); // Filter by userId
-        const querySnapshot = await getDocs(q);
-
-        const servicesList = document.getElementById('servicesList');
-        servicesList.innerHTML = ''; // Clear existing services
-
-        if (querySnapshot.empty) {
-            console.log("No services found for userId:", userId);
-            return;
-        }
-
-        // Iterate through the documents and create checkboxes with price, image, and document ID
-        querySnapshot.forEach((doc) => {
-            const serviceData = doc.data();
-            const serviceName = serviceData.name;
-            const servicePrice = serviceData.price; // Assuming price is a field in the document
-            const serviceImage = serviceData.image; // Assuming image URL is a field in the document
-            const serviceId = doc.id; // Get document ID
-
-            const label = document.createElement('label');
-            label.className = 'flex items-center mb-2'; // Add some spacing between services
-            label.innerHTML = `
-                <input type="checkbox" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''} />
-                <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded" />
-                <span>${serviceName} - $${servicePrice}</span>
-            `;
-            servicesList.appendChild(label);
         });
-    } catch (error) {
-        console.error("Error fetching services:", error);
-    }
-}
 
-// Function to fetch and display employees
-async function fetchEmployees() {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return;
-    }
-
-    try {
-        const employeesCollection = collection(db, "employees");
-        const q = query(employeesCollection, where("userId", "==", userId)); // Filter by userId
-        const employeesSnapshot = await getDocs(q);
-
-        const employeesTableBody = document.getElementById('employees-table-body');
-        employeesTableBody.innerHTML = ''; // Clear existing entries
-
-        if (employeesSnapshot.empty) {
-            employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-black">No employees found.</td></tr>';
-        } else {
-            employeesSnapshot.forEach((doc) => {
-                const employeeData = doc.data();
-                const employeeId = doc.id; // Get the document ID
-
-                const employeeRow = `
-                    <tr>
-                        <td class="px-4 py-2">
-                            <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover" />
-                        </td>
-                        <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
-                        <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
-                        <td class="px-4 py-2">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
-                        </td>
-                    </tr>
-                `;
-                employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
-            });
-        }
-    } catch (error) {
-        console.error('Error fetching employees:', error);
-    }
-}
-
-// Event listener for Attach Service buttons
-document.getElementById('employees-table-body').addEventListener('click', async (event) => {
-    if (event.target.classList.contains('attach-service-button')) {
-        const employeeId = event.target.getAttribute('data-id');
-        console.log("Opening service modal for employee ID:", employeeId); // Debugging
-
-        // Fetch the employee document to get previously attached services
-        const employeeRef = doc(db, "employees", employeeId);
-        const employeeDoc = await getDoc(employeeRef);
-        
-        // Get the existing services for the employee
-        let existingServices = [];
-        if (employeeDoc.exists()) {
-            existingServices = employeeDoc.data().services || []; // Assume services is an array
+        // Function to close the service modal
+        function closeServiceModal() {
+            document.getElementById('servicesModal').classList.add('hidden');
+            fetchEmployees(); // Refresh the employees table after closing the modal
         }
 
-        // Fetch and display services when the modal opens
-        await fetchServices(existingServices);
-        
-        // Open the modal
-        document.getElementById('servicesModal').classList.remove('hidden');
-
-        // Save button click handler
-        document.getElementById('saveServicesButton').onclick = async () => {
-            const selectedServiceIds = Array.from(document.querySelectorAll('#servicesList input[type="checkbox"]:checked')).map(input => input.value);
-            console.log("Selected service IDs for employee ID:", employeeId, selectedServiceIds); // Debugging
-
-            // Save the selected services for the employee
-            await updateDoc(employeeRef, {
-                services: selectedServiceIds // Update employee document with selected service IDs
-            });
-            alert("Services attached successfully!");
-            closeServiceModal(); // Close the modal after saving
+        // Load employees and services when the page loads
+        window.onload = () => {
+            fetchEmployees();
+            fetchServices();
         };
-    }
-});
 
-// Function to close the service modal
-function closeServiceModal() {
-    document.getElementById('servicesModal').classList.add('hidden');
-}
-
-// Fetch employees on page load
-window.onload = fetchEmployees;
-// Event listener to redirect to the edit employee page
-document.getElementById('addEmployees').addEventListener('click', function() {
-    console.log("Redirecting to /employees"); // Debugging redirection
-    window.location.href = '/employees'; // Replace with the actual URL of your edit page
-});
-
-
-
-// Optionally, you could call the fetchServices() function here to trigger it on page load or modal open
-
-
-    
-
+        // Event listener to redirect to the edit employee page
+        document.getElementById('addEmployees').addEventListener('click', function() {
+            console.log("Redirecting to /employees"); // Debugging redirection
+            window.location.href = '/employees'; // Replace with the actual URL of your edit page
+        });
 
         // Fetch business data on page load
         if (userId) {
@@ -671,17 +477,15 @@ document.getElementById('addEmployees').addEventListener('click', function() {
         // Close modal functionality (already present in your file)
         document.getElementById('closeServicesModal').onclick = function() {
             document.getElementById('servicesModal').classList.add('hidden');
+            fetchEmployees(); // Refresh the employees table after closing the modal
         };
 
         // Add an event listener to open the modal
         document.getElementById('manageServicesButton').addEventListener('click', function() {
             fetchServices();
             document.getElementById('servicesModal').classList.remove('hidden');
-        
+            fetchEmployees(); // Refresh the employees table after opening the modal
         });
-
-      
-
 
         // Save working hours
         document.getElementById('saveWorkingHours').addEventListener('click', async () => {
@@ -700,13 +504,159 @@ document.getElementById('addEmployees').addEventListener('click', function() {
                 const workingHoursRef = doc(db, 'working_hours', userId);
                 await setDoc(workingHoursRef, { workingHours });
                 alert('Working hours updated successfully');
+                fetchEmployees(); // Refresh the employees table after updating working hours
             } catch (error) {
                 console.error('Error updating working hours:', error);
                 alert('Error updating working hours.');
             }
         });
+
+        // Function to fetch services from Firebase Firestore where userId matches uid  
+        async function fetchServices(existingServices) {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error("User ID not found in localStorage.");
+                return;
+            }
+
+            try {
+                const servicesRef = collection(db, 'services'); // Corrected collection name
+                const q = query(servicesRef, where('uid', '==', userId)); // Filter by userId
+                const querySnapshot = await getDocs(q);
+
+                const servicesList = document.getElementById('servicesList');
+                servicesList.innerHTML = ''; // Clear existing services
+
+                if (querySnapshot.empty) {
+                    console.log("No services found for userId:", userId);
+                    return;
+                }
+
+                // Iterate through the documents and create checkboxes with price, image, and document ID
+                querySnapshot.forEach((doc) => {
+                    const serviceData = doc.data();
+                    const serviceName = serviceData.name;
+                    const servicePrice = serviceData.price; // Assuming price is a field in the document
+                    const serviceImage = serviceData.image_url; // Assuming image URL is a field in the document
+                    const serviceId = doc.id; // Get document ID
+
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center mb-2'; // Add some spacing between services
+                    label.innerHTML = `
+                        <input type="checkbox" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''} />
+                        <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded" />
+                        <span>${serviceName} - $${servicePrice}</span>
+                    `;
+                    servicesList.appendChild(label);
+                });
+            } catch (error) {
+                console.error("Error fetching services:", error);
+            }
+        }
+
+        // Upload the image to Firebase Storage
+        async function uploadToFirebase(file) {
+            // Create a storage reference
+            const storageRef = ref(storage, `backgrounds/${file.name}`); // Specify the path and file name
+            const uploadTask = uploadBytesResumable(storageRef, file); // Start the upload
+
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // You can monitor upload progress here
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    }, 
+                    (error) => {
+                        console.error('Upload failed:', error);
+                        reject(error); // Reject the promise on error
+                    }, 
+                    async () => {
+                        // Handle successful uploads on complete
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        console.log('File available at', downloadURL);
+                        resolve(downloadURL); // Resolve the promise with the download URL
+                    }
+                );
+            });
+        }
+
+        // Function to handle file input change
+        function handleFileInput(event) {
+            const file = event.target.files[0]; // Get the selected file
+            if (file) {
+                uploadImage(file); // Call the upload function
+            } else {
+                console.error('No file selected');
+            }
+        }
+
+        // On clicking the background or button, trigger file input
+        const uploadButton = document.getElementById('uploadButton');
+        const backgroundImageInput = document.getElementById('backgroundImageInput');
+        const backgroundImage = document.getElementById('backgroundImage');
+        const uploadingStatus = document.getElementById('uploadingStatus');
+
+        uploadButton.addEventListener('click', () => {
+            backgroundImageInput.click();
+        });
+
+        // On file selection, handle image upload to Firebase and preview
+        backgroundImageInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Show the uploading status
+                uploadingStatus.classList.remove('hidden');
+
+                try {
+                    // Upload the file to Firebase Storage
+                    const imageUrl = await uploadToFirebase(file);
+
+                    // Set the uploaded image as background
+                    backgroundImage.style.backgroundImage = `url('${imageUrl}')`;
+
+                    // Save the image URL to Firestore with matching UID from local storage
+                    await saveImageToFirestore(imageUrl);
+
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                } finally {
+                    // Hide the uploading status after completion
+                    uploadingStatus.classList.add('hidden');
+                }
+            }
+        });
+
+        async function saveImageToFirestore(imageUrl) {
+            const userId = localStorage.getItem('userId'); // Get the user ID from local storage
+
+            if (!userId) {
+                console.error('User ID not found in local storage.');
+                return;
+            }
+
+            try {
+                // Create a reference to the businesses collection
+                const businessesRef = collection(db, 'businesses');
+                // Create a query to find the document where the uid field matches userId
+                const q = query(businessesRef, where('uid', '==', userId));
+                
+                // Execute the query
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    // If we found a matching document, update the first one (or handle appropriately if multiple)
+                    const docRef = doc(db, 'businesses', querySnapshot.docs[0].id);
+                    await updateDoc(docRef, { background: imageUrl });
+                    console.log('Background image URL saved successfully:', imageUrl);
+                } else {
+                    console.error('No document found for the given UID:', userId);
+                }
+            } catch (error) {
+                console.error('Error saving image URL to Firestore:', error);
+            }
+        }
     </script>
 </body>
- 
-
+{% endblock %}
 </html>
