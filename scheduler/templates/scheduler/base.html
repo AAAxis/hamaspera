@@ -23,37 +23,36 @@
 <body class="text-gray-800 relative min-h-full bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg">    
  
 <!-- ========== HEADER ========== -->
-<header class="bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full">
-  <nav class="relative max-w-[85rem] w-full md:flex md:items-center md:justify-between md:gap-3 mx-auto px-4 sm:px-6 lg:px-8 py-2">
-    <!-- Logo -->
-    <div class="flex items-center justify-between">
-      <a href="{% url 'schedule' %}" class="text-2xl dark:text-white mb-4 font-bold "><mark class="bg-yellow-400 text-black">Ha</mark>maspera</a>
-
-      <!-- Collapse Button for mobile -->
-      <div class="md:hidden">
-        <button type="button" class="hs-collapse-toggle relative size-9 flex justify-center items-center text-sm font-semibold rounded-lg border border-gray-200 text-gray-800 hover:bg-gray-100 focus:outline-none dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-700" id="hs-header-classic-collapse" data-hs-collapse="#hs-header-classic">
-          <svg class="hs-collapse-open:hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          <svg class="hs-collapse-open:block shrink-0 hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          <span class="sr-only">Toggle navigation</span>
-        </button>
+<header class="flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white text-sm py-3 dark:bg-neutral-800">
+  <nav class="max-w-[85rem] w-full mx-auto px-4 flex flex-wrap basis-full items-center justify-between">
+    <a class="sm:order-1 flex-none text-xl font-semibold dark:text-white focus:outline-none focus:opacity-80" href="{% url 'schedule' %}"><mark class="bg-yellow-400">Hamas</mark>pera</a>
+    <div class="sm:order-3 flex items-center gap-x-2">
+      <button type="button" class="sm:hidden hs-collapse-toggle relative size-7 flex justify-center items-center gap-x-2 rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-transparent dark:border-neutral-700 dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10" id="hs-navbar-alignment-collapse" aria-expanded="false" aria-controls="hs-navbar-alignment" aria-label="Toggle navigation" data-hs-collapse="#hs-navbar-alignment">
+        <svg class="hs-collapse-open:hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+        <svg class="hs-collapse-open:block hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <span class="sr-only">Toggle</span>
+      </button>
+      {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Dashboard</a>
+      <a href="{% url 'logout' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Logout</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Login</a>
+      {% endif %}
+    </div>
+    <div id="hs-navbar-alignment" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:grow-0 sm:basis-auto sm:block sm:order-2" aria-labelledby="hs-navbar-alignment-collapse">
+      <div class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:mt-0 sm:ps-5">
+        {% if not user.is_authenticated %}
+        <a class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{% url 'register_business' %}">Register Business</a>
+        {% endif %}
+        <a class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{% url 'about' %}">About</a>
       </div>
     </div>
-    <!-- End Logo -->
-
-    <!-- Navigation links -->
-    <div id="hs-header-classic" class="hs-collapse hidden md:block overflow-hidden transition-all duration-300 basis-full grow">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
-        <a href="{% url 'about' %}" class="text-gray-800 hover:text-blue-600 dark:text-white">About</a>
-        <a href="{% url 'login' %}" class="text-gray-800 hover:text-blue-600 dark:text-white">Login</a>
-      </div>
-    </div>
-    <!-- End Navigation -->
   </nav>
 </header>
 <!-- ========== END HEADER ========== -->
 
 <!-- Main Content Section -->
-<main class="container mx-auto px-4 py-6 min-h-screen">
+<main class="container mx-auto px-4 py-6 min-h-screen md:py-12 md:px-8">
   {% block content %}
   {% endblock %}
 </main>

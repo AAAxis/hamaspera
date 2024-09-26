@@ -1,11 +1,11 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-6 md:py-12 md:px-8">
     <div class="backdrop-blur-xl bg-white bg-opacity-70 rounded-lg shadow-md p-6">
-        <div class="flex flex-col md:flex-row md:items-start">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between md:space-x-4 space-y-4 md:space-y-4">
             <!-- Left: Barbershop Info -->
-            <div class="md:w-1/2 mb-6 md:mb-0 relative">
+            <div class="md:w-1/2 mb-4 md:mb-0 relative">
                 <!-- Background Image with logo overlay -->
                 <div class="relative">
                     <!-- Keep the original proportions for the background image -->
@@ -15,8 +15,8 @@
                         <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
                     </div>
                 </div>
-                <div class="mt-6">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-4" id="businessName">Business Name</h1>
+                <div class="mt-4">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2" id="businessName">Business Name</h1>
                     <p class="text-lg text-gray-600"><strong>Address:</strong> <span id="address" class="text-gray-600">n/a</span> 
                         <a href="#" class="inline-flex items-center ml-2 text-blue-600 hover:text-blue-800">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
