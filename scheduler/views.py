@@ -137,3 +137,9 @@ class available_slots_api(View):
         slots = Slot.objects.filter(barber_shop=barbershop, is_available=True)
         return JsonResponse({'services': list(services.values()), 'barbers': list(barbers.values()), 'slots': list(slots.values())})
     
+
+class LogoutView(View):
+    def get(self, request):
+        # Your logout logic here
+        return redirect('home')
+
