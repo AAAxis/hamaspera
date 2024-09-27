@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (ScheduleView, AboutView, available_slots_api, 
                     BarberShopDetailView, BarberShopBookingView, 
                     RegisterView, LoginView, ForgotView, 
-                    DashboardView, EditView, HoursView, EmployeesView, LogoutView)
+                    DashboardView, EditView, HoursView, EmployeesView, LogoutView, OrderView)
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register_business'),  # Registration path
@@ -10,6 +10,7 @@ urlpatterns = [
     path('forgot/', ForgotView.as_view(), name='forgot'),  # Forgot password path
     path('dashboard/', DashboardView.as_view(), name='dashboard'),  # Dashboard path
     path('edit/', EditView.as_view(), name='edit'),  # Dashboard path
+    path('order/', OrderView.as_view(), name='order'),  # Dashboard path
     path('hours/', HoursView.as_view(), name='hours'),  # Dashboard path
     path('employees/', EmployeesView.as_view(), name='employees'),  # Dashboard path
     path('', ScheduleView.as_view(), name='schedule'),

@@ -88,6 +88,16 @@ class ForgotView(TemplateView):
         context = super().get_context_data(**kwargs)
         return context
     
+
+    #     API to get available slots
+class OrderView(TemplateView):
+    template_name = "scheduler/order.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+    
         #     API to get available slots
 class DashboardView(TemplateView):
     template_name = "scheduler/dashboard.html"
