@@ -51,6 +51,7 @@
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Name</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
+                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Edit</th>
                             </tr>
                         </thead>
                         <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
@@ -70,15 +71,15 @@
     <!-- Services Modal -->
     <div id="servicesModal" class="fixed inset-0 flex items-left justify-left z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-            <h2 class="text-xl font-bold mb-4">Attach Services</h2>
-            <div id="servicesList" class="space-y-2">
+            <h2 class="text-4xl font-bold text-gray-900 mt-8 mb-8">Attached Services</h2>
+            <div id="servicesList" class="mt-4 mb-8 border-b border-gray-200 dark:border-neutral-700">
                 <!-- Services will be dynamically fetched and added here -->
             </div>
-            <div class="mt-4 flex justify-end">
-                <button id="saveServicesButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <div class="mt-4 mb-2 flex justify-start ">
+                <button id="saveServicesButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
                     Save
                 </button>
-                <button id="closeServicesModal" class="ml-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded">
+                <button id="closeServicesModal" class="ml-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded hover:text-white">
                     Close
                 </button>
             </div>
@@ -217,10 +218,10 @@ async function fetchServices(existingServices) {
             const serviceId = doc.id; // Get document ID
 
             const label = document.createElement('label');
-            label.className = 'flex items-center mb-2'; // Add some spacing between services
+            label.className = 'flex items-center mb-4 mt-4 text-sm'; // Add some spacing between services
             label.innerHTML = `
                 <input type="checkbox" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''} />
-                <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded" />
+                <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded-full" />
                 <span>${serviceName} - $${servicePrice}</span>
             `;
             servicesList.appendChild(label);
@@ -287,13 +288,14 @@ async function fetchEmployees() {
                 const employeeRow = `
                     <tr>
                         <td class="px-4 py-2">
-                            <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover" />
+                            <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover rounded-full mx-auto" />
                         </td>
-                        <td class="px-4 py-2">${employeeData.name || 'N/A'}</td>
-                        <td class="px-4 py-2">${employeeData.phone || 'N/A'}</td>
-                        <td class="px-4 py-2">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
-                        </td>
+                        <td class="px-4 py-2 text-center">${employeeData.name || 'N/A'}</td>
+                        <td class="px-4 py-2 text-center">${employeeData.phone || 'N/A'}</td>
+                        <td class="px-4 py-2 text-center">${employeeData.services ? employeeData.services.join(', ') : 'N/A'}</td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach Services</button>
+                        </td> 
                     </tr>
                 `;
                 employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
