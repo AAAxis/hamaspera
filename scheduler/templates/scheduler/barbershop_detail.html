@@ -292,6 +292,11 @@
         }
         await fetchServices();
         await fetchGallery();
+         // Set the default value for the dateTime input to now
+    const now = new Date();
+    const formattedDateTime = now.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+    document.getElementById('dateTime').value = formattedDateTime; // Set the value
+
     });
 
     async function fetchGallery() {
