@@ -117,19 +117,19 @@
 <br><br>
 <div class="container mx-auto my-8 p-4">
 
-            <div>
-                <label for="employeeSelect" class="flex">Employee:</label>
-                <select id="employeeSelect" class="w-full">
-                    <option value="">Select an employee</option>
-                </select>
-            </div>
+      
             <div>
                 <label for="serviceSelect" class="flex">Service:</label>
                 <select id="serviceSelect" class="w-full">
                     <option value="">Select a service</option>
                 </select>
             </div>
-
+            <div>
+                <label for="employeeSelect" class="flex">Employee:</label>
+                <select id="employeeSelect" class="w-full">
+                    <option value="">Select an employee</option>
+                </select>
+            </div>
 
         <!-- Date & Time Input (Second Row) -->
         <div class="flex">
@@ -152,195 +152,171 @@
     </div>
 </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        authDomain: "barbershop-77353.firebaseapp.com",
+        projectId: "barbershop-77353",
+        storageBucket: "barbershop-77353.appspot.com",
+        messagingSenderId: "1018170430611",
+        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        measurementId: "G-4VS048B47G"
+    };
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-            authDomain: "barbershop-77353.firebaseapp.com",
-            projectId: "barbershop-77353",
-            storageBucket: "barbershop-77353.appspot.com",
-            messagingSenderId: "1018170430611",
-            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-            measurementId: "G-4VS048B47G"
-        };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        document.getElementById('closeBanner').addEventListener('click', function() {
-            document.getElementById('banner').classList.add('closed');
-        });
-
-        async function fetchBarbershopData(barbershopId) {
-            try {
-                const docRef = doc(db, 'businesses', barbershopId); 
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('logoImage').src = data.image_url; 
-                    document.getElementById('background').style.backgroundImage = `url(${data.background})`;
-                    document.getElementById('barbershopName').textContent = data.business_name; // Set the barbershop name
-                    const email = data.email || 'No email provided';
-                    const phone = data.phone || 'No phone number provided';
-                    const address = data.address || 'No address provided';
-
-                    // Add event listeners for icons
-                    document.getElementById('emailIcon').addEventListener('click', () => {
-                        window.location.href = `mailto:${email}`;
-                    });
-
-                    document.getElementById('phoneIcon').addEventListener('click', () => {
-                        window.location.href = `tel:${phone}`;
-                    });
-
-                    document.getElementById('addressIcon').addEventListener('click', () => {
-                        window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
-                    });
-
-                } else {
-                    console.error('No such document!');
-                }
-            } catch (e) {
-                console.error("Error fetching barbershop data:", e);
-            }
-        }
-
-
-         // Fetch Employees Based on UserId
-         async function fetchEmployees() {
-            const userId = localStorage.getItem('userId'); // Fetch userId from localStorage
-            console.log('User ID:', userId); // Console the userId
-
-
-if (!userId) {
-    console.error('User ID not found in local storage.');
-    return;
-}
-
-const employeesQuery = query(collection(db, 'employees'), where('userId', '==', userId));
-const querySnapshot = await getDocs(employeesQuery);
-
-// Process employee data
-querySnapshot.forEach((doc) => {
-    const employeeData = doc.data();
-    console.log('Employee Data:', employeeData);
-
-    // Populate employee select dropdown
-    const employeeSelect = document.getElementById('employeeSelect');
-    const option = document.createElement('option');
-    option.value = doc.id; // Employee document ID
-    option.textContent = employeeData.name; // Employee name
-    employeeSelect.appendChild(option);
-});
-
-document.getElementById('employeeSelect').addEventListener('change', async (event) => {
-    const employeeId = event.target.value;
-    if (employeeId) {
-        await fetchEmployeeServices(employeeId);
-    }
-});
-
-       
-        }
-
-        async function fetchEmployeeServices(employeeId) {
-        const employeeDocRef = doc(db, 'employees', employeeId);
-        const employeeDoc = await getDoc(employeeDocRef);
-
-        if (employeeDoc.exists()) {
-            const employeeData = employeeDoc.data();
-            const servicesArray = employeeData.services;
-
-            console.log('Services Array:', servicesArray);
-
-            const serviceSelect = document.getElementById('serviceSelect');
-            serviceSelect.innerHTML = '<option value="">Select a service</option>'; // Clear the previous options
-
-            // Populate the services dropdown based on the services array
-            for (let serviceId of servicesArray) {
-                const serviceDocRef = doc(db, 'services', serviceId);
-                const serviceDoc = await getDoc(serviceDocRef);
-
-                if (serviceDoc.exists()) {
-                    const serviceData = serviceDoc.data();
-                    const option = document.createElement('option');
-                    option.value = serviceId;
-                    option.textContent = serviceData.name; // Assuming 'name' is a field in your service document
-                    serviceSelect.appendChild(option);
-                }
-            }
-        } else {
-            console.error('No such employee document!');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        await fetchEmployees();
-        await fetchGallery();
+    document.getElementById('closeBanner').addEventListener('click', function () {
+        document.getElementById('banner').classList.add('closed');
     });
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const barbershopId = "{{ barbershop_id }}";
-            if (barbershopId) {
+    async function fetchBarbershopData(barbershopId) {
+        try {
+            const docRef = doc(db, 'businesses', barbershopId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('logoImage').src = data.image_url;
+                document.getElementById('background').style.backgroundImage = `url(${data.background})`;
+                document.getElementById('barbershopName').textContent = data.business_name;
+                const email = data.email || 'No email provided';
+                const phone = data.phone || 'No phone number provided';
+                const address = data.address || 'No address provided';
 
-                await fetchBarbershopData(barbershopId);
+                // Add event listeners for icons
+                document.getElementById('emailIcon').addEventListener('click', () => {
+                    window.location.href = `mailto:${email}`;
+                });
+
+                document.getElementById('phoneIcon').addEventListener('click', () => {
+                    window.location.href = `tel:${phone}`;
+                });
+
+                document.getElementById('addressIcon').addEventListener('click', () => {
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+                });
+
+            } else {
+                console.error('No such document!');
             }
-        });
-        
+        } catch (e) {
+            console.error("Error fetching barbershop data:", e);
+        }
+    }
 
-
-        async function fetchGallery() {
-    try {
-        const userId = localStorage.getItem('userId'); // Fetch userId from localStorage
-        console.log('User ID:', userId); // Log the userId for debugging
+    // Fetch Services Based on UserId
+    async function fetchServices() {
+        const userId = localStorage.getItem('userId');
+        console.log('User ID:', userId);
 
         if (!userId) {
             console.error('User ID not found in local storage.');
             return;
         }
 
-        const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId)); // Filter by userId
+        const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId));
         const querySnapshot = await getDocs(servicesQuery);
 
-        console.log('Query Snapshot:', querySnapshot); // Log the query snapshot
-
-        const galleryDiv = document.getElementById('gallery');
-        galleryDiv.innerHTML = ''; // Clear previous images
-
-        if (querySnapshot.empty) {
-            console.log('No services found for this user ID.');
-            return; // Exit if there are no results
-        }
-
+        // Process service data
+        const serviceSelect = document.getElementById('serviceSelect');
+        serviceSelect.innerHTML = '<option value="">Select a service</option>'; // Clear previous options
         querySnapshot.forEach((doc) => {
             const serviceData = doc.data();
-            console.log('Service Data:', serviceData); // Log each service data
+            console.log('Service Data:', serviceData);
 
-            // Check if the service has a valid image URL
-            const image = serviceData.image; // Directly use the image field
-            if (image) {
-                console.log('Image URL:', image); // Log the image URL
-                const imgDiv = document.createElement('div');
-                imgDiv.className = 'w-full h-48 bg-gray-200 flex items-center justify-center';
-                const img = document.createElement('img');
-                img.src = image; // Set image source correctly
-                img.alt = 'Service Image';
-                img.className = 'object-cover w-full h-full rounded-lg'; // Style the image
-                imgDiv.appendChild(img);
-                galleryDiv.appendChild(imgDiv);
+            const option = document.createElement('option');
+            option.value = doc.id; // Service document ID
+            option.textContent = serviceData.name; // Service name
+            serviceSelect.appendChild(option);
+        });
+
+        // Add event listener for services dropdown
+        serviceSelect.addEventListener('change', async (event) => {
+            const serviceId = event.target.value;
+            if (serviceId) {
+                await fetchServiceEmployees(serviceId);
             } else {
-                console.warn('No image URL found for service:', serviceData.name); // Warn if no image
+                // Clear employee select if no service is selected
+                document.getElementById('employeeSelect').innerHTML = '<option value="">Select an employee</option>';
             }
         });
-    } catch (error) {
-        console.error("Error fetching gallery images:", error);
     }
-}
 
-    </script>
-</body>
-</html>
+    async function fetchServiceEmployees(serviceId) {
+        const employeesQuery = query(collection(db, 'employees'), where('services', 'array-contains', serviceId));
+        const querySnapshot = await getDocs(employeesQuery);
+
+        const employeeSelect = document.getElementById('employeeSelect');
+        employeeSelect.innerHTML = '<option value="">Select an employee</option>'; // Clear previous options
+
+        querySnapshot.forEach((doc) => {
+            const employeeData = doc.data();
+            console.log('Employee Data:', employeeData);
+
+            const option = document.createElement('option');
+            option.value = doc.id; // Employee document ID
+            option.textContent = employeeData.name; // Employee name
+            employeeSelect.appendChild(option);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const barbershopId = "{{ barbershop_id }}";
+        if (barbershopId) {
+            await fetchBarbershopData(barbershopId);
+        }
+        await fetchServices();
+        await fetchGallery();
+    });
+
+    async function fetchGallery() {
+        try {
+            const userId = localStorage.getItem('userId');
+            console.log('User ID:', userId);
+
+            if (!userId) {
+                console.error('User ID not found in local storage.');
+                return;
+            }
+
+            const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId));
+            const querySnapshot = await getDocs(servicesQuery);
+
+            console.log('Query Snapshot:', querySnapshot);
+
+            const galleryDiv = document.getElementById('gallery');
+            galleryDiv.innerHTML = ''; // Clear previous images
+
+            if (querySnapshot.empty) {
+                console.log('No services found for this user ID.');
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const serviceData = doc.data();
+                console.log('Service Data:', serviceData);
+
+                const image = serviceData.image; // Directly use the image field
+                if (image) {
+                    console.log('Image URL:', image);
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'w-full h-48 bg-gray-200 flex items-center justify-center';
+                    const img = document.createElement('img');
+                    img.src = image; // Set image source correctly
+                    img.alt = 'Service Image';
+                    img.className = 'object-cover w-full h-full rounded-lg';
+                    imgDiv.appendChild(img);
+                    galleryDiv.appendChild(imgDiv);
+                } else {
+                    console.warn('No image URL found for service:', serviceData.name);
+                }
+            });
+        } catch (error) {
+            console.error("Error fetching gallery images:", error);
+        }
+    }
+</script>
