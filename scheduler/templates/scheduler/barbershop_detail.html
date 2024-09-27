@@ -151,7 +151,6 @@
         </div>
     </div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -170,6 +169,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Declare store globally
+    let store;
+
     document.getElementById('closeBanner').addEventListener('click', function () {
         document.getElementById('banner').classList.add('closed');
     });
@@ -186,6 +188,7 @@
                 const email = data.email || 'No email provided';
                 const phone = data.phone || 'No phone number provided';
                 const address = data.address || 'No address provided';
+                store = data.uid || 'No address provided'; // Set store here
 
                 // Add event listeners for icons
                 document.getElementById('emailIcon').addEventListener('click', () => {
@@ -210,15 +213,14 @@
 
     // Fetch Services Based on UserId
     async function fetchServices() {
-        const userId = localStorage.getItem('userId');
-        console.log('User ID:', userId);
+        console.log('User ID:', store);
 
-        if (!userId) {
-            console.error('User ID not found in local storage.');
+        if (!store) {
+            console.error('User ID not found.');
             return;
         }
 
-        const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId));
+        const servicesQuery = query(collection(db, 'services'), where('userId', '==', store));
         const querySnapshot = await getDocs(servicesQuery);
 
         // Process service data
@@ -275,15 +277,7 @@
 
     async function fetchGallery() {
         try {
-            const userId = localStorage.getItem('userId');
-            console.log('User ID:', userId);
-
-            if (!userId) {
-                console.error('User ID not found in local storage.');
-                return;
-            }
-
-            const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId));
+            const servicesQuery = query(collection(db, 'services'), where('userId', '==', store));
             const querySnapshot = await getDocs(servicesQuery);
 
             console.log('Query Snapshot:', querySnapshot);
