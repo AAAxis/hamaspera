@@ -86,15 +86,18 @@
 </head>
 <body class="bg-gray-50">
 
-    <!-- Banner Section -->
-    <div id="banner" class="bg-blue-400 text-white p-4 flex justify-between items-center">
-        <div>
-            <p style="color:black">Try our Mobile app! Download now!</p>
-        </div>
-        <button id="closeBanner" class="bg-black text-white w-8 h-8 rounded-full flex items-center justify-center" aria-label="Close">
-            &times;
-        </button>
+   <!-- Banner Section -->
+<div id="banner" class="bg-blue-400 text-white p-4 flex justify-between items-center">
+    <div>
+        <p style="color:black">
+            Try our Mobile app! 
+            <a style="color: #f0f0f0;" id="downloadLink" class="text-blue-500 target="_blank">Download now!</a>
+        </p>
     </div>
+    <button id="closeBanner" class=" text-white w-8 h-8 rounded-full flex items-center justify-center" aria-label="Close">
+        &times;
+    </button>
+</div>
 
     <!-- Background Image -->
     <div id="background">
@@ -297,6 +300,25 @@
     const formattedDateTime = now.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
     document.getElementById('dateTime').value = formattedDateTime; // Set the value
 
+
+     // Function to set the download link based on the device
+     function setDownloadLink() {
+        const downloadLink = document.getElementById('downloadLink');
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isAndroid) {
+            downloadLink.href = "https://play.google.com/store/apps/details?id=com.wheels.driverapp"; // Set your Android download link here
+        } else if (isiOS) {
+            downloadLink.href = "https://apps.apple.com/au/app/hamaspera/id6469025512"; // Set your iOS download link here
+        } else {
+            downloadLink.href = "#"; // Fallback link or you can leave it empty
+            downloadLink.textContent = "Download link unavailable for your device.";
+        }
+    }
+
+    // Call the function on page load
+    document.addEventListener('DOMContentLoaded', setDownloadLink);
     });
 
     async function fetchGallery() {
