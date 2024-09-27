@@ -6,7 +6,7 @@
     <div class="mb-4 mt-8">
         <h2 class="text-4xl font-bold text-gray-900">Business Info</h2>
     </div>
-    <div class="flex flex-col shadow-md">
+     <div class="flex flex-col shadow-md">
         <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
@@ -29,16 +29,18 @@
             </div>
         </div>
     </div>
+    <div class="flex justify-center">
+        <a href="/edit" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
+            Edit Business Info
+        </a>
+    </div>
 
     <!-- Workers Data Section -->
     <div class="mb-4 mt-8">
         <h2 class="text-4xl font-bold text-gray-900">Workers Info</h2>
-        <a href="/employees" class="mt-4 bg-white hover:bg-green-100 text-black text-sm py-2 px-4 rounded-lg">
-            Add Employee
-        </a>
     </div>
 
-    <div class="flex flex-col shadow-md">
+    <div class="flex flex-col shadow-md divide-y divide-gray-200 dark:divide-neutral-700 border-b border-gray-200 dark:border-neutral-700">
         <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
@@ -59,9 +61,14 @@
             </div>
         </div>
     </div>
+    <div class="flex justify-center">
+        <a href="/employees" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
+            Add New Employee
+        </a>
+    </div>
 
     <!-- Services Modal -->
-    <div id="servicesModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div id="servicesModal" class="fixed inset-0 flex items-left justify-left z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
             <h2 class="text-xl font-bold mb-4">Attach Services</h2>
             <div id="servicesList" class="space-y-2">
@@ -153,9 +160,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.email}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.phone}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.service}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <a href="/edit" class="text-blue-600 hover:text-blue-900">Edit</a>
-                        </td>
                     </tr>
                 `;
                 businessTableBody.innerHTML += businessRow;
