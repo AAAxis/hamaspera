@@ -31,10 +31,12 @@
                     <label for="businessAddress" class="block text-lg font-medium text-gray-700">Edit Address</label>
                     <input type="text" id="businessAddress" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                 </div>
+        
                 <div class="form-group mb-4 max-w-sm">
-                    <label for="businessEmail" class="block text-lg font-medium text-gray-700">Edit Email</label>
-                    <input type="email" id="businessEmail" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                    <label for="businessInstagram" class="block text-lg font-medium text-gray-700">Instagram Link</label>
+                    <input type="url" id="businessInstagram" placeholder="https://www.instagram.com/yourbusiness" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                 </div>
+                
                 <div class="form-group mb-4 max-w-sm">
                     <label for="businessPhone" class="block text-lg font-medium text-gray-700">Edit Phone</label>
                     <input type="tel" id="businessPhone" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
@@ -44,8 +46,8 @@
                     <input type="text" id="businessService" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                 </div>
                 <div class="form-group mb-4 max-w-sm">
-                    <label for="businessImage" class="block text-lg font-medium text-gray-700">Upload new Business Logo</label>
-                    <input type="file" id="businessImage" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                    <label for="businessLogo" class="block text-lg font-medium text-gray-700">Upload new Business Logo</label>
+                    <input type="file" id="businessLogo" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                     <div class="mt-2">
                         <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
                         <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
@@ -53,8 +55,8 @@
                 </div>
 
                 <div class="form-group mb-4 max-w-sm">
-                    <label for="businessImage" class="block text-lg font-medium text-gray-700">Upload new Business Background</label>
-                    <input type="file" id="businessImage" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                    <label for="businessBackground" class="block text-lg font-medium text-gray-700">Upload new Business Background</label>
+                    <input type="file" id="businessBackground" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                     <div class="mt-2">
                         <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
                         <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
@@ -103,11 +105,11 @@
                 const data = docSnap.data();
                 document.getElementById('businessName').value = data.business_name || '';
                 document.getElementById('businessAddress').value = data.address || '';
-                document.getElementById('businessEmail').value = data.email || '';
+                document.getElementById('businessInstagram').value = data.instagram || '';
                 document.getElementById('businessPhone').value = data.phone || '';
                 document.getElementById('businessService').value = data.service || '';
-                document.getElementById('image_url').src = data.image_url || 'https://via.placeholder.com/600x300';
-                document.getElementById('background').src = data.background || 'https://via.placeholder.com/600x300';
+                document.getElementById('image_url').src = data.image_url;
+                document.getElementById('background').src = data.background;
             } else {
                 console.error(`No business document found for user ID: ${userId}`);
                 alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
@@ -118,69 +120,65 @@
         }
     }
 
-    // Handle form submission for updating business
-    document.getElementById('editBusinessForm').onsubmit = async (e) => {
-        e.preventDefault();
+   // Handle form submission for updating business
+document.getElementById('editBusinessForm').onsubmit = async (e) => {
+    e.preventDefault();
 
-        const businessName = document.getElementById('businessName').value;
-        const businessAddress = document.getElementById('businessAddress').value;
-        const businessEmail = document.getElementById('businessEmail').value;
-        const businessPhone = document.getElementById('businessPhone').value;
-        const businessService = document.getElementById('businessService').value;
-        const businessLogo = document.getElementById('businessLogo').files[0];
-        const businessBackground = document.getElementById('businessBackground').files[0];
-        try {
-            const q = query(collection(db, "businesses"), where("uid", "==", userId));
-            const querySnapshot = await getDocs(q);
+    const businessName = document.getElementById('businessName').value;
+    const businessAddress = document.getElementById('businessAddress').value;
+    const businessInstagram = document.getElementById('businessInstagram').value;
+    const businessPhone = document.getElementById('businessPhone').value;
+    const businessService = document.getElementById('businessService').value;
+    const businessLogo = document.getElementById('businessLogo').files[0];
+    const businessBackground = document.getElementById('businessBackground').files[0];
 
-            if (!querySnapshot.empty) {
-                const docSnap = querySnapshot.docs[0];
-                const docRef = doc(db, "businesses", docSnap.id);
+    try {
+        const q = query(collection(db, "businesses"), where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
 
-                // Update business details
-                await updateDoc(docRef, {
-                    business_name: businessName,
-                    address: businessAddress,
-                    email: businessEmail,
-                    phone: businessPhone,
-                    service: businessService,
-                    background: businessBackground,
-                    image_url: businessLogo,
-                });
+        if (!querySnapshot.empty) {
+            const docSnap = querySnapshot.docs[0];
+            const docRef = doc(db, "businesses", docSnap.id);
 
-                // Upload business image if a new one is selected
-                if (businessLogo) {
-                    const storageRef = ref(storage, `businessImages/${userId}/${businessLogo.name}`);
-                    const uploadTask = uploadBytesResumable(storageRef, businessLogo);
+            // Prepare update data object
+            const updateData = {
+                business_name: businessName,
+                address: businessAddress,
+                instagram: businessInstagram,
+                phone: businessPhone,
+                service: businessService,
+            };
 
-                    uploadTask.on('state_changed', (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        document.getElementById('uploadProgress').value = progress;
-                        document.getElementById('uploadProgress').classList.remove('hidden');
-                        document.getElementById('uploadStatus').innerText = `${progress.toFixed(0)}% uploaded`;
-                        document.getElementById('uploadStatus').classList.remove('hidden');
-                    }, (error) => {
-                        console.error('Upload error:', error);
-                        alert('Error uploading image. Please check the console for more details.');
-                    }, async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        await updateDoc(docRef, { image_url: downloadURL });
-                        alert('Business updated successfully!');
-                        location.reload();
-                    });
-                } else {
-                    alert('Business updated successfully!');
-                    location.reload();
-                }
-            } else {
-                console.error(`No business document found for user ID: ${userId}`);
-                alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
+            // Upload business logo if a new one is selected
+            if (businessLogo) {
+                const logoStorageRef = ref(storage, `businessImages/${userId}/${businessLogo.name}`);
+                await uploadBytes(logoStorageRef, businessLogo);
+                const logoDownloadURL = await getDownloadURL(logoStorageRef);
+                updateData.image_url = logoDownloadURL; // Add download URL to update data
             }
-        } catch (error) {
-            console.error('Error updating business:', error);
-            alert('Error updating business. Please check the console for more details.');
+
+            // Upload business background if a new one is selected
+            if (businessBackground) {
+                const backgroundStorageRef = ref(storage, `businessBackgrounds/${userId}/${businessBackground.name}`);
+                await uploadBytes(backgroundStorageRef, businessBackground);
+                const backgroundDownloadURL = await getDownloadURL(backgroundStorageRef);
+                updateData.background = backgroundDownloadURL; // Add download URL to update data
+            }
+
+            // Update business details in Firestore
+            await updateDoc(docRef, updateData);
+            alert('Business updated successfully!');
+            location.reload();
+        } else {
+            console.error(`No business document found for user ID: ${userId}`);
+            alert(`No business document found for user ID: ${userId}. Please ensure you have created a business entry.`);
         }
-    };
+    } catch (error) {
+        console.error('Error updating business:', error);
+        alert('Error updating business. Please check the console for more details.');
+    }
+};
+
 
     // Fetch business data on page load
     document.addEventListener('DOMContentLoaded', () => {

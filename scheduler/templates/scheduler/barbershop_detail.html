@@ -75,6 +75,12 @@
             font-size: 1.5rem; /* Font size */
             font-weight: bold; /* Bold text */
         }
+        #gallery img {
+    height: 200px; /* Set a fixed height */
+    width: auto;   /* Maintain aspect ratio */
+    border-radius: 0.5rem; /* Rounded corners for images */
+    object-fit: cover; /* Ensure images cover the area */
+}
 
     </style>
 </head>
@@ -103,11 +109,12 @@
 
         <!-- Icons Section -->
         <div id="iconSection">
-            <div class="icon-wrapper" id="emailIcon">
-                <i class="fas fa-envelope"></i>
-            </div>
+         
             <div class="icon-wrapper" id="phoneIcon">
                 <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="icon-wrapper" id="instagramIcon">
+                <i class='fab fa-instagram' style='font-size:46px;color:red'></i>
             </div>
             <div class="icon-wrapper" id="addressIcon">
                 <i class="fas fa-map-marker-alt"></i>
@@ -144,11 +151,14 @@
             <button id="orderButton" class="bg-black text-white w-full px-4 py-2 rounded">Order</button>
         </div>
         <br>
-        <h1>Gallary</h1>
+    
+        <h1 class="text-center text-xl font-bold my-4">Gallery</h1>
 
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+        <div id="gallery" class="flex overflow-x-auto space-x-4 mt-4">
             <!-- Gallery images will be dynamically inserted here -->
         </div>
+        
+        
     </div>
 </div>
 <script type="module">
@@ -185,16 +195,17 @@
                 document.getElementById('logoImage').src = data.image_url;
                 document.getElementById('background').style.backgroundImage = `url(${data.background})`;
                 document.getElementById('barbershopName').textContent = data.business_name;
-                const email = data.email || 'No email provided';
+                const instagram = data.instagram || 'No instagram provided';
                 const phone = data.phone || 'No phone number provided';
                 const address = data.address || 'No address provided';
                 store = data.uid || 'No address provided'; // Set store here
 
-                // Add event listeners for icons
-                document.getElementById('emailIcon').addEventListener('click', () => {
-                    window.location.href = `mailto:${email}`;
-                });
+                        
 
+                // Add event listener for the Instagram icon
+                document.getElementById('instagramIcon').addEventListener('click', () => {
+                    window.open(instagram, '_blank'); // Open in a new tab
+                });
                 document.getElementById('phoneIcon').addEventListener('click', () => {
                     window.location.href = `tel:${phone}`;
                 });
