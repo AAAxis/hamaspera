@@ -1,191 +1,346 @@
-{% extends 'scheduler/base.html' %}
-
-{% block content %}
-<div class="container mx-auto px-4 py-6 md:py-12 md:px-8">
-    <div class="backdrop-blur-xl bg-white bg-opacity-70 rounded-lg shadow-md p-6">
-        <div class="flex flex-col md:flex-row md:items-start md:justify-between md:space-x-4 space-y-4 md:space-y-4">
-            <!-- Left: Barbershop Info -->
-            <div class="md:w-1/2 mb-4 md:mb-0 relative">
-                <!-- Background Image with logo overlay -->
-                <div class="relative">
-                    <!-- Keep the original proportions for the background image -->
-                    <img id="background" alt="Business Background" class="w-full h-96 object-cover rounded-md shadow">
-                    <!-- Logo overlay -->
-                    <div class="absolute inset-0 flex justify-center items-center">
-                        <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-2" id="businessName">Business Name</h1>
-                    <p class="text-lg text-gray-600"><strong>Address:</strong> <span id="address" class="text-gray-600">n/a</span> 
-                        <a href="#" class="inline-flex items-center ml-2 text-blue-600 hover:text-blue-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
-                            </svg>
-                        </a>
-                    </p>
-                    <p class="text-lg text-gray-600"><strong>Email:</strong> <span id="email" class="text-gray-600">n/a</span></p>
-                    <p class="text-lg text-gray-600"><strong>Phone:</strong> <span id="phone" class="text-gray-600">n/a</span></p>
-                    <p class="text-lg text-gray-600"><strong>Service:</strong> <span id="service" class="text-gray-600">n/a</span></p>
-                    <p class="text-lg text-gray-600"><strong>Working Hours:</strong> <span id="working_hours" class="text-gray-600">n/a</span></p>
-                </div>
-            </div>
-
-            <!-- Right: Booking Options -->
-            <div class="md:w-1/2 md:pl-10">
-                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Book a Service</h2>
-                    <p class="text-lg text-gray-600 mb-4">Choose a service:</p>   
-                    <form id="serviceForm" class="mb-4"> 
-                        <select id="serviceSelect" class="w-full p-2 border border-gray-300 rounded-lg">
-                            <!-- Service options dynamically populated -->
-                        </select>
-                    </form>
-                    <p class="text-lg text-gray-600 mb-4">Choose a date and time for your appointment:</p>
-                    <form id="bookingForm">
-                        <div class="mb-4">
-                            <label for="bookingDate" class="block text-gray-600">Select Date</label>
-                            <input type="date" id="bookingDate" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="mb-4">
-                            <label for="bookingTime" class="block text-gray-600">Select Time</label>
-                            <input type="time" id="bookingTime" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <button type="submit" class="w-full bg-yellow-400 text-black font-semibold py-2 px-4 rounded-lg shadow hover:bg-yellow-500 transition-colors">Confirm Booking</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- New Block: Service Previews -->
-<div class="container mx-auto px-4 py-6">
-    <div class="backdrop-blur-xl bg-white bg-opacity-70 rounded-lg shadow-md p-6 mt-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Available Services</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Example Service Card -->
-        <div class="bg-gray-100 rounded-lg shadow p-4">
-            <div class="grid grid-rows-3 grid-flow-col gap-4">
-                <!-- Service Image -->
-                <div class="row-span-3">
-                    <img src="https://via.placeholder.com/150" alt="Service Image" class="w-full h-full object-cover rounded-md">
-                </div>
-                <!-- Service Name and Description -->
-                <div class="col-span-2">
-                    <h3 class="text-xl font-bold text-gray-800">Service Name</h3>
-                    <p class="text-sm text-gray-600">Short description of the service.</p>
-                </div>
-                <!-- Next Available Date -->
-                <div class="row-span-2 col-span-2">
-                    <p class="text-sm text-gray-600"><strong>Next Available:</strong> 2023-09-25</p>
-                    <!-- Book Now Button -->
-                    <button class="bg-yellow-400 text-black py-2 px-4 rounded-lg mt-2 hover:bg-yellow-500 transition-colors">Book Now</button>
-                </div>
-            </div>
-            </div>
-            <!-- Repeat more service cards as needed -->
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        measurementId: "G-4VS048B47G"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Function to fetch barbershop data
-    async function fetchBarbershopData(barbershopId) {
-        try {
-            const docRef = doc(db, 'businesses', barbershopId);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById('businessName').innerText = data.business_name;
-                document.getElementById('address').innerText = data.address;
-                document.getElementById('email').innerText = data.email;
-                document.getElementById('phone').innerText = data.phone;
-                document.getElementById('service').innerText = data.service;
-                document.getElementById('image_url').src = data.image_url || 'https://via.placeholder.com/600x300';
-                document.getElementById('background').src = data.background || 'https://via.placeholder.com/600x300';
-
-                // Get today's day of the week 
-                const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                const today = new Date().getDay();
-                const todayWorkingHours = data.working_hours[daysOfWeek[today]];
-
-                if (todayWorkingHours.working) {
-                    document.getElementById('working_hours').innerText = `Open today from ${todayWorkingHours.from} to ${todayWorkingHours.to}`;
-                } else {
-                    // Find the next working day
-                    let nextWorkingDay = (today + 1) % 7;
-                    while (!data.working_hours[daysOfWeek[nextWorkingDay]].working) {
-                        nextWorkingDay = (nextWorkingDay + 1) % 7;
-                    }
-                    const nextWorkingHours = data.working_hours[daysOfWeek[nextWorkingDay]];
-                    document.getElementById('working_hours').innerText = `Closed today. Next open on ${daysOfWeek[nextWorkingDay]} from ${nextWorkingHours.from} to ${nextWorkingHours.to}`;
-                }
-            } else {
-                console.error('No such document!');
-            }
-        } catch (e) {
-            console.error("Error fetching barbershop data:", e);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        #banner {
+            transition: all 0.5s ease;
         }
+        #banner.closed {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding: 0;
+        }
+        #background {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        #logo {
+            width: 150px;
+            height: 150px;
+            background-color: white;
+            border: 5px solid white; /* Rounded white border */
+            border-radius: 12px; /* Slightly rounded corners for a box look */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Cast shadow */
+            position: absolute; /* Change to absolute positioning */
+            top: 200px; /* Snap it 100px above the bottom */
+            left: 5%; /* Center it horizontally */
+        }
+
+        #iconSection {
+            display: flex;
+            position: absolute; /* Absolute positioning to place icons on the right */
+            right: 10%; /* Align it to the right */
+            top: 15%; /* Adjust the top position */
+            z-index: 1; /* Place it above the background */
+        }
+
+        .icon-wrapper {
+            margin: 0 10px; /* Space between icons */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center icon */
+            width: 40px; /* Width for button-like appearance */
+            height: 40px; /* Height for button-like appearance */
+            border-radius: 50%; /* Make it circular */
+            background-color: white; /* White background for buttons */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add shadow for button effect */
+            transition: background-color 0.3s; /* Smooth background transition */
+        }
+
+        .icon-wrapper:hover {
+            background-color: #f0f0f0; /* Light gray on hover */
+        }
+
+        .icon-wrapper i {
+            font-size: 1.5rem; /* Increase icon size */
+            color: black; /* Icon color */
+        }
+
+        /* New styling for the barbershop name */
+        #barbershopName {
+            position: absolute;
+            top: 310px; /* Position it above the bottom */
+            left: 50%; /* Align it to the left */
+            color: black; /* White text color */
+            font-size: 1.5rem; /* Font size */
+            font-weight: bold; /* Bold text */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Banner Section -->
+    <div id="banner" class="bg-blue-400 text-white p-4 flex justify-between items-center">
+        <div>
+            <p style="color:black">Try our Mobile app! Download now!</p>
+        </div>
+        <button id="closeBanner" class="bg-black text-white w-8 h-8 rounded-full flex items-center justify-center" aria-label="Close">
+            &times;
+        </button>
+    </div>
+
+    <!-- Background Image -->
+    <div id="background">
+        <div class="h-full flex flex-col justify-center items-center text-white">
+            <div id="logo" class="flex justify-center">
+                <img src="{{ image_url }}" alt="Logo" class="w-full h-full object-contain rounded-full" id="logoImage">
+            </div>
+        </div>
+
+        <!-- Barbershop Name -->
+        <div id="barbershopName"></div>
+
+        <!-- Icons Section -->
+        <div id="iconSection">
+            <div class="icon-wrapper" id="emailIcon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="icon-wrapper" id="phoneIcon">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="icon-wrapper" id="addressIcon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+        </div>
+    </div>
+<br><br>
+<div class="container mx-auto my-8 p-4">
+
+            <div>
+                <label for="employeeSelect" class="flex">Employee:</label>
+                <select id="employeeSelect" class="w-full">
+                    <option value="">Select an employee</option>
+                </select>
+            </div>
+            <div>
+                <label for="serviceSelect" class="flex">Service:</label>
+                <select id="serviceSelect" class="w-full">
+                    <option value="">Select a service</option>
+                </select>
+            </div>
+
+
+        <!-- Date & Time Input (Second Row) -->
+        <div class="flex">
+            <div class="w-full">
+                <label for="dateTime" class="mr-2">Date & Time:</label>
+                <input type="datetime-local" id="dateTime" class="border border-gray-300 rounded px-2 py-1 w-full">
+            </div>
+        </div>
+<br>
+        <!-- Order Button (Third Row) -->
+        <div class="flex">
+            <button id="orderButton" class="bg-black text-white w-full px-4 py-2 rounded">Order</button>
+        </div>
+        <br>
+        <h1>Gallary</h1>
+        <br>
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+            <!-- Gallery images will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+            measurementId: "G-4VS048B47G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('closeBanner').addEventListener('click', function() {
+            document.getElementById('banner').classList.add('closed');
+        });
+
+        async function fetchBarbershopData(barbershopId) {
+            try {
+                const docRef = doc(db, 'businesses', barbershopId); 
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('logoImage').src = data.image_url; 
+                    document.getElementById('background').style.backgroundImage = `url(${data.background})`;
+                    document.getElementById('barbershopName').textContent = data.business_name; // Set the barbershop name
+                    const email = data.email || 'No email provided';
+                    const phone = data.phone || 'No phone number provided';
+                    const address = data.address || 'No address provided';
+
+                    // Add event listeners for icons
+                    document.getElementById('emailIcon').addEventListener('click', () => {
+                        window.location.href = `mailto:${email}`;
+                    });
+
+                    document.getElementById('phoneIcon').addEventListener('click', () => {
+                        window.location.href = `tel:${phone}`;
+                    });
+
+                    document.getElementById('addressIcon').addEventListener('click', () => {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+                    });
+
+                } else {
+                    console.error('No such document!');
+                }
+            } catch (e) {
+                console.error("Error fetching barbershop data:", e);
+            }
+        }
+
+
+         // Fetch Employees Based on UserId
+         async function fetchEmployees() {
+            const userId = localStorage.getItem('userId'); // Fetch userId from localStorage
+            console.log('User ID:', userId); // Console the userId
+
+
+if (!userId) {
+    console.error('User ID not found in local storage.');
+    return;
+}
+
+const employeesQuery = query(collection(db, 'employees'), where('userId', '==', userId));
+const querySnapshot = await getDocs(employeesQuery);
+
+// Process employee data
+querySnapshot.forEach((doc) => {
+    const employeeData = doc.data();
+    console.log('Employee Data:', employeeData);
+
+    // Populate employee select dropdown
+    const employeeSelect = document.getElementById('employeeSelect');
+    const option = document.createElement('option');
+    option.value = doc.id; // Employee document ID
+    option.textContent = employeeData.name; // Employee name
+    employeeSelect.appendChild(option);
+});
+
+document.getElementById('employeeSelect').addEventListener('change', async (event) => {
+    const employeeId = event.target.value;
+    if (employeeId) {
+        await fetchEmployeeServices(employeeId);
     }
+});
 
-    // Function to fetch services for the barbershop
-    async function fetchServices(barbershopId) {
-        const serviceSelect = document.getElementById('serviceSelect');
-        const servicePreviews = document.getElementById('servicePreviews');
-        try {
-            const q = query(collection(db, 'services'), where('userId', '==', barbershopId));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const option = document.createElement('option');
-                option.value = data.name;
-                option.textContent = `${data.name} - $${data.price}`;
-                serviceSelect.appendChild(option);
+       
+        }
 
-                // Create a preview card for the service
-                const card = document.createElement('div');
-                card.classList.add('bg-gray-100', 'rounded-lg', 'shadow', 'p-4');
-                card.innerHTML = `
-                    <img src="${data.image}" alt="${data.name}" class="w-full h-32 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">${data.name}</h3>
-                    <p class="text-sm text-gray-600">$${data.price}</p>
-                `;
-                servicePreviews.appendChild(card);
-            });
-        } catch (e) {
-            console.error("Error fetching services: ", e);
+        async function fetchEmployeeServices(employeeId) {
+        const employeeDocRef = doc(db, 'employees', employeeId);
+        const employeeDoc = await getDoc(employeeDocRef);
+
+        if (employeeDoc.exists()) {
+            const employeeData = employeeDoc.data();
+            const servicesArray = employeeData.services;
+
+            console.log('Services Array:', servicesArray);
+
+            const serviceSelect = document.getElementById('serviceSelect');
+            serviceSelect.innerHTML = '<option value="">Select a service</option>'; // Clear the previous options
+
+            // Populate the services dropdown based on the services array
+            for (let serviceId of servicesArray) {
+                const serviceDocRef = doc(db, 'services', serviceId);
+                const serviceDoc = await getDoc(serviceDocRef);
+
+                if (serviceDoc.exists()) {
+                    const serviceData = serviceDoc.data();
+                    const option = document.createElement('option');
+                    option.value = serviceId;
+                    option.textContent = serviceData.name; // Assuming 'name' is a field in your service document
+                    serviceSelect.appendChild(option);
+                }
+            }
+        } else {
+            console.error('No such employee document!');
         }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-        const barbershopId = "{{ barbershop_id }}"; // This ID should be passed from the URL or context
-        if (barbershopId) {
-            await fetchBarbershopData(barbershopId);
-            await fetchServices(barbershopId);
-        } else {
-            console.error("Barbershop ID not provided.");
-        }
+        await fetchEmployees();
+        await fetchGallery();
     });
-</script>
-{% endblock %}
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const barbershopId = "{{ barbershop_id }}";
+            if (barbershopId) {
+
+                await fetchBarbershopData(barbershopId);
+            }
+        });
+        
+
+
+        async function fetchGallery() {
+    try {
+        const userId = localStorage.getItem('userId'); // Fetch userId from localStorage
+        console.log('User ID:', userId); // Log the userId for debugging
+
+        if (!userId) {
+            console.error('User ID not found in local storage.');
+            return;
+        }
+
+        const servicesQuery = query(collection(db, 'services'), where('userId', '==', userId)); // Filter by userId
+        const querySnapshot = await getDocs(servicesQuery);
+
+        console.log('Query Snapshot:', querySnapshot); // Log the query snapshot
+
+        const galleryDiv = document.getElementById('gallery');
+        galleryDiv.innerHTML = ''; // Clear previous images
+
+        if (querySnapshot.empty) {
+            console.log('No services found for this user ID.');
+            return; // Exit if there are no results
+        }
+
+        querySnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            console.log('Service Data:', serviceData); // Log each service data
+
+            // Check if the service has a valid image URL
+            const image = serviceData.image; // Directly use the image field
+            if (image) {
+                console.log('Image URL:', image); // Log the image URL
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'w-full h-48 bg-gray-200 flex items-center justify-center';
+                const img = document.createElement('img');
+                img.src = image; // Set image source correctly
+                img.alt = 'Service Image';
+                img.className = 'object-cover w-full h-full rounded-lg'; // Style the image
+                imgDiv.appendChild(img);
+                galleryDiv.appendChild(imgDiv);
+            } else {
+                console.warn('No image URL found for service:', serviceData.name); // Warn if no image
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching gallery images:", error);
+    }
+}
+
+    </script>
+</body>
+</html>
