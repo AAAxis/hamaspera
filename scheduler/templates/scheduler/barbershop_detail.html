@@ -245,6 +245,27 @@
         }
     }
 
+    document.getElementById('orderButton').addEventListener('click', async () => {
+    const serviceId = document.getElementById('serviceSelect').value;
+    const employeeId = document.getElementById('employeeSelect').value;
+    const dateTime = document.getElementById('dateTime').value;
+
+    // Check if everything is selected
+    if (!serviceId || !employeeId || !dateTime) {
+        alert("Please select a service, an employee, and a date/time.");
+        return;
+    }
+
+    // Optionally, get employee and service names for display
+    const serviceName = document.getElementById('serviceSelect').options[document.getElementById('serviceSelect').selectedIndex].text;
+    const employeeName = document.getElementById('employeeSelect').options[document.getElementById('employeeSelect').selectedIndex].text;
+
+    // Redirect to the order screen with the selected data in the query string
+    const orderUrl = `/order?service=${serviceId}&employee=${employeeId}&datetime=${encodeURIComponent(dateTime)}&serviceName=${encodeURIComponent(serviceName)}&employeeName=${encodeURIComponent(employeeName)}`;
+    window.location.href = orderUrl;
+});
+
+
     // Fetch Services Based on UserId
     async function fetchServices() {
         console.log('User ID:', store);
