@@ -54,7 +54,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
                             </tr>
                         </thead>
                         <tbody id="employeesTable" class="bg-white divide-y divide-gray-200">
@@ -109,7 +109,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
                             </tr>
                         </thead>
                         <tbody id="servicesTable" class="bg-white divide-y divide-gray-200">
@@ -263,7 +263,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${doc.id}')">Delete</button>
+                    <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${doc.id}')">X</button>
                 </td>
             `;
             employeesTable.appendChild(employeeRow);
@@ -287,7 +287,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${service.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${price.toFixed(2)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button class="text-red-600 hover:text-red-900" onclick="deleteService('${doc.id}')">Delete</button>
+                    <button class="text-red-600 hover:text-red-900" onclick="deleteService('${doc.id}')">X</button>
                 </td>
             `;
             servicesTable.appendChild(serviceRow);
