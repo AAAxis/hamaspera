@@ -72,6 +72,17 @@ class AboutView(TemplateView):
         context['barbershops'] = BarberShop.objects.all()
         return context
     
+
+class SuccessView(TemplateView):
+    template_name = "scheduler/success.html"
+
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['barbershops'] = BarberShop.objects.all()
+        return context
+      
 #     API to get available slots
 class RegisterView(TemplateView):
     template_name = "scheduler/register_business.html"

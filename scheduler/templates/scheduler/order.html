@@ -31,7 +31,7 @@
 
     <!-- Phone Number Input -->
     <div class="mt-4">
-        <label for="phone">Enter Your Phone Number:</label>
+     
         <input type="tel" id="phone" class="border border-gray-300 rounded px-2 py-1 w-full" placeholder="Enter phone number">
     </div>
 
@@ -48,7 +48,55 @@
 </div>
 
 <script type="module">
-    // Firebase is no longer necessary for this SMS verification flow
+ 
+// Initialize Firestore
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+    authDomain: "barbershop-77353.firebaseapp.com",
+    projectId: "barbershop-77353",
+    storageBucket: "barbershop-77353.appspot.com",
+    messagingSenderId: "1018170430611",
+    appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app); // Pass the initialized app
+
+ 
+    document.getElementById('confirmCodeButton').addEventListener('click', async () => {
+    const code = document.getElementById('verificationCode').value;
+    const phoneNumber = document.getElementById('phone').value;
+    const serviceName = urlParams.get('serviceName');
+    const employeeName = urlParams.get('employeeName');
+    const dateTime = urlParams.get('datetime');
+
+    // Save order to Firestore
+    try {
+        await addDoc(collection(db, "orders"), {
+            phone: phoneNumber,
+            service: serviceName,
+            employee: employeeName,
+            datetime: dateTime,
+            verificationCode: code // Optionally store the verification code
+        });
+        alert('Order saved successfully!');
+        
+        // Redirect to success page
+        window.location.href = '/success'; // Adjust the URL as needed
+    } catch (error) {
+        console.error('Error saving order:', error);
+        alert('Error saving order: ' + error.message);
+    }
+});
+
+
+
+
     // Display the selected data from the query parameters
     const urlParams = new URLSearchParams(window.location.search);
     document.getElementById('serviceName').textContent = urlParams.get('serviceName');
@@ -56,30 +104,27 @@
     document.getElementById('dateTimeDisplay').textContent = urlParams.get('datetime');
 
     document.getElementById('verifyButton').addEventListener('click', async () => {
-        const phoneNumber = document.getElementById('phone').value;
+    const phoneNumber = document.getElementById('phone').value;
 
-        try {
-            // Send phone number to the backend for Twilio to send verification code
-            const response = await fetch('https://polskoydm.pythonanywhere.com/global_sms?phone=' + encodeURIComponent(phoneNumber), {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert('Verification code sent successfully.');
-                document.getElementById('verificationCodeSection').classList.remove('hidden');
-            } else {
-                alert('Failed to send verification code. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error sending verification code:', error);
-            alert('An error occurred while sending the verification code.');
+    try {
+        const response = await fetch(`https://polskoydm.pythonanywhere.com/global_sms?phone=${encodeURIComponent(phoneNumber)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
+        const data = await response.json();
+        alert(data.message);  // Show success message
+        
+        // Hide phone number input and button
+        document.getElementById('phone').style.display = 'none';
+        document.getElementById('verifyButton').style.display = 'none';
+
+        // Show the verification code section
+        document.getElementById('verificationCodeSection').classList.remove('hidden');
+    } catch (error) {
+        console.error('Error sending verification code:', error);
+        alert('Error sending verification code: ' + error.message);
+    }
+});
 
     document.getElementById('confirmCodeButton').addEventListener('click', () => {
         const code = document.getElementById('verificationCode').value;
