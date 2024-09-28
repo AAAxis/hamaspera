@@ -40,8 +40,15 @@
         <!-- Navbar links -->
         <nav class="flex items-center space-x-4">
         
-            <a href="{% url 'orders_history' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">My Orders</a>
-            <a href="#" onclick="logout()" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Logout</a>
+            <a href="{% url 'orders_history' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Orders</a>
+            <a href="{% url 'dashboard' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Dashboard</a>
+            <a href="#" onclick="logout()" class="flex items-center px-3 py-2 text-sm text-gray-800 hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H3m6-6l-6 6 6 6m3 6h6a2 2 0 002-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2v16a2 2 0 002 2z" />
+                </svg>
+                Logout
+            </a>
+            
         </nav>
     </header>
     {% endblock %}
