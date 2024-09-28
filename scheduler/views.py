@@ -93,7 +93,8 @@ class HistoryView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['barbershops'] = BarberShop.objects.all()
         return context
-      
+    
+
       
 #     API to get available slots
 class RegisterView(TemplateView):

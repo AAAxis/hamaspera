@@ -1,11 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="relative min-h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Barbershop Booking</title>
+    <!-- Importing Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.5.2/cdn.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userId = localStorage.getItem('userId');
+            const authLinks = document.getElementById('auth-links');
+            if (userId) {
+                authLinks.innerHTML = `
+                    <a href="{% url 'orders_history' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Orders</a>
+                    <a href="{% url 'dashboard' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Dashboard</a>
+                    <a href="#" onclick="logout()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Logout</a>
+                `;
+            } else {
+                authLinks.innerHTML = `
+                    <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">About</a>
+                    <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Login</a>
+                `;
+            }
+        });
+
+        function logout() {
+            // Remove userId from local storage
+            localStorage.removeItem('userId');
+            
+            // Redirect to login page
+            window.location.href = "/login"; // Change this URL to your actual login page
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+<body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
+    <header class="flex items-center justify-between bg-white p-4 shadow-md">
+        <!-- Business Info as Logo and Name -->
+        <div class="relative">
+         
+        <!-- Navbar links -->
+        <nav class="flex items-center space-x-4">
+            <a href="{% url 'orders_history' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Orders</a>
+            <a href="{% url 'dashboard' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Dashboard</a>
+            <a href="#" onclick="logout()" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Logout</a>
+        </nav>
+    </header>
+  
+    <!-- Main Content Section -->
+    <main class="container mx-auto px-4 py-6 min-h-screen md:py-12 md:px-8">
+   
+  
 <body class="bg-gray-50">
     <div class="container mx-auto p-4 text-center">
         <h1 class="text-2xl font-bold mb-4">Order Management</h1>
@@ -28,11 +75,19 @@
             </table>
         </div>
     </div>
+       <!-- ========== FOOTER ========== -->
+       <footer class="bg-gray-200 text-center py-4 mt-auto">
+        <div class="container mx-auto">
+            <p class="text-gray-700">© 2023 Barbershop Booking System</p>
+        </div>
+    </footer>
+    <!-- ========== END FOOTER ========== -->
+
 
     <script type="module">
         // Initialize Firestore
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -48,7 +103,8 @@
         const db = getFirestore(app);
 
         async function fetchAllOrders() {
-            const ordersQuery = collection(db, 'orders');
+            const uid = localStorage.getItem('userId'); // Retrieve UID from local storage
+            const ordersQuery = query(collection(db, 'orders'), where('store', '==', uid)); // Query to fetch orders by userId
             const ordersSnapshot = await getDocs(ordersQuery);
             const orderTableBody = document.getElementById('orderTableBody');
 

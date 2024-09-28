@@ -10,28 +10,39 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% load static %}
-
 </head>
 <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
+
     <!-- ========== HEADER ========== -->
     {% block header %}
-    <header class="flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white text-sm py-3 dark:bg-neutral-800">
-        <nav class="max-w-[85rem] w-full mx-auto px-4 flex flex-wrap basis-full items-center justify-between">
-            <a class="sm:order-1 flex-none text-xl font-semibold dark:text-white focus:outline-none focus:opacity-80" href="{% url 'schedule' %}">Hamaspera</a>
-            <div class="sm:order-3 flex items-center gap-x-2">
-                <button type="button" class="sm:hidden hs-collapse-toggle relative size-7 flex justify-center items-center gap-x-2 rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-transparent dark:border-neutral-700 dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10" id="hs-navbar-alignment-collapse" aria-expanded="false" aria-controls="hs-navbar-alignment" aria-label="Toggle navigation" data-hs-collapse="#hs-navbar-alignment">
-                    <svg class="hs-collapse-open:hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
-                    <svg class="hs-collapse-open:block hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    <span class="sr-only">Toggle</span>
-                </button>
-                <div id="auth-links">
-                    <!-- Authentication links will be dynamically inserted here -->
+    <header class="flex items-center justify-between bg-white p-4 shadow-md">
+        <!-- Business Info as Logo and Name -->
+        <div class="relative">
+            <button class="flex items-center focus:outline-none" id="business-dropdown">
+                <img src="" id="business-logo" alt="Business Logo" class="w-10 h-10 rounded-full object-cover mr-3">
+                <span id="business-name" class="text-gray-800 font-medium">Business Name</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        
+            <!-- Dropdown content -->
+            <div id="business-info" class="hidden absolute bg-white shadow-lg rounded-lg mt-2 w-56 p-4">
+                <div class="text-sm text-gray-800">
+                    <p id="business-address"><strong></strong> 123 Main St</p>
+                    <p id="business-email"><strong>Email:</strong> business@example.com</p>
+                    <p id="business-phone"><strong>Phone:</strong> 123-456-7890</p>
+                    <a href="/edit" class="block mt-2 text-blue-500 hover:text-blue-700">Settings</a>
                 </div>
             </div>
-            <div id="hs-navbar-alignment" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:grow-0 sm:basis-auto sm:block sm:order-2" aria-labelledby="hs-navbar-alignment-collapse">
+        </div>
         
-           
-            </div>
+        <!-- Navbar links -->
+        <nav class="flex items-center space-x-4">
+        
+            <a href="{% url 'orders_history' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Orders</a>
+            <a href="{% url 'dashboard' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Dashboard</a>
+            <a href="#" onclick="logout()" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Logout</a>
         </nav>
     </header>
     {% endblock %}
@@ -58,31 +69,44 @@
             const authLinks = document.getElementById('auth-links');
             if (userId) {
                 authLinks.innerHTML = `
-              
-                       <a href="{% url 'orders_history' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Orders</a>
-                
-                    <a href="{% url 'dashboard' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Dashboard</a>
-                    <a href="#" onclick="logout()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Logout</a>
+                    <a href="{% url 'orders_history' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Orders</a>
+                    <a href="{% url 'dashboard' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Dashboard</a>
+                    <a href="#" onclick="logout()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Logout</a>
                 `;
             } else {
                 authLinks.innerHTML = `
-                    <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">About</a>
-                
-                    <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Login</a>
+                    <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">About</a>
+                    <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50">Login</a>
                 `;
             }
         });
-    
+
         function logout() {
             // Remove userId from local storage
             localStorage.removeItem('userId');
             
             // Redirect to login page
-            window.location.href = "http://127.0.0.1:8000/login"; // Change this URL to your actual login page
+            window.location.href = "/login"; // Change this URL to your actual login page
         }
     </script>
-    
+
     {% block scripts %}{% endblock %}
 </body>
+
+<script>
+    // Show/Hide business info dropdown
+    document.getElementById('business-dropdown').addEventListener('click', function() {
+        const dropdown = document.getElementById('business-info');
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicked outside
+    window.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('business-info');
+        if (!e.target.closest('#business-dropdown')) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
+
 </html>
- 

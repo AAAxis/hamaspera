@@ -1,38 +1,7 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<div class="min-h-full">
-    <!-- Business Data Section -->
-    <div class="mb-4 mt-8">
-        <h2 class="text-4xl font-bold text-gray-900">Business Info</h2>
-    </div>
-     <div class="flex flex-col shadow-md">
-        <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
-            <div class="p-1.5 min-w-full inline-block align-middle">
-                <div class="overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Logo</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Business Name</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Address</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Email</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
-                            </tr>
-                        </thead>
-                        <tbody id="business-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
-                            <!-- Business items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="flex justify-center">
-        <a href="/edit" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
-            Edit Business
-        </a>
-    </div>
+
 
     <!-- Workers Data Section -->
     <div class="mb-4 mt-8">
@@ -184,6 +153,44 @@
 
 
 
+// Fetch Business Data
+async function fetchBusinessData(userId) {
+    try {
+        const q = query(collection(db, 'businesses'), where('uid', '==', userId));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.warn('No business data found for user ID:', userId);
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const business = doc.data();
+
+            // Check and log the fetched business data
+            console.log('Fetched business data:', business);
+
+            // Update the navbar with business information
+            document.getElementById('business-logo').src = business.image_url || '';
+            document.getElementById('business-name').textContent = business.business_name || 'N/A';
+
+            // Check if address, email, and phone exist
+            const address = business.address ? `Address: ${business.address}` : 'Address not available';
+            const email = business.email ? `Email: ${business.email}` : 'Email not available';
+            const phone = business.phone ? `Phone: ${business.phone}` : 'Phone not available';
+
+            document.getElementById('business-address').textContent = address;
+            document.getElementById('business-email').textContent = email;
+            document.getElementById('business-phone').textContent = phone;
+        });
+    } catch (error) {
+        console.error('Error fetching business data:', error);
+    }
+}
+
+
+
+
   
 // Function to fetch services from Firebase Firestore where userId matches uid
 async function fetchServices(existingServices) {
@@ -221,38 +228,6 @@ async function fetchServices(existingServices) {
         console.error("Error fetching services:", error);
     }
 }
-
-
-    // Fetch Business Data
-    async function fetchBusinessData(userId) {
-        try {
-            const q = query(collection(db, 'businesses'), where('uid', '==', userId));
-            const querySnapshot = await getDocs(q);
-            const businessTableBody = document.getElementById('business-table-body');
-            businessTableBody.innerHTML = ''; // Clear table
-
-            querySnapshot.forEach((doc) => {
-                const business = doc.data();
-                const businessRow = `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <img src="${business.image_url}" alt="${business.name}" class="h-10 w-10 rounded-full mx-auto">
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.business_name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.address}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.phone}</td>
-                   
-                    </tr>
-                `;
-                businessTableBody.innerHTML += businessRow;
-            });
-        } catch (error) {
-            console.error('Error fetching business data:', error);
-        }
-    }
-
-
 // Mapping for service IDs to names
 let serviceMapping = {};
 
