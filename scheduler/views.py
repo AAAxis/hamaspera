@@ -82,6 +82,18 @@ class SuccessView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['barbershops'] = BarberShop.objects.all()
         return context
+    
+
+class HistoryView(TemplateView):
+    template_name = "scheduler/orders_history.html"
+
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['barbershops'] = BarberShop.objects.all()
+        return context
+      
       
 #     API to get available slots
 class RegisterView(TemplateView):

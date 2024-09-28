@@ -18,7 +18,6 @@
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Address</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Email</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Business Type</th>
                             </tr>
                         </thead>
                         <tbody id="business-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
@@ -180,17 +179,9 @@
 
     // Get user info from localStorage
     const userId = localStorage.getItem("userId");
-    const userEmail = localStorage.getItem("email") || "User";
 
-    // Set greeting
-    const greetingElement = document.getElementById("greeting");
-    if (greetingElement) {
-        const currentHour = new Date().getHours();
-        let greetingText = "Good Evening";
-        if (currentHour < 12) greetingText = "Good Morning";
-        else if (currentHour < 18) greetingText = "Good Afternoon";
-        greetingElement.innerText = `${greetingText}, ${userEmail}!`;
-    }
+
+
 
 
   
@@ -251,7 +242,7 @@ async function fetchServices(existingServices) {
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.address}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.email}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.phone}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${business.service}</td>
+                   
                     </tr>
                 `;
                 businessTableBody.innerHTML += businessRow;
@@ -261,6 +252,25 @@ async function fetchServices(existingServices) {
         }
     }
 
+
+// Mapping for service IDs to names
+let serviceMapping = {};
+
+// Function to fetch services
+async function retrieveServices() {
+    try {
+        const servicesCollection = collection(db, "services");
+        const servicesSnapshot = await getDocs(servicesCollection);
+        
+        servicesSnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            const serviceId = doc.id; // Get the document ID
+            serviceMapping[serviceId] = serviceData.name; // Store the service name in mapping
+        });
+    } catch (error) {
+        console.error('Error fetching services:', error);
+    }
+}
 
 // Function to fetch and display employees
 async function fetchEmployees() {
@@ -285,6 +295,9 @@ async function fetchEmployees() {
                 const employeeData = doc.data();
                 const employeeId = doc.id; // Get the document ID
 
+                // Map service IDs to names
+                const serviceNames = employeeData.services ? employeeData.services.map(id => serviceMapping[id] || id).join(', ') : 'N/A';
+
                 const employeeRow = `
                     <tr>
                         <td class="px-4 py-2">
@@ -292,7 +305,7 @@ async function fetchEmployees() {
                         </td>
                         <td class="px-4 py-2 text-center">${employeeData.name || 'N/A'}</td>
                         <td class="px-4 py-2 text-center">${employeeData.phone || 'N/A'}</td>
-                        <td class="px-4 py-2 text-center">${employeeData.services ? employeeData.services.join(', ') : 'N/A'}</td>
+                        <td class="px-4 py-2 text-center">${serviceNames}</td>
                         <td class="px-4 py-2 text-center">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
                         </td> 
@@ -305,6 +318,15 @@ async function fetchEmployees() {
         console.error('Error fetching employees:', error);
     }
 }
+
+// Call the functions to fetch services and employees
+async function init() {
+    await retrieveServices(); // Fetch services first
+    await fetchEmployees(); // Then fetch employees
+}
+
+// Initialize the application
+init();
 
 // Event listener for Attach Service buttons
 document.getElementById('employees-table-body').addEventListener('click', async (event) => {
