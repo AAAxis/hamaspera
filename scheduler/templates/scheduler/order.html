@@ -21,13 +21,8 @@
 </div>
 
 <div class="container mx-auto p-4">
-    <h1 class="text-center text-2xl font-bold">Confirm Your Order</h1>
+    <h1 class="text-center text-2xl font-bold">Confirm Your Number</h1>
 
-    <div class="mt-4">
-        <p>Service: <span id="serviceName"></span></p>
-        <p>Employee: <span id="employeeName"></span></p>
-        <p>Date & Time: <span id="dateTimeDisplay"></span></p>
-    </div>
 
     <!-- Phone Number Input -->
     <div class="mt-4">
@@ -68,6 +63,7 @@
     // Retrieve URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const store = urlParams.get('store'); // Get the store ID
+    let verificationCode; // Variable to store the verification code
 
     document.getElementById('confirmCodeButton').addEventListener('click', async () => {
         const code = document.getElementById('verificationCode').value;
@@ -76,30 +72,31 @@
         const employeeName = urlParams.get('employeeName');
         const dateTime = urlParams.get('datetime');
 
-        // Save order to Firestore
-        try {
-            await addDoc(collection(db, "orders"), {
-                phone: phoneNumber,
-                service: serviceName,
-                employee: employeeName,
-                datetime: dateTime,
-                verificationCode: code, // Optionally store the verification code
-                store: store // Save the store ID
-            });
-            alert('Order saved successfully!');
+        // Check if the entered code matches the sent verification code
+        if (code === verificationCode) {
+            // Save order to Firestore
+            try {
+                const docRef = await addDoc(collection(db, "orders"), {
+                    phone: phoneNumber,
+                    service: serviceName,
+                    employee: employeeName,
+                    datetime: dateTime,
+                    store: store // Save the store ID
+                });
+                
+                const orderId = docRef.id;  // Get the newly created order ID
+                alert('Order saved successfully!');
 
-            // Redirect to success page
-            window.location.href = '/success'; // Adjust the URL as needed
-        } catch (error) {
-            console.error('Error saving order:', error);
-            alert('Error saving order: ' + error.message);
+                // Redirect to success page with orderId as a query parameter
+                window.location.href = `/success?orderId=${orderId}`;
+            } catch (error) {
+                console.error('Error saving order:', error);
+                alert('Error saving order: ' + error.message);
+            }
+        } else {
+            alert('Invalid verification code. Please try again.');
         }
     });
-
-    // Display the selected data from the query parameters
-    document.getElementById('serviceName').textContent = urlParams.get('serviceName');
-    document.getElementById('employeeName').textContent = urlParams.get('employeeName');
-    document.getElementById('dateTimeDisplay').textContent = urlParams.get('datetime');
 
     document.getElementById('verifyButton').addEventListener('click', async () => {
         const phoneNumber = document.getElementById('phone').value;
@@ -111,7 +108,10 @@
             }
             const data = await response.json();
             alert(data.message);  // Show success message
-            
+
+            // Store the verification code for later comparison
+            verificationCode = data.verification_code;
+
             // Hide phone number input and button
             document.getElementById('phone').style.display = 'none';
             document.getElementById('verifyButton').style.display = 'none';

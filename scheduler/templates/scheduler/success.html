@@ -1,1 +1,112 @@
-success
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4 text-center">
+
+        <!-- Success Image -->
+        <div class="mb-6">
+            <img src="https://icons.veryicon.com/png/o/miscellaneous/real-estate-project-related/confirm-27.png" alt="Order Success" class="mx-auto w-48 h-48">
+        </div>
+
+        <!-- Order Details Section -->
+        <div id="orderDetails" class="mt-4 p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-semibold">Order Details</h2>
+            <p><strong>Phone:</strong> <span id="phone"></span></p>
+            <p><strong>Service:</strong> <span id="service"></span></p>
+            <p><strong>Employee:</strong> <span id="employee"></span></p>
+            <p><strong>Date & Time:</strong> <span id="datetime"></span></p>
+            <p><strong>Address:</strong> <span id="address"></span></p>
+            <p><strong>Business Name:</strong> <span id="businessName"></span></p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Initialize Firestore
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+            authDomain: "barbershop-77353.firebaseapp.com",
+            projectId: "barbershop-77353",
+            storageBucket: "barbershop-77353.appspot.com",
+            messagingSenderId: "1018170430611",
+            appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Retrieve the orderId from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+
+        // Fetch the order data
+        async function fetchOrderDetails() {
+            if (orderId) {
+                const orderRef = doc(db, 'orders', orderId);
+                const orderSnapshot = await getDoc(orderRef);
+
+                if (orderSnapshot.exists()) {
+                    const orderData = orderSnapshot.data();
+
+                    // Update the HTML with the order data
+                    document.getElementById('phone').textContent = orderData.phone;
+                    document.getElementById('service').textContent = orderData.service;
+                    document.getElementById('employee').textContent = orderData.employee;
+                    document.getElementById('datetime').textContent = formatDate(orderData.datetime); // Convert to human-readable format
+                 
+                    // Fetch business details using store ID
+                    fetchBusinessDetails(orderData.store);
+                } else {
+                    alert('No order found with this ID.');
+                }
+            } else {
+                alert('No order ID provided.');
+            }
+        }
+
+        // Fetch business details based on store ID
+        async function fetchBusinessDetails(storeId) {
+            const businessQuery = query(
+                collection(db, 'businesses'),
+                where('uid', '==', storeId) // Correctly use storeId here
+            );
+
+            const businessSnapshot = await getDocs(businessQuery); // Use getDocs here
+
+            if (!businessSnapshot.empty) {
+                const businessData = businessSnapshot.docs[0].data(); // Get the first document's data
+                document.getElementById('businessName').textContent = businessData.business_name; // Correct field name
+                document.getElementById('address').textContent = businessData.address; // Correct field name
+            } else {
+                alert('No business found with this ID.');
+            }
+        }
+
+        // Function to format date to a human-readable format without seconds
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            return date.toLocaleString(undefined, options).replace(/:\d{2} /, ' '); // Remove seconds
+        }
+
+        // Fetch the order details when the page loads
+        fetchOrderDetails();
+    </script>
+</body>
+</html>
