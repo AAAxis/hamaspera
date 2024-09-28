@@ -12,6 +12,8 @@
 
 </head>
 
+    <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
+
 <header class="flex items-center justify-between bg-white p-4 shadow-md">
     <!-- Business Info as Logo and Name -->
     <div class="relative">
@@ -32,16 +34,11 @@
         </a>
     </nav>
 </header>
+<!-- Workers Data Section -->
+<div class="mb-4 mt-8 flex flex-col items-center">
+    <h4 class="text-2xl font-bold text-gray-900">Workers Info</h4>
 
-
-    <body class="text-gray-800 relative min-h-full p-4 {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
-
-    <!-- Workers Data Section -->
-    <div class="mb-4 mt-8">
-        <h4 class="text-2xl font-bold text-gray-900">Workers Info</h4>
-    </div>
-
-    <div class="flex flex-col shadow-md divide-y divide-gray-200 dark:divide-neutral-700 border-b border-gray-200 dark:border-neutral-700">
+    <div class="flex flex-col shadow-md divide-y divide-gray-200 dark:divide-neutral-700 border-b border-gray-200 dark:border-neutral-700 w-full max-w-3xl mt-4">
         <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
@@ -63,11 +60,13 @@
             </div>
         </div>
     </div>
-    <div class="flex justify-center">
+
+    <div class="flex justify-center mt-4">
         <a href="/employees" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
             Add Employee
         </a>
     </div>
+</div>
 
     <!-- Services Modal -->
     <div id="servicesModal" class="fixed inset-0 flex items-left justify-left z-50 hidden">
@@ -86,73 +85,71 @@
             </div>
         </div>
     </div>
-
-   
-                <!-- Working Hours Section -->
-                <div class="mt-8 flex">
-                    <div class="w-full">
-                        <h2 class="text-2xl font-bold text-gray-900">Working Hours</h2>
-                        <ul class="max-w-xs flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Monday
-                                <input type="checkbox" id="monday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="monday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="monday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Tuesday
-                                <input type="checkbox" id="tuesday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="tuesday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="tuesday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Wednesday
-                                <input type="checkbox" id="wednesday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="wednesday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="wednesday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Thursday
-                                <input type="checkbox" id="thursday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="thursday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="thursday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Friday
-                                <input type="checkbox" id="friday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="friday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="friday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Saturday
-                                <input type="checkbox" id="saturday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="saturday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="saturday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                            <li class="inline-flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
-                                Sunday
-                                <input type="checkbox" id="sunday-working" class="ml-auto">
-                                <div class="flex gap-x-2">
-                                    <input type="time" id="sunday-from" class="py-1 px-2 border rounded" disabled>
-                                    <input type="time" id="sunday-to" class="py-1 px-2 border rounded" disabled>
-                                </div>
-                            </li>
-                        </ul>
-                        <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
-                    </div>
+<!-- Working Hours Section -->
+<div class="mb-4 mt-8 flex justify-center">
+    <div class="w-full max-w-lg">
+        <h2 class="text-2xl font-bold text-gray-900 text-center">Working Hours</h2>
+        <ul class="flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Monday</span>
+                <input type="checkbox" id="monday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="monday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="monday-to" class="py-1 px-2 border rounded" value="20:00">
                 </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Tuesday</span>
+                <input type="checkbox" id="tuesday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="tuesday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="tuesday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Wednesday</span>
+                <input type="checkbox" id="wednesday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="wednesday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="wednesday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Thursday</span>
+                <input type="checkbox" id="thursday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="thursday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="thursday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Friday</span>
+                <input type="checkbox" id="friday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="friday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="friday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Saturday</span>
+                <input type="checkbox" id="saturday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="saturday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="saturday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+            <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white">
+                <span>Sunday</span>
+                <input type="checkbox" id="sunday-working" class="ml-auto" checked>
+                <div class="flex gap-x-2">
+                    <input type="time" id="sunday-from" class="py-1 px-2 border rounded" value="08:00">
+                    <input type="time" id="sunday-to" class="py-1 px-2 border rounded" value="20:00">
+                </div>
+            </li>
+        </ul>
+        <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Save</button>
+    </div>
+</div>
 
             </div>
         </main>
