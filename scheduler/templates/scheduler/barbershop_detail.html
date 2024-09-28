@@ -244,7 +244,6 @@
             console.error("Error fetching barbershop data:", e);
         }
     }
-
     document.getElementById('orderButton').addEventListener('click', async () => {
     const serviceId = document.getElementById('serviceSelect').value;
     const employeeId = document.getElementById('employeeSelect').value;
@@ -260,10 +259,11 @@
     const serviceName = document.getElementById('serviceSelect').options[document.getElementById('serviceSelect').selectedIndex].text;
     const employeeName = document.getElementById('employeeSelect').options[document.getElementById('employeeSelect').selectedIndex].text;
 
-    // Redirect to the order screen with the selected data in the query string
-    const orderUrl = `/order?service=${serviceId}&employee=${employeeId}&datetime=${encodeURIComponent(dateTime)}&serviceName=${encodeURIComponent(serviceName)}&employeeName=${encodeURIComponent(employeeName)}`;
+    // Redirect to the order screen with the selected data and store in the query string
+    const orderUrl = `/order?service=${serviceId}&employee=${employeeId}&datetime=${encodeURIComponent(dateTime)}&serviceName=${encodeURIComponent(serviceName)}&employeeName=${encodeURIComponent(employeeName)}&store=${encodeURIComponent(store)}`;
     window.location.href = orderUrl;
 });
+
 
 
     // Fetch Services Based on UserId
