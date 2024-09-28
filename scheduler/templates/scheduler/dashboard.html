@@ -36,7 +36,7 @@
 </header>
 <!-- Workers Data Section -->
 <div class="mb-4 mt-8 flex flex-col items-center">
-    <h4 class="text-2xl font-bold text-gray-900">Workers Info</h4>
+    <h4 class="text-2xl font-bold text-gray-900">Services Info</h4>
 
     <div class="flex flex-col shadow-md divide-y divide-gray-200 dark:divide-neutral-700 border-b border-gray-200 dark:border-neutral-700 w-full max-w-3xl mt-4">
         <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
@@ -47,7 +47,6 @@
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Image</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Name</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Phone</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
                                 <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Edit</th>
                             </tr>
@@ -307,7 +306,6 @@ async function fetchEmployees() {
                             <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover rounded-full mx-auto" />
                         </td>
                         <td class="px-4 py-2 text-center">${employeeData.name || 'N/A'}</td>
-                        <td class="px-4 py-2 text-center">${employeeData.phone || 'N/A'}</td>
                         <td class="px-4 py-2 text-center">${serviceNames}</td>
                         <td class="px-4 py-2 text-center">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
