@@ -29,6 +29,7 @@
             background-color: white;
             border: 5px solid white; /* Rounded white border */
             border-radius: 12px; /* Slightly rounded corners for a box look */
+            border-radius: 50%; /* Make it circular 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Cast shadow */
             position: absolute; /* Change to absolute positioning */
             top: 200px; /* Snap it 100px above the bottom */
@@ -66,118 +67,115 @@
             color: black; /* Icon color */
         }
 
-        /* New styling for the barbershop name */
-        #barbershopName {
-            position: absolute;
-            top: 310px; /* Position it above the bottom */
-            left: 50%; /* Align it to the left */
-            color: black; /* White text color */
-            font-size: 1.5rem; /* Font size */
-            font-weight: bold; /* Bold text */
-        }
         #gallery img {
-    height: 200px; /* Set a fixed height */
-    width: auto;   /* Maintain aspect ratio */
-    border-radius: 0.5rem; /* Rounded corners for images */
-    object-fit: cover; /* Ensure images cover the area */
-}
+            height: 200px; /* Set a fixed height */
+            width: auto;   /* Maintain aspect ratio */
+            border-radius: 0.5rem; /* Rounded corners for images */
+            object-fit: cover; /* Ensure images cover the area */
+        }
 
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-white">
 
-   <!-- Banner Section -->
+
 <div id="banner" class="bg-blue-400 text-white p-4 flex justify-between items-center">
     <div>
         <p style="color:black">
             Try our Mobile app! 
-            <a style="color: #f0f0f0;" id="downloadLink" class="text-blue-500 target="_blank">Download now!</a>
+            <!-- <a style="color: #f0f0f0;" id="downloadLink" class="text-blue-500 target="_blank"> Download now! <i class="fas fa-download"></i></a> -->
         </p>
     </div>
     <button id="closeBanner" class=" text-white w-8 h-8 rounded-full flex items-center justify-center" aria-label="Close">
         &times;
     </button>
 </div>
+<!-- End of Banner Section -->
 
-    <!-- Background Image -->
-    <div id="background">
-        <div class="h-full flex flex-col justify-center items-center text-white">
-            <div id="logo" class="flex justify-center">
+
+<!-- Background Image -->
+<div id="background">
+    <div class="h-full flex flex-col justify-center items-center text-white">
+        <div id="logo" class="flex justify-center mt-4">
                 <img src="{{ image_url }}" alt="Logo" class="w-full h-full object-contain rounded-full" id="logoImage">
-            </div>
-        </div>
-
-        <!-- Barbershop Name -->
-        <div id="barbershopName"></div>
-
-        <!-- Icons Section -->
-        <div id="iconSection">
-         
-            <div class="icon-wrapper" id="phoneIcon">
-                <i class="fas fa-phone-alt"></i>
-            </div>
-            <div class="icon-wrapper" id="instagramIcon">
-                <i class='fab fa-instagram' style='font-size:46px;color:red'></i>
-            </div>
-            <div class="icon-wrapper" id="addressIcon">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
         </div>
     </div>
-<br><br>
+</div>
 <div class="container mx-auto my-8 p-4">
-
-      
-            <div>
-                <label for="serviceSelect" class="flex">Service:</label>
-                <select id="serviceSelect" class="w-full">
-                    <option value="">Select a service</option>
-                </select>
-            </div>
-            <div>
-                <label for="employeeSelect" class="flex">Employee:</label>
-                <select id="employeeSelect" class="w-full">
-                    <option value="">Select an employee</option>
-                </select>
-            </div>
-<br>
-        <!-- Date & Time Input (Second Row) -->
-        <div class="flex">
-            <div class="w-full">
-                <label for="dateTime" class="mr-2">Date & Time:</label>
-                <input type="datetime-local" id="dateTime" class="border border-gray-300 rounded px-2 py-1 w-full">
-            </div>
+<!-- Icons Section -->
+    <div id="iconSection" class="flex justify-center">
+        <div class="icon-wrapper" id="phoneIcon">
+            <i class="fas fa-phone-alt" style="font-size: 30px; color: black;"></i>
         </div>
-<br>
-        <!-- Order Button (Third Row) -->
-        <div class="flex">
-            <button id="orderButton" class="bg-black text-white w-full px-4 py-2 rounded">Order</button>
+        <div class="icon-wrapper" id="instagramIcon">
+            <i class='fab fa-instagram' style='font-size:30px;color:black'></i>
         </div>
-        <br>
-        <!-- About Section -->
-<h1 class="text-center text-xl font-bold my-4">About</h1>
+        <div class="icon-wrapper" id="addressIcon">
+            <i class="fas fa-map-marker-alt" style="font-size: 30px; color: black;"></i>
+        </div>
+    </div>
+</div>
+<div id="barbershopName" class="text-center text-6xl font-bold mt-2 relative text-black"></div>
+<div class="text-center my-2 text-sm text-gray-500">First in the Tel Aviv</div>
+<!--About us Section-->
+<div class="container mx-auto px-4">
+    <h1 class="text-left text-2xl font-bold my-4">Today's open hours: {{ working_hours }}</h1> 
+    <h1 class="text-left text-xl my-4 text-gray-500">Book your appointment in just a one minute:</h1>
+</div>
+<!--Order Section-->
+<div class="container mx-auto my-2 p-4">  
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <label for="serviceSelect" class="mb-2 text-xl text-gray-700 text-left">Select Service:</label>
+        </div>
+        <div class="w-full">
+            <select id="serviceSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select a service</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <label for="dateTime" class="mb-2 text-xl text-gray-700 text-left">Select Date & Time:</label>
+        </div>
+        <div class="w-full ">
+            <input type="datetime-local" id="dateTime" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" value="{{ now|date:'Y-m-d\\TH:i' }}" step="3600">
+        </div>
+    </div>
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <label for="employeeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Employee:</label>
+        </div>
+        <div class="w-full">
+            <select id="employeeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select an employee</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex flex-col mb-4">
 
-  <!-- Description Section -->
-<div id="serviceDescription" class="text-center my-4 text-lg"></div>
-
-
-<br>
-        <h1 class="text-center text-xl font-bold my-4">Gallery</h1>
-
-        <div id="gallery" class="flex overflow-x-auto space-x-4 mt-4">
+    </div>
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <button id="orderButton" class="bg-black text-white w-full px-4 py-2 rounded text-xl hover:bg-gray-800">Order now</button>
+        </div>
+    </div>
+    <div class="container mx-auto my-4 p-4">
+        <h1 class="text-left text-2xl font-bold my-4 text-gray-700">Gallery</h1>
+        <div id="gallery" class="flex overflow-x-auto space-x-4 mt-4 px-4 scrollbar-hide">
             <!-- Gallery images will be dynamically inserted here -->
         </div>
-        
-        
     </div>
+
     <!-- Footer Section -->
-<footer class="text-black text-center py-4 mt-8">
-    <div class="mt-2"></div>
-        <p class="text-sm">Do you want a site like this?  <a href="https://t.me/polskoydm" class="text-black-500 ">Contact Us</a></p>
-       
-    </div>
-    <div>
-        <p class="text-sm">Powered by Hamaspera <img src="https://play-lh.googleusercontent.com/qS5E6u-ZbMe8S20V2jCkYoNtcGP-oV1olkShS3cpV0fCw1tBHx4Fq-k_8b-gY90NaOw=w480-h960-rw" alt="Logo" class="inline h-6"> </p>
+    <footer class="text-black text-center py-4 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="mt-2">
+                <p class="text-sm">Do you want a site like this?  <a href="https://t.me/polskoydm" class="text-black-500 ">Contact Us</a></p>
+            </div>
+            <div>
+                <p class="text-sm">Powered by Hamaspera <img src="https://play-lh.googleusercontent.com/qS5E6u-ZbMe8S20V2jCkYoNtcGP-oV1olkShS3cpV0fCw1tBHx4Fq-k_8b-gY90NaOw=w480-h960-rw" alt="Logo" class="inline h-6"> </p>
+            </div>
     </div>
     
 </footer>
@@ -264,7 +262,25 @@
     window.location.href = orderUrl;
 });
 
+    // Fetch Working Hours
+    async function fetchWorkingHours() {
+        const workingHoursQuery = query(collection(db, 'working_hours'), where('userId', '==', store));
+        const querySnapshot = await getDocs(workingHoursQuery);
 
+        const workingHoursDiv = document.getElementById('workingHours');
+        workingHoursDiv.innerHTML = '<option value="">Select a working hour</option>'; // Clear previous options
+
+        querySnapshot.forEach((doc) => {
+            const workingHourData = doc.data(); 
+            console.log('Working Hour Data:', workingHourData);
+
+            const option = document.createElement('option');
+            option.value = doc.id; // Working hour document ID
+            option.textContent = workingHourData.day; // Working hour day
+            workingHoursDiv.appendChild(option);
+        });
+    }
+    
 
     // Fetch Services Based on UserId
     async function fetchServices() {
@@ -377,11 +393,11 @@
                 if (image) {
                     console.log('Image URL:', image);
                     const imgDiv = document.createElement('div');
-                    imgDiv.className = 'w-full h-48 bg-gray-200 flex items-center justify-center';
+                    imgDiv.className = 'w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg';
                     const img = document.createElement('img');
                     img.src = image; // Set image source correctly
                     img.alt = 'Service Image';
-                    img.className = 'object-cover w-full h-full rounded-lg';
+                    img.className = ' w-full h-full rounded-lg mx-4 scrollbar-hide';
                     imgDiv.appendChild(img);
                     galleryDiv.appendChild(imgDiv);
                 } else {
@@ -392,4 +408,5 @@
             console.error("Error fetching gallery images:", error);
         }
     }
+
 </script>
