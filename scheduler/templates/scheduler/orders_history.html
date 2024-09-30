@@ -1,20 +1,22 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<body class="bg-gray-50">
-    <div class="container mx-auto p-4 text-center">
-        <h1 class="text-2xl font-bold mb-4">Order Management</h1>
+<body class="bg-white">
+    <div class="min-h-full">
+        <div class="mb-4 mt-8">
+            <h2 class="text-4xl font-bold text-gray-900">Order Management</h2>
+        </div>
 
         <!-- Order Table -->
         <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200 rounded shadow">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
                 <thead>
-                    <tr class="bg-gray-200">
-                        <th class="py-2 px-4 border-b">Phone</th>
-                        <th class="py-2 px-4 border-b">Service</th>
-                        <th class="py-2 px-4 border-b">Employee</th>
-                        <th class="py-2 px-4 border-b">Date & Time</th>
-                        <th class="py-2 px-4 border-b">Status</th>
+                    <tr class="bg-gray-100">
+                        <th class="py-2 px-4 border-b text-xl font-medium text-gray-700 uppercase tracking-wider">Phone</th>
+                        <th class="py-2 px-4 border-b text-xl font-medium text-gray-700 uppercase tracking-wider">Service</th>
+                        <th class="py-2 px-4 border-b text-xl font-medium text-gray-700 uppercase tracking-wider">Employee</th>
+                        <th class="py-2 px-4 border-b text-xl font-medium text-gray-700 uppercase tracking-wider">Date & Time</th>
+                        <th class="py-2 px-4 border-b text-xl font-medium text-gray-700 uppercase tracking-wider">Status</th>
                     </tr>
                 </thead>
                 <tbody id="orderTableBody">
@@ -23,7 +25,6 @@
             </table>
         </div>
     </div>
-       <!-- ========== FOOTER ========== -->
 
 
     <script type="module">
@@ -60,15 +61,15 @@
         function createOrderRow(orderData, id) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="py-2 px-4 border-b">${orderData.phone}</td>
-                <td class="py-2 px-4 border-b">${orderData.service}</td>
-                <td class="py-2 px-4 border-b">${orderData.employee}</td>
-                <td class="py-2 px-4 border-b">${formatDate(orderData.datetime)}</td>
-                <td class="py-2 px-4 border-b">
+                <td class="py-2 px-4 border-b text-center">${orderData.phone}</td>
+                <td class="py-2 px-4 border-b text-center">${orderData.service}</td>
+                <td class="py-2 px-4 border-b text-center">${orderData.employee}</td>
+                <td class="py-2 px-4 border-b text-center">${formatDate(orderData.datetime)}</td>
+                <td class="py-2 px-4 border-b text-center">
                     <select onchange="changeOrderStatus('${id}', this.value)" class="border rounded">
-                        <option value="new" ${orderData.status === 'new' ? 'selected' : ''}>New</option>
-                        <option value="confirmed" ${orderData.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                        <option value="declined" ${orderData.status === 'declined' ? 'selected' : ''}>Canceled</option>
+                        <option value="new" class="text-gray-700" ${orderData.status === 'new' ? 'selected' : ''}>New</option>
+                        <option value="confirmed" class="text-gray-700" ${orderData.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="declined" class="text-gray-700" ${orderData.status === 'declined' ? 'selected' : ''}>Canceled</option>
                     </select>
                 </td>
             `;

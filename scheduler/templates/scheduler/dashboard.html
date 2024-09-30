@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
 <html lang="en" class="relative min-h-full">
 <head>
     <meta charset="UTF-8">
@@ -14,14 +17,15 @@
 
     <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
 
-<header class="flex items-center justify-between bg-white p-4 shadow-md">
+<header class="flex items-center justify-between bg-white p-4 shadow-md hidden">
     <!-- Business Info as Logo and Name -->
     <div class="relative">
         <button class="flex items-center focus:outline-none" onclick="window.location.href='/edit'">
-            <img src="" id="business-logo" alt="Business Logo" class="w-10 h-10 rounded-full object-cover mr-3 cursor-pointer">
+            <img src="" id="business-logo" alt="Business Logo" class="w-10 h-10 rounded-full object-cover mr-3 cursor-pointer shadow-md">
             <span id="business-name" class="text-gray-800 font-medium">Business Name</span>
         </button>
     </div>
+
     
     <!-- Navbar links -->
     <nav class="flex items-center space-x-4">
@@ -425,3 +429,4 @@ function closeServiceModal() {
             }
         });
     </script>
+{% endblock %}

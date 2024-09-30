@@ -1,56 +1,25 @@
 
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Barbershop Booking</title>
-    <!-- Importing Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+{% extends 'scheduler/base.html' %}
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% block content %}
 
-</head>
-
-    <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
+<body class="bg-gray-50">
         
     <div class="min-h-full">
         <!-- Navigation Bar -->
-        <nav class="bg-gray-800">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
-                        </div>
-                        <div class="hidden md:block">
-                            <div class="ml-10 flex items-baseline space-x-4">
-                                <a href="/dashboard" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700">Dashboard</a>
-                                <a href="/edit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700">Edit Business</a>
-                                <a href="/employees" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700" aria-current="page">Manage</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hidden md:flex items-center">
-                        <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
-                        <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
+        <div class="hidden">
+            <p class="mr-4 text-white"><strong>ID:</strong> <span id="user-id"></span></p>
+        </div>
 
         <!-- Page Heading -->
-        <header class="bg-white shadow">
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Employees & Services</h1>
+        <div class="min-h-full">
+            <div class="mb-4 mt-8">
+                <h2 class="text-4xl font-bold text-gray-900">Employees & Services</h2>
             </div>
-        </header>
 
         <!-- Main Content for Employees -->
         <main>
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 ">
                 <div class="mt-6 bg-white rounded-lg shadow-md p-6">
                     <h2 class="text-lg font-bold mb-4">Added Employees</h2>
                     <table class="min-w-full divide-y divide-gray-200">
@@ -397,4 +366,5 @@ window.closeServiceModal = () => {
     loadServices();
 </script>
 </body>
-</html>
+{% endblock %}
+
