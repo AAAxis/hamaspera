@@ -16,7 +16,7 @@
     <!-- ========== HEADER ========== -->
     {% block header %}
     <header class="flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white text-sm py-3 dark:bg-neutral-800">
-        <nav class="max-w-[85rem] w-full mx-auto px-4 flex flex-wrap basis-full items-center justify-between">
+        <nav class="max-w-[85rem] w-full mx-auto px-4 flex flex-wrap basis-full items-center justify-between relative z-50">
             <a class="sm:order-1 flex-none text-xl font-semibold dark:text-white focus:outline-none focus:opacity-80" href="{% url 'schedule' %}">Hamaspera</a>
             <div class="sm:order-3 flex items-center gap-x-2">
            
@@ -39,7 +39,7 @@
     <!-- ========== FOOTER ========== -->
     <footer class="bg-gray-200 text-center py-4 mt-auto">
         <div class="container mx-auto">
-            <p class="text-gray-700">© 2023 Barbershop Booking System</p>
+            <p class="text-gray-700">© 2024 Hamaspera.<a href="mailto:info@hamaspera.com" style="color: gray-500;">info@hamaspera.com</a></p>
         </div>
     </footer>
     <!-- ========== END FOOTER ========== -->
@@ -51,18 +51,60 @@
             const authLinks = document.getElementById('auth-links');
             if (userId) {
                 authLinks.innerHTML = `
-                    <a href="{% url 'dashboard' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Dashboard</a>
-                    <a href="{% url 'edit' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Edit</a>
-                    <a href="{% url 'orders_history' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Orders</a>
-                    <a href="{% url 'employees' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Employees</a>
-                    <a href="#" onclick="logout()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Logout</a>
+                    <div class="relative">
+                        <button class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                            Menu
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
+                            <a href="{% url 'dashboard' %}" class="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                <img src="{% static 'scheduler/img/image1.png' %}" alt="Dashboard Icon" class="inline-block w-4 h-4 mr-2">
+                                Dashboard
+                            </a>
+                            <a href="{% url 'edit' %}" class="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                <img src="{% static 'scheduler/img/image2.png' %}" alt="Edit Icon" class="inline-block w-4 h-4 mr-2">
+                                Edit
+                            </a>
+                            <a href="{% url 'orders_history' %}" class="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                <img src="{% static 'scheduler/img/image3.png' %}" alt="Orders Icon" class="inline-block w-4 h-4 mr-2">
+                                Orders
+                            </a>
+                            <a href="{% url 'employees' %}" class="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                <img src="{% static 'scheduler/img/image4.png' %}" alt="Employees Icon" class="inline-block w-4 h-4 mr-2">
+                                Employees
+                            </a>
+                            <a href="#" onclick="logout()" class="block px-6 py-4 text-sm text-gray-700 hover:bg-red-100">
+                                <img src="{% static 'scheduler/img/image5.png' %}" alt="Log Out Icon" class="inline-block w-4 h-4 mr-2">
+                                Log Out
+                            </a>
+                        </div>
+                    </div>
                 `;
             } else {
                 authLinks.innerHTML = `
-                         <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">About</a>
+                    <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">About</a>
                     <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Login</a>
                 `;
             }
+
+            // Toggle dropdown menu
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = document.getElementById('user-menu');
+
+            userMenuButton.addEventListener('click', () => {
+                const isExpanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+                userMenuButton.setAttribute('aria-expanded', !isExpanded);
+                userMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                    userMenuButton.setAttribute('aria-expanded', 'false');
+                }
+            });
         });
     
         function logout() {

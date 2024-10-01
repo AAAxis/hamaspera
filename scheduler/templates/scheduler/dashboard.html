@@ -15,7 +15,7 @@
 
 </head>
 
-    <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
+<body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
 
 <header class="flex items-center justify-between bg-white p-4 shadow-md hidden">
     <!-- Business Info as Logo and Name -->
@@ -39,30 +39,29 @@
     </nav>
 </header>
 <!-- Workers Data Section -->
-<div class="mb-4 mt-8 flex flex-col items-center">
-    <h4 class="text-2xl font-bold text-gray-900">Services Info</h4>
-
-    <div class="flex flex-col shadow-md divide-y divide-gray-200 dark:divide-neutral-700 border-b border-gray-200 dark:border-neutral-700 w-full max-w-3xl mt-4">
-        <div class="-m-1.5 overflow-x-auto bg-white rounded-lg">
-            <div class="p-1.5 min-w-full inline-block align-middle">
-                <div class="overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Image</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Employee</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
-                                <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Edit</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
-                            <!-- Employee items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<body class="bg-white">
+    <div class="min-h-full">
+        <div class="mb-4 mt-8">
+            <h2 class="text-4xl font-bold text-gray-900">Dashboard</h2>
         </div>
-    </div>
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-bold mb-4">Services Info</h2>
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Image</th>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Employee</th>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
+                        <!-- Employee items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+   
+        </div>
 
     <div class="flex justify-center mt-4">
         <a href="/employees" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
@@ -153,6 +152,7 @@
         <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Save</button>
     </div>
 </div>
+
 
 
             </div>
