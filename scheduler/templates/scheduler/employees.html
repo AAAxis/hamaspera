@@ -72,20 +72,20 @@
                 <h2 class="text-lg font-bold mb-4">Add Employee</h2>
                 <form id="addEmployeeForm" enctype="multipart/form-data">
                     <div class="mb-4">
-                        <label for="employeeName" class="block text-sm font-medium text-gray-700">Name:</label>
-                        <input type="text" id="employeeName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Employee Name" />
+                        <label for="employeeName" class="block font-medium text-gray-700">Name:</label>
+                        <input type="text" id="employeeName" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Employee Name" />
                     </div>
                     <div class="mb-4">
-                        <label for="employeePhone" class="block text-sm font-medium text-gray-700">Phone:</label>
-                        <input type="tel" id="employeePhone" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Phone Number" />
+                        <label for="employeePhone" class="block font-medium text-gray-700">Phone:</label>
+                        <input type="tel" id="employeePhone" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Phone Number" />
                     </div>
                     <div class="mb-4">
-                        <label for="employeeImage" class="block text-sm font-medium text-gray-700">Profile Image:</label>
-                        <input type="file" id="employeeImage" accept="image/*" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        <label for="employeeImage" class="block font-medium text-gray-700">Profile Image:</label>
+                        <input type="file" id="employeeImage" accept="image/*" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
                     </div>
-                    <div class="flex justify-end">
-                        <button type="button" class="mr-2 inline-flex justify-center py-2 px-4 bg-gray-300 text-gray-700 font-medium rounded-md" onclick="closeEmployeeModal()">Cancel</button>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Add Employee</button>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" class="mt-4 inline-flex justify-center py-2 px-4 bg-red-900 text-white font-medium rounded-md hover:bg-red-800" onclick="closeEmployeeModal()">Cancel</button>
+                        <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Add Employee</button>
                     </div>
                 </form>
                 <div id="uploadProgressContainer" class="hidden mt-4">
@@ -100,7 +100,7 @@
         <main>
             <div class="min-w-full">
                 <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-bold mb-4">Added Services</h2>
+                    <h2 class="text-lg font-bold mb-4">Services</h2>
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -114,7 +114,7 @@
                         </tbody>
                     </table>
                     <!-- Add Service Button -->
-                    <button id="addServiceButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">
+                    <button id="addServiceButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
                         Add Service
                     </button>
                 </div>
@@ -130,21 +130,21 @@
             <h2 class="text-lg font-bold mb-4">Add Service</h2>
             <form id="addServiceForm" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label for="serviceName" class="block text-sm font-medium text-gray-700">Service Name:</label>
-                    <input type="text" id="serviceName" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Service Name" />
+                    <label for="serviceName" class="block font-medium text-gray-700">Service Name:</label>
+                    <input type="text" id="serviceName" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Service Name" />
                 </div>
                 <div class="mb-4">
-                    <label for="servicePrice" class="block text-sm font-medium text-gray-700">Price:</label>
-                    <input type="number" id="servicePrice" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Price" />
+                    <label for="servicePrice" class="block  font-medium text-gray-700">Price:</label>
+                    <input type="number" id="servicePrice" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Price" />
                 </div>
                 <div class="mb-4">
-                    <label for="serviceImage" class="block text-sm font-medium text-gray-700">Service Image:</label>
-                    <input type="file" id="serviceImage" accept="image/*" required class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label for="serviceImage" class="block  font-medium text-gray-700">Service Image:</label>
+                    <input type="file" id="serviceImage" accept="image/*" required class="mt-4 block w-full shadow-sm rounded-md" />
                 </div>
             
-                <div class="flex justify-end">
-                    <button type="button" class="mr-2 inline-flex justify-center py-2 px-4 bg-gray-300 text-gray-700 font-medium rounded-md" onclick="closeServiceModal()">Cancel</button>
-                    <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Add Service</button>
+                <div class="flex mb-4 justify-end space-x-4">
+                    <button type="button" class="mt-4 inline-flex justify-center py-2 px-4 bg-red-900 text-white font-medium rounded-md hover:bg-red-800" onclick="closeServiceModal()">Cancel</button>
+                    <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Add Service</button>
                 </div>
             </form>
 
@@ -262,7 +262,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${service.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${price.toFixed(2)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button class="text-red-600 hover:text-red-900" onclick="deleteService('${doc.id}')">X</button>
+                    <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-employee-button" onclick="deleteService('${doc.id}')">Delete</button>
                 </td>
             `;
             servicesTable.appendChild(serviceRow);
@@ -294,9 +294,9 @@
                         <td class="px-4 py-2 text-left">${employeeData.phone || 'N/A'}</td>
                         <td class="px-4 py-2 text-left">${employeeData.services || 'N/A'}</td>
                         <td class="px-4 py-2 text-left">
-                            <button class="bg-blue-800 hover:bg-blue-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach Service</button>
-                            <button class="bg-green-800 hover:bg-green-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Edit</button>
-                            <button class="bg-red-800 hover:bg-red-700 text-white  py-1 px-2 rounded delete-employee-button" data-id="${employeeId}">Delete</button>
+                            <button class="bg-blue-800 hover:bg-blue-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}" onclick="attachServiceToEmployee('${employeeId}')">Attach Service</button>
+                            <button class="bg-green-800 hover:bg-green-700 text-white py-1 px-2 rounded edit-employee-button" data-id="${employeeId}" onclick="editEmployee('${employeeId}')">Edit</button>
+                            <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-employee-button" data-id="${employeeId}" onclick="deleteEmployee('${employeeId}')">Delete</button>
                         </td>
                     </tr>
                 `;
