@@ -42,13 +42,16 @@
         <main>
             <div class="min-w-full">
                 <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-bold mb-4">Added Employees</h2>
+                    <h2 class="text-lg font-bold mb-4">Employees</h2>
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Photo</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Services</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                
                             </tr>
                         </thead>
                         <tbody id="employeesTable" class="bg-white divide-y divide-gray-200">
@@ -56,8 +59,8 @@
                         </tbody>
                     </table>
                     <!-- Add Employee Button -->
-                    <button id="addEmployeeButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">
-                        Add Employee
+                    <button id="addEmployeeButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
+                        Add Employees
                     </button>
                 </div>
             </div>
@@ -242,28 +245,6 @@
             });
         }
     };
-
-    const loadEmployees = async () => {
-        const employeesTable = document.getElementById('employeesTable');
-        employeesTable.innerHTML = ''; // Clear the table before loading
-
-        const q = query(collection(db, 'employees'), where('userId', '==', userId));
-        const employeesSnapshot = await getDocs(q);
-        employeesSnapshot.forEach(doc => {
-            const employee = doc.data();
-
-            const employeeRow = document.createElement('tr');
-            employeeRow.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.phone}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button class="text-red-600 hover:text-red-900" onclick="deleteEmployee('${doc.id}')">Delete</button>
-                </td>
-            `;
-            employeesTable.appendChild(employeeRow);
-        });
-    };
-
     const loadServices = async () => {
         const servicesTable = document.getElementById('servicesTable');
         servicesTable.innerHTML = ''; // Clear the table before loading
@@ -287,6 +268,53 @@
             servicesTable.appendChild(serviceRow);
         });
     };
+
+    const loadEmployees = async () => {
+        const employeesTable = document.getElementById('employeesTable');
+        employeesTable.innerHTML = ''; // Clear the table before loading
+
+        const q = query(collection(db, 'employees'), where('userId', '==', userId));
+        const employeesSnapshot = await getDocs(q);
+        if (employeesSnapshot.empty) {
+            employeesTable.innerHTML = '<tr><td colspan="4" class="text-left text-black">No employees found.</td></tr>';
+        } else {
+            employeesSnapshot.forEach((doc) => {
+                const employeeData = doc.data();
+                const employeeId = doc.id; // Get the document ID
+                // Fetch service names and replace employeeData.services
+                
+
+
+                const employeeRow = `
+                    <tr>
+                        <td class="px-4 py-2 text-left">
+                            <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover rounded-full" />
+                        </td>
+                        <td class="px-4 py-2 text-left">${employeeData.name || 'N/A'}</td>
+                        <td class="px-4 py-2 text-left">${employeeData.phone || 'N/A'}</td>
+                        <td class="px-4 py-2 text-left">${employeeData.services || 'N/A'}</td>
+                        <td class="px-4 py-2 text-left">
+                            <button class="bg-blue-800 hover:bg-blue-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach Service</button>
+                            <button class="bg-green-800 hover:bg-green-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Edit</button>
+                            <button class="bg-red-800 hover:bg-red-700 text-white  py-1 px-2 rounded delete-employee-button" data-id="${employeeId}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                employeesTable.innerHTML += employeeRow; // Add employee row to table body
+            });
+        }
+
+        // Attach service button event listener
+        document.querySelectorAll('.attach-service-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const employeeId = button.getAttribute('data-id');
+                attachServiceToEmployee(employeeId);
+            });
+        });
+
+    };
+
+    
 
     document.getElementById('addEmployeeButton').onclick = () => {
         document.getElementById('employeeModal').classList.remove('hidden');
