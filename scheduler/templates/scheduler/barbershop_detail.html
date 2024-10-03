@@ -40,7 +40,7 @@
             display: flex;
             position: absolute; /* Absolute positioning to place icons on the right */
             right: 5%; /* Align it to the right for small screens */
-            top: 30%; /* Adjust the top position for small screens */
+            top: 31%; /* Adjust the top position for small screens */
             /* big screens */
             @media (min-width: 768px) {
                 right: 10%; /* Align it to the right */
@@ -82,7 +82,7 @@
     </style>
 </head>
 <body class="bg-white">
-<div class="max-w-md mx-auto bg-white p-2 md:p-4">
+<div class="max-w-md mx-auto bg-white p-2 md:p-4 hidden">
     <div>
         <p class="text-black text-sm md:text-base">
             Try our Mobile app! 
@@ -95,14 +95,15 @@
 <!-- End of Banner Section -->
 
 
-<!-- Background Image -->
-<div id="background" class=" mx-auto bg-white ">
+<!-- Barbershop Logo Image -->
+<div id="background" class=" mx-auto bg-white">
     <div class="h-full flex flex-col justify-center items-center text-white">
         <div id="logo" class="flex justify-center mt-4">
                 <img src="{{ image_url }}" alt="Logo" class="w-full h-full object-contain rounded-full" id="logoImage">
         </div>
     </div>
 </div>
+<!-- Barbershop Name -->
 <div class="container mx-auto my-4 p-4">
 <!-- Icons Section -->
     <div id="iconSection" class="flex justify-center">
@@ -117,12 +118,13 @@
         </div>
     </div>
 </div>
-<div id="barbershopName" class="text-center text-5xl font-bold mt-2 relative text-black"></div>
-<div class="text-center mb-4 text-sm text-gray-500">First in the Tel Aviv</div>
+<!-- Barbershop Name -->
+<div id="barbershopName" class="text-center text-5xl font-bold mt-6 relative text-black">{{ business_name }}</div>
+<!-- Barbershop Description -->
+<div class="text-center mb-4 text-sm text-gray-500" id="barbershopDescription">{{ service }}</div>    
 <!--About us Section-->
-<div class="container mx-auto px-4">
-    <h1 class="text-left text-xl font-bold my-4">Today's open hours: {{ working_hours }}</h1> 
-</div>
+<div id="workingHours" class="container mx-auto px-4">Today's open hours: {{ working_hours }}</div>
+   
 <!--Order Section-->
 <div class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
     <h1 class="text-left text-lg my-4 text-gray-500">Book your appointment in just a one minute <span class="text-xl font-bold">💇‍♂️</span></h1>
@@ -138,10 +140,18 @@
     </div>
     <div class="flex flex-col mb-4">
         <div class="flex flex-col mb-4">
-            <label for="dateTime" class="mb-2 text-xl text-gray-700 text-left">Select Date & Hour:</label>
+            <label for="dateSelect" class="mb-2 text-xl text-gray-700 text-left">Select Date:</label>
         </div>
-        <div class="w-full ">
-            <input type="datetime-local" id="dateTime" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" value="{{ now|date:'Y-m-d\\TH:i' }}" step="3600"> 
+        <div class="w-full">
+            <input type="date" id="dateSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+        </div>
+    </div>
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <label for="timeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Hour:</label>
+        </div>
+        <div class="w-full">
+            <input type="time" id="timeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" step="3600">
         </div>
     </div>
     <div class="flex flex-col mb-4">
@@ -216,28 +226,54 @@
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                document.getElementById('logoImage').src = data.image_url;
-                document.getElementById('background').style.backgroundImage = `url(${data.background})`;
-                document.getElementById('barbershopName').textContent = data.business_name;
+
+                const logoImage = document.getElementById('logoImage');
+                if (logoImage) {
+                    logoImage.src = data.image_url;
+                }
+
+                const background = document.getElementById('background');
+                if (background) {
+                    background.style.backgroundImage = `url(${data.background})`;
+                }
+
+                const barbershopName = document.getElementById('barbershopName');
+                if (barbershopName) {
+                    barbershopName.textContent = data.business_name;
+                }
+
+                const serviceDescription = document.getElementById('serviceDescription');
+                if (serviceDescription) {
+                    serviceDescription.textContent = data.service || 'No type provided';
+                }
+
                 const instagram = data.instagram || 'No instagram provided';
                 const phone = data.phone || 'No phone number provided';
                 const address = data.address || 'No address provided';
-                const type = data.service || 'No type provided';
+
                 store = data.uid || 'No address provided'; // Set store here
-                document.getElementById('serviceDescription').textContent = type;
-                        
 
                 // Add event listener for the Instagram icon
-                document.getElementById('instagramIcon').addEventListener('click', () => {
-                    window.open(instagram, '_blank'); // Open in a new tab
-                });
-                document.getElementById('phoneIcon').addEventListener('click', () => {
-                    window.location.href = `tel:${phone}`;
-                });
+                const instagramIcon = document.getElementById('instagramIcon');
+                if (instagramIcon) {
+                    instagramIcon.addEventListener('click', () => {
+                        window.open(instagram, '_blank'); // Open in a new tab
+                    });
+                }
 
-                document.getElementById('addressIcon').addEventListener('click', () => {
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
-                });
+                const phoneIcon = document.getElementById('phoneIcon');
+                if (phoneIcon) {
+                    phoneIcon.addEventListener('click', () => {
+                        window.location.href = `tel:${phone}`;
+                    });
+                }
+
+                const addressIcon = document.getElementById('addressIcon');
+                if (addressIcon) {
+                    addressIcon.addEventListener('click', () => {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+                    });
+                }
 
             } else {
                 console.error('No such document!');
@@ -249,42 +285,77 @@
     document.getElementById('orderButton').addEventListener('click', async () => {
     const serviceId = document.getElementById('serviceSelect').value;
     const employeeId = document.getElementById('employeeSelect').value;
-    const dateTime = document.getElementById('dateTime').value;
+    const date = document.getElementById('dateSelect').value;
+    const time = document.getElementById('timeSelect').value;
 
-    // Check if everything is selected
-    if (!serviceId || !employeeId || !dateTime) {
+    if (!serviceId || !employeeId || !date || !time) {
         alert("Please select a service, an employee, and a date/time.");
         return;
     }
 
-    // Optionally, get employee and service names for display
-    const serviceName = document.getElementById('serviceSelect').options[document.getElementById('serviceSelect').selectedIndex].text;
-    const employeeName = document.getElementById('employeeSelect').options[document.getElementById('employeeSelect').selectedIndex].text;
-
-    // Redirect to the order screen with the selected data and store in the query string
-    const orderUrl = `/order?service=${serviceId}&employee=${employeeId}&datetime=${encodeURIComponent(dateTime)}&serviceName=${encodeURIComponent(serviceName)}&employeeName=${encodeURIComponent(employeeName)}&store=${encodeURIComponent(store)}`;
+    const dateTime = `${date}T${time}`;
+    const orderUrl = `/order?datetime=${encodeURIComponent(dateTime)}&store=${encodeURIComponent(store)}`;
     window.location.href = orderUrl;
 });
 
-    // Fetch Working Hours
-    async function fetchWorkingHours() {
-        const workingHoursQuery = query(collection(db, 'working_hours'), where('userId', '==', store));
-        const querySnapshot = await getDocs(workingHoursQuery);
+    // Fetch Working Hours for Today
+    async function fetchWorkingHoursForToday() {
+        try {
+            const workingHoursRef = doc(db, 'working_hours', store);
+            const workingHoursDoc = await getDoc(workingHoursRef);
 
-        const workingHoursDiv = document.getElementById('workingHours');
-        workingHoursDiv.innerHTML = '<option value="">Select a working hour</option>'; // Clear previous options
+            if (workingHoursDoc.exists()) {
+                const workingHours = workingHoursDoc.data().workingHours;
+                const workingHoursDiv = document.getElementById('workingHours');
+                if (!workingHoursDiv) {
+                    console.error('Element with ID "workingHours" not found.');
+                    return;
+                }
+                workingHoursDiv.innerHTML = ''; // Clear previous content
 
-        querySnapshot.forEach((doc) => {
-            const workingHourData = doc.data(); 
-            console.log('Working Hour Data:', workingHourData);
+                // Get today's day name and normalize it
+                const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+                console.log('Today is:', today); // Debugging
+                console.log('Fetched working hours:', workingHours); // Debugging
 
-            const option = document.createElement('option');
-            option.value = doc.id; // Working hour document ID
-            option.textContent = workingHourData.day; // Working hour day
-            workingHoursDiv.appendChild(option);
-        });
+                if (workingHours[today]) {
+                    const hours = workingHours[today];
+                    const hoursText = hours.working ? `${hours.from} - ${hours.to}` : 'Closed';
+                    let message = `Today's open hours: ${hoursText}`;
+
+                    if (hours.working) {
+                        const now = new Date();
+                        const [fromHour, fromMinute] = hours.from.split(':').map(Number);
+                        const [toHour, toMinute] = hours.to.split(':').map(Number);
+
+                        const openingTime = new Date(now);
+                        openingTime.setHours(fromHour, fromMinute);
+
+                        const closingTime = new Date(now);
+                        closingTime.setHours(toHour, toMinute);
+
+                        const oneHour = 60 * 60 * 1000; // One hour in milliseconds
+
+                        if (now < openingTime && openingTime - now <= oneHour) {
+                            message += ' (Opening soon)';
+                        } else if (now > closingTime && now - closingTime <= oneHour) {
+                            message += ' (Closed)';
+                        } else if (closingTime - now <= oneHour) {
+                            message += ' (Closing soon)';
+                        }
+                    }
+
+                    workingHoursDiv.textContent = message;
+                } else {
+                    workingHoursDiv.textContent = 'No working hours available for today.';
+                }
+            } else {
+                console.warn('No working hours found for store:', store);
+            }
+        } catch (error) {
+            console.error('Error fetching working hours:', error);
+        }
     }
-    
 
     // Fetch Services Based on UserId
     async function fetchServices() {
@@ -348,6 +419,7 @@
         }
         await fetchServices();
         await fetchGallery();
+        await fetchWorkingHoursForToday(); // Fetch today's working hours
          // Set the default value for the dateTime input to now
     const now = new Date();
     const formattedDateTime = now.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM 
@@ -394,6 +466,7 @@
                 console.log('Service Data:', serviceData);
 
                 const image = serviceData.image; // Directly use the image field
+                const name = serviceData.name; // Directly use the image field
                 if (image) {
                     console.log('Image URL:', image);
                     const imgDiv = document.createElement('div');
@@ -401,19 +474,19 @@
                     const img = document.createElement('img');
                     img.src = image; // Set image source correctly
                     img.alt = 'Service Image';
-                    img.className = ' w-full h-full rounded-lg mx-4 scrollbar-hide';
+                    img.title = name; // Set the service name as the title
+                    img.className = 'w-full h-full rounded-lg mx-4 scrollbar-hide';
                     imgDiv.appendChild(img);
                     galleryDiv.appendChild(imgDiv);
                 } else {
-                    console.warn('No image URL found for service:', serviceData.name);
+                    console.warn('No image URL found for service:', name);
                 }
             });
         } catch (error) {
             console.error("Error fetching gallery images:", error);
         }
     }
-    
-    
+
     async function fetchNextAvailableSlot() {
         try {
             const slotsQuery = query(collection(db, 'slots'), where('userId', '==', store), where('available', '==', true));
