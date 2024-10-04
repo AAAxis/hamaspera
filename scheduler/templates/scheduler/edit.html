@@ -6,64 +6,56 @@
         <h2 class="text-4xl font-bold text-gray-900">Edit Business</h2>
     </div>
 
-    <div class="flex flex-col md:flex-row md:items-start md:justify-between md:space-x-4 space-y-4 md:space-y-0 shadow-md">
-        <!-- Left: Barbershop Info -->
-        <div class="md:w-1/2 mb-4 md:mb-0 relative">
-            <!-- Background Image with logo overlay -->
-            <div class="relative">
-                <!-- Keep the original proportions for the background image -->
-                <img id="background" alt="Business Background" class="w-full h-96 object-cover rounded-md shadow">
-                <!-- Logo overlay -->
-                <div class="absolute inset-0 flex justify-center items-center">
-                    <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
+    <!-- Background Image with logo overlay -->
+    <div class="relative mb-8">
+        <img id="background" alt="Business Background" class="w-full h-96 object-cover rounded-md shadow">
+        <div class="absolute inset-0 flex justify-center items-center">
+            <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
+        </div>
+    </div>
+
+    <!-- Edit Business Info -->
+    <div class="min-w-full">
+        <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-lg font-bold mb-4">You can edit your business information here</h2>
+            <form id="editBusinessForm">
+                <div class="form-group mb-4">
+                <label for="businessName" class="block text-lg font-medium text-gray-700">Business Name</label>
+                <input type="text" id="businessName" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
+            </div>
+            <div class="form-group mb-4">
+                <label for="businessAddress" class="block text-lg font-medium text-gray-700">Address</label>
+                <input type="text" id="businessAddress" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
+            </div>
+            <div class="form-group mb-4">
+                <label for="businessInstagram" class="block text-lg font-medium text-gray-700">Instagram Link</label>
+                <input type="url" id="businessInstagram" placeholder="https://www.instagram.com/yourbusiness" class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
+            </div>
+            <div class="form-group mb-4">
+                <label for="businessPhone" class="block text-lg font-medium text-gray-700">Phone</label>
+                <input type="tel" id="businessPhone" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
+            </div>
+            <div class="form-group mb-4">
+                <label for="businessService" class="block text-lg font-medium text-gray-700">About</label>
+                <input type="text" id="businessService" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div class="form-group mb-4">
+                <label for="businessLogo" class="block text-lg font-medium text-gray-700">Logo</label>
+                <input type="file" id="businessLogo" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                <div class="mt-2">
+                    <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
+                    <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
                 </div>
             </div>
-        </div>
-
-        <!-- Right: Edit Business Info -->
-        <div class="md:w-1/2 bg-white rounded-lg shadow-md p-6">
-            <form id="editBusinessForm">
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessName" class="block text-lg font-medium text-gray-700">Edit Business Name</label>
-                    <input type="text" id="businessName" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            <div class="form-group mb-4">
+                <label for="businessBackground" class="block text-lg font-medium text-gray-700">Background</label>
+                <input type="file" id="businessBackground" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                <div class="mt-2">
+                    <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
+                    <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
                 </div>
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessAddress" class="block text-lg font-medium text-gray-700">Edit Address</label>
-                    <input type="text" id="businessAddress" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                </div>
-        
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessInstagram" class="block text-lg font-medium text-gray-700">Instagram Link</label>
-                    <input type="url" id="businessInstagram" placeholder="https://www.instagram.com/yourbusiness" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                </div>
-                
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessPhone" class="block text-lg font-medium text-gray-700">Edit Phone</label>
-                    <input type="tel" id="businessPhone" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                </div>
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessService" class="block text-lg font-medium text-gray-700">Edit About</label>
-                    <input type="text" id="businessService" required class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                </div>
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessLogo" class="block text-lg font-medium text-gray-700">Upload Logo</label>
-                    <input type="file" id="businessLogo" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                    <div class="mt-2">
-                        <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
-                        <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
-                    </div>
-                </div>
-
-                <div class="form-group mb-4 max-w-sm">
-                    <label for="businessBackground" class="block text-lg font-medium text-gray-700">Upload Background</label>
-                    <input type="file" id="businessBackground" accept="image/*" class="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                    <div class="mt-2">
-                        <progress id="uploadProgress" value="0" max="100" class="w-full hidden"></progress>
-                        <span id="uploadStatus" class="text-sm text-gray-500 hidden"></span>
-                    </div>
-                </div>
-
-                <button type="submit" class="inline-flex justify-center py-2 px-4 bg-indigo-600 text-white font-medium rounded-md">Update Business</button>
+            </div>
+                <button type="submit" class="inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Save</button>
             </form>
         </div>
     </div>

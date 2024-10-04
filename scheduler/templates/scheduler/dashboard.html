@@ -40,13 +40,28 @@
 </header>
 <!-- Workers Data Section -->
 <body class="bg-white">
+    
+    
     <div class="min-h-full">
         <div class="mb-4 mt-8">
             <h2 class="text-4xl font-bold text-gray-900">Dashboard</h2>
         </div>
         <div class="mb-4 mt-8">
+            <div class="w-full p-4 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
+                <ul class="list-disc list-inside mt-4">
+                    <li id="business-address"> Address </li>
+                    <li id="business-email"> Email </li>
+                    <li id="business-phone"> Phone </li>
+                    <button onclick="window.location.href='/edit'" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
+                        Edit Business Info
+                    </button>
+                </ul>
+            </div>
+        </div>
+        <div class="mb-4 mt-8">
             <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-lg font-bold mb-4">Employees Info</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Employees Info</h2>
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
                     <thead>
                         <tr>
@@ -59,14 +74,15 @@
                         <!-- Employee items will be dynamically inserted here -->
                     </tbody>
                 </table>
+                <button onclick="window.location.href='/employees'" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
+                    Edit Employees
+                </button>
             </div>
    
         </div>
 
     <div class="flex justify-center mt-4">
-        <a href="/employees" class="mt-4 bg-green-500 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg">
-            Edit Employees
-        </a>
+
     </div>
 </div>
 
@@ -90,7 +106,7 @@
 <!-- Working Hours Section -->
 <div class="mb-4 mt-8">
     <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-900 text-center">Working Hours</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Business Working Hours</h2>
         <ul class="flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
             <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white px-2">
                 <span>Monday</span>
@@ -149,15 +165,40 @@
                 </div>
             </li>
         </ul>
-        <button id="saveWorkingHours" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Save</button>
+        <button id="saveWorkingHours" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Save</button>
     </div>
 </div>
 
-
-
-            </div>
-        </main>
+<div class="mb-4 mt-8">
+    <div class="w-full p-4 bg-white rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-gray-900">Shift Schedule</h2>
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700" id="shiftTable">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Employee</th>
+                    <!-- Days of the week will be dynamically inserted here -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Employee rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+        <button id="saveScheduleButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
+            Save Schedule
+        </button>
     </div>
+</div>
+<style>
+    #shiftTable th, #shiftTable td {
+        border-right: 1px solid #e5e7eb; /* Light gray color for column separation */
+    }
+    #shiftTable th:last-child, #shiftTable td:last-child {
+        border-right: none; /* Remove border from the last column */
+    }
+</style>
+
+
+</main>
 
 <script type="module">
        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -180,6 +221,7 @@
 
     // Get user info from localStorage
     const userId = localStorage.getItem("userId");
+    console.log("User ID:", userId);
 
 
 
@@ -206,14 +248,10 @@ async function fetchBusinessData(userId) {
             document.getElementById('business-logo').src = business.image_url || '';
             document.getElementById('business-name').textContent = business.business_name || 'N/A';
 
-            // Check if address, email, and phone exist
-            const address = business.address ? `Address: ${business.address}` : 'Address not available';
-            const email = business.email ? `Email: ${business.email}` : 'Email not available';
-            const phone = business.phone ? `Phone: ${business.phone}` : 'Phone not available';
-
-            document.getElementById('business-address').textContent = address;
-            document.getElementById('business-email').textContent = email;
-            document.getElementById('business-phone').textContent = phone;
+            // Ensure these elements exist in your HTML
+            document.getElementById('business-address').textContent = business.address || 'Address not available';
+            document.getElementById('business-email').textContent = business.email || 'Email not available';
+            document.getElementById('business-phone').textContent = business.phone || 'Phone not available';
         });
     } catch (error) {
         console.error('Error fetching business data:', error);
@@ -428,5 +466,105 @@ function closeServiceModal() {
                 alert('Error updating working hours.');
             }
         });
+
+function populateWeekDays() {
+    const today = new Date();
+    const options = { weekday: 'long', month: '2-digit', day: '2-digit' };
+    const headerRow = document.querySelector('#shiftTable thead tr');
+
+    // Find the next Sunday
+    const nextSunday = new Date(today);
+    nextSunday.setDate(today.getDate() - today.getDay());
+
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(nextSunday);
+        date.setDate(nextSunday.getDate() + i);
+        const dayName = date.toLocaleDateString('en-US', options);
+        const th = document.createElement('th');
+        th.textContent = dayName;
+        headerRow.appendChild(th);
+    }
+}
+
+async function populateAvailableHours(select, dayName) {
+    if (!userId) {
+        console.error("User ID is not available.");
+        return;
+    }
+
+    const workingHoursRef = doc(db, 'working_hours', userId);
+    try {
+        const workingHoursDoc = await getDoc(workingHoursRef);
+        if (workingHoursDoc.exists()) {
+            const workingHours = workingHoursDoc.data().workingHours;
+            console.log(`Fetched working hours:`, workingHours);
+
+            if (workingHours[dayName] && workingHours[dayName].working) {
+                const { from, to } = workingHours[dayName];
+                const [fromHour, fromMinute] = from.split(':').map(Number);
+                const [toHour, toMinute] = to.split(':').map(Number);
+
+                for (let hour = fromHour; hour <= toHour; hour++) {
+                    const option = document.createElement('option');
+                    option.value = `${hour}:${fromMinute < 10 ? '0' + fromMinute : fromMinute}`;
+                    option.textContent = `${hour}:${fromMinute < 10 ? '0' + fromMinute : fromMinute}`;
+                    select.appendChild(option);
+                }
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'Closed';
+                select.appendChild(option);
+            }
+        } else {
+            console.error("No working hours document found for user ID:", userId);
+        }
+    } catch (error) {
+        console.error("Error fetching working hours:", error);
+    }
+}
+
+async function populateEmployeeRows() {
+    if (!userId) {
+        console.error("User ID is not available.");
+        return;
+    }
+
+    const employeesRef = query(collection(db, 'employees'), where('userId', '==', userId));
+    try {
+        const querySnapshot = await getDocs(employeesRef);
+        const tbody = document.querySelector('#shiftTable tbody');
+
+        querySnapshot.forEach((doc) => {
+            const employee = doc.data();
+            const tr = document.createElement('tr');
+            const nameTd = document.createElement('td');
+            nameTd.textContent = employee.name;
+            tr.appendChild(nameTd);
+
+            for (let i = 0; i < 7; i++) {
+                const td = document.createElement('td');
+                const select = document.createElement('select');
+                select.className = 'shift-select';
+
+                const dayName = new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + i)).toLocaleDateString('en-US', { weekday: 'long' });
+                console.log(`Populating available hours for ${dayName}`);
+                populateAvailableHours(select, dayName);
+
+                td.appendChild(select);
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        });
+    } catch (error) {
+        console.error("Error fetching employees:", error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    populateWeekDays();
+    populateEmployeeRows();
+});
+
     </script>
 {% endblock %}
