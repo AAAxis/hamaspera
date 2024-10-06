@@ -1,0 +1,248 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-center">Shift Schedule</h1>
+    <!-- Navigation Controls -->
+    <div class="flex justify-between items-center mb-4">
+        <button id="prevWeek" class="bg-gray-300 px-4 py-2 rounded">Previous Week</button>
+        <!-- Week Display -->
+        <div id="week-display" class="text-lg font-medium">
+            <!-- Current week range will be displayed here -->
+        </div>
+        <button id="nextWeek" class="bg-gray-300 px-4 py-2 rounded">Next Week</button>
+    </div>
+    <!-- Calendar -->
+    <div class="overflow-x-auto">
+        <table id="calendar" class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr>
+                    <!-- Employee Column Header -->
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Employee</th>
+                    <!-- Generate Week Days -->
+                    {% for day in week_days %}
+                        <th class="py-2 px-4 border-b border-gray-200 text-center">{{ day }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody id="calendar-body">
+                <!-- Calendar rows will be populated here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        authDomain: "barbershop-77353.firebaseapp.com",
+        projectId: "barbershop-77353",
+        storageBucket: "barbershop-77353.appspot.com",
+        messagingSenderId: "1052222222222",
+        appId: "1:1052222222222:web:1234567890abcdef123456"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Initialize current week start to the previous Sunday
+    let currentWeekStart = new Date();
+    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+
+    /**
+     * Formats a date to "Month Day, Year" (e.g., "October 1, 2024")
+     * @param {Date} date 
+     * @returns {string}
+     */
+    function formatDate(date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    }
+
+    /**
+     * Updates the week display element with the current week's date range and month.
+     */
+    function updateWeekDisplay() {
+        const weekDisplay = document.getElementById('week-display');
+        const startDate = new Date(currentWeekStart);
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(endDate.getDate() + 6); // Add 6 days to get the end of the week
+
+        const formattedStart = formatDate(startDate);
+        const formattedEnd = formatDate(endDate);
+
+        weekDisplay.textContent = `${formattedStart} - ${formattedEnd}`;
+    }
+
+    /**
+     * Function to generate the calendar grid
+     * @param {Array} employees - Array of employee objects
+     * @param {Array} weekDates - Array of Date objects representing the current week
+     */
+    function generateCalendar(employees, weekDates) {
+        const calendarBody = document.getElementById('calendar-body');
+        calendarBody.innerHTML = ''; // Clear previous content
+
+        // Create a row for each employee
+        employees.forEach(employee => {
+            const weekRow = document.createElement('tr');
+
+            // Employee Name Cell
+            const employeeCell = document.createElement('td');
+            employeeCell.className = 'py-4 px-6 border border-gray-200 align-top font-semibold';
+            employeeCell.textContent = employee.name; // Display employee name
+            weekRow.appendChild(employeeCell);
+
+            // Create cells for each day
+            weekDates.forEach(date => {
+                const cell = document.createElement('td');
+                cell.className = 'py-4 px-6 border border-gray-200 align-top';
+                cell.dataset.date = date.toISOString().split('T')[0];
+
+                const shiftContainer = document.createElement('div');
+                shiftContainer.className = 'shift-container';
+
+                // Filter shifts for the current employee and date
+                const shiftsForDate = employee.shifts.filter(shift => {
+                    const shiftDate = new Date(shift.date).toISOString().split('T')[0];
+                    return shiftDate === cell.dataset.date;
+                });
+
+                // Display each shift
+                shiftsForDate.forEach(shift => {
+                    const shiftDiv = document.createElement('div');
+                    // Ensure the color exists to prevent invalid class names
+                    const bgColor = shift.color ? `bg-${shift.color}-100` : 'bg-blue-100';
+                    const textColor = shift.color ? `text-${shift.color}-800` : 'text-blue-800';
+                    shiftDiv.className = `${bgColor} ${textColor} p-2 mb-2 rounded shadow hover:bg-opacity-75 transition duration-300`;
+                    shiftDiv.setAttribute('title', `Employee: ${employee.name}\nFrom: ${shift.start_time}\nTo: ${shift.end_time}`);
+                    
+                    shiftDiv.innerHTML = `
+                        <p class="text-sm font-medium">From: ${shift.start_time}</p>
+                        <p class="text-sm">To: ${shift.end_time}</p>
+                    `;
+
+                    shiftContainer.appendChild(shiftDiv);
+                });
+
+                cell.appendChild(shiftContainer);
+                weekRow.appendChild(cell);
+            });
+
+            calendarBody.appendChild(weekRow);
+        });
+    }
+
+    /**
+     * Function to get all dates for the current week
+     * @returns {Array} - Array of Date objects
+     */
+    function getWeekDates() {
+        const weekDates = [];
+        const date = new Date(currentWeekStart);
+        for (let i = 0; i < 7; i++) {
+            weekDates.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+        return weekDates;
+    }
+
+    /**
+     * Function to fetch employees and their shifts from Firestore
+     * @returns {Promise<Array>} - Promise resolving to an array of employee objects
+     */
+    async function fetchEmployees() {
+        const employeesRef = collection(db, 'employees'); // Ensure you have an 'employees' collection
+        const q = query(employeesRef);
+        const querySnapshot = await getDocs(q);
+        const employees = [];
+
+        querySnapshot.forEach(doc => {
+            const employeeData = doc.data();
+            employees.push({
+                name: employeeData.name,
+                shifts: employeeData.shifts || [] // Default to empty array if no shifts
+            });
+        });
+
+        return employees;
+    }
+
+    /**
+     * Function to populate shifts into the calendar
+     */
+    async function populateShifts() {
+        showLoading(true);
+        try {
+            const employees = await fetchEmployees();
+            const weekDates = getWeekDates();
+            generateCalendar(employees, weekDates);
+            updateWeekDisplay(); // Update the week display after generating the calendar
+        } catch (error) {
+            console.error('Error fetching shifts:', error);
+            displayErrorMessage('Failed to load shifts. Please try again later.');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    /**
+     * Function to display an error message to the user
+     * @param {string} message 
+     */
+    function displayErrorMessage(message) {
+        const calendarBody = document.getElementById('calendar-body');
+        calendarBody.innerHTML = ''; // Clear existing content
+
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 8; // 1 for Employee + 7 days
+        cell.className = 'py-4 px-6 text-center text-red-500';
+        cell.textContent = message;
+        row.appendChild(cell);
+        calendarBody.appendChild(row);
+    }
+
+    /**
+     * Function to show or hide the loading indicator
+     * @param {boolean} isLoading 
+     */
+    function showLoading(isLoading) {
+        let loadingDiv = document.getElementById('loading');
+        if (!loadingDiv) {
+            // Create loading div if it doesn't exist
+            loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading';
+            loadingDiv.className = 'text-center text-gray-500';
+            loadingDiv.textContent = 'Loading shifts...';
+            // Insert loadingDiv above the calendar table
+            const container = document.querySelector('.overflow-x-auto');
+            container.parentNode.insertBefore(loadingDiv, container);
+        }
+        loadingDiv.style.display = isLoading ? 'block' : 'none';
+    }
+
+    // Navigation functions
+    document.getElementById('prevWeek').addEventListener('click', () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        populateShifts();
+    });
+
+    document.getElementById('nextWeek').addEventListener('click', () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        populateShifts();
+    });
+
+    // Initialize the calendar on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        populateShifts();
+    });
+</script>
+{% endblock %}

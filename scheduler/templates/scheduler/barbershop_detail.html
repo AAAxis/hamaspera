@@ -40,12 +40,7 @@
             display: flex;
             position: absolute; /* Absolute positioning to place icons on the right */
             right: 5%; /* Align it to the right for small screens */
-            top: 31%; /* Adjust the top position for small screens */
-            /* big screens */
-            @media (min-width: 768px) {
-                right: 10%; /* Align it to the right */
-                top: 37%; /* Adjust the top position */
-            }
+            top: 32%;
             z-index: 1; /* Place it above the background */
         }
 
@@ -342,9 +337,13 @@
 
                         if (now < openingTime && openingTime - now <= oneHour) {
                             message += ' (Opening soon)';
-                        } else if (now > closingTime && now - closingTime <= oneHour) {
+                        } else if (now > closingTime) {
                             message += ' (Closed)';
-                        } else if (closingTime - now <= oneHour) {
+                        } else if (now > openingTime && now - openingTime <= oneHour) {
+                            message += ' (Open)';
+                        }
+                        // Closing soon icon
+                        if (now > closingTime && now - closingTime <= oneHour) {
                             message += ' (Closing soon)';
                         }
                     }

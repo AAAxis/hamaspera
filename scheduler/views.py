@@ -6,6 +6,7 @@ from django.views import View
 from .models import Slot, Booking, Service, Barber, BarberShop
 
 from google.cloud import firestore
+import calendar
 
 
 class BarberShopDetailView(View):
@@ -177,3 +178,11 @@ class LogoutView(View):
         # Your logout logic here
         return redirect('home')
 
+class ShiftScheduleView(View):
+    def get(self, request):
+        # List of week days starting from Sunday
+        week_days = list(calendar.day_name)
+
+        return render(request, 'scheduler/shift_schedule.html', {
+            'week_days': week_days,
+        })
