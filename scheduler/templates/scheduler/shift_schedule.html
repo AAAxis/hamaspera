@@ -63,7 +63,7 @@
 {% block scripts %}
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, doc, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -170,8 +170,7 @@
 
                 // Filter shifts for the current employee and date
                 const shiftsForDate = employee.shifts.filter(shift => {
-                    const shiftDate = new Date(shift.date).toISOString().split('T')[0];
-                    return shiftDate === cell.dataset.date;
+                    return shift.date === cell.dataset.date;
                 });
 
                 // Display each shift
@@ -180,13 +179,24 @@
                     // Ensure the color exists to prevent invalid class names
                     const bgColor = shift.color ? `bg-${shift.color}-100` : 'bg-blue-100';
                     const textColor = shift.color ? `text-${shift.color}-800` : 'text-blue-800';
-                    shiftDiv.className = `${bgColor} ${textColor} p-2 mb-2 rounded shadow hover:bg-opacity-75 transition duration-300`;
+                    shiftDiv.className = `${bgColor} ${textColor} p-2 mb-2 rounded shadow relative`;
+
                     shiftDiv.setAttribute('title', `Employee: ${employee.name}\nFrom: ${shift.start_time}\nTo: ${shift.end_time}`);
-                    
+
                     shiftDiv.innerHTML = `
                         <p class="text-sm font-medium">From: ${shift.start_time}</p>
                         <p class="text-sm">To: ${shift.end_time}</p>
                     `;
+
+                    // Add delete icon to shiftDiv
+                    const deleteIcon = document.createElement('ion-icon');
+                    deleteIcon.setAttribute('name', 'close-circle-outline');
+                    deleteIcon.className = 'absolute top-1 right-1 text-red-500 hover:text-red-700 cursor-pointer';
+                    deleteIcon.style.fontSize = '20px';
+                    deleteIcon.addEventListener('click', () => {
+                        deleteShift(employee.id, shift.id);
+                    });
+                    shiftDiv.appendChild(deleteIcon);
 
                     shiftContainer.appendChild(shiftDiv);
                 });
@@ -195,7 +205,7 @@
 
                 // Add an icon to add a new shift
                 const addShiftIcon = document.createElement('ion-icon');
-                addShiftIcon.setAttribute('name', 'add-circle-outline');
+                addShiftIcon.setAttribute('name', 'add-outline');
                 addShiftIcon.className = 'absolute bottom-1 right-1 text-blue-500 hover:text-blue-700 cursor-pointer';
                 addShiftIcon.style.fontSize = '24px';
                 addShiftIcon.addEventListener('click', () => {
@@ -248,7 +258,12 @@
 
                 const shiftsQuery = query(shiftsRef, where('date', '>=', startOfWeek), where('date', '<=', endOfWeek));
                 const shiftsSnapshot = await getDocs(shiftsQuery);
-                const shifts = shiftsSnapshot.docs.map(shiftDoc => shiftDoc.data());
+                const shifts = shiftsSnapshot.docs.map(shiftDoc => {
+                    return {
+                        id: shiftDoc.id,
+                        ...shiftDoc.data()
+                    };
+                });
 
                 employees.push({
                     id: employeeId,
@@ -384,5 +399,24 @@
             alert('Failed to add shift. Please try again.');
         }
     });
+
+    /**
+     * Function to delete a shift
+     * @param {string} employeeId 
+     * @param {string} shiftId 
+     */
+    async function deleteShift(employeeId, shiftId) {
+        const confirmDelete = confirm('Are you sure you want to delete this shift?');
+        if (!confirmDelete) return;
+
+        try {
+            const shiftDocRef = doc(db, 'employees', employeeId, 'shifts', shiftId);
+            await deleteDoc(shiftDocRef);
+            populateShifts(); // Refresh the calendar
+        } catch (error) {
+            console.error('Error deleting shift:', error);
+            alert('Failed to delete shift. Please try again.');
+        }
+    }
 </script>
 {% endblock %}
