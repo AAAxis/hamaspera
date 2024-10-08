@@ -1,6 +1,13 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
+<!-- Include Ionicons Library in the head -->
+<head>
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6 text-center">Shift Schedule</h1>
     <!-- Navigation Controls -->
@@ -16,17 +23,10 @@
     <div class="overflow-x-auto">
         <table id="calendar" class="min-w-full bg-white border border-gray-200">
             <thead>
-                <tr>
+                <tr id="week-days-header">
                     <!-- Employee Column Header -->
                     <th class="py-2 px-4 border-b border-gray-200 text-center">Employee</th>
-                    <!-- Week Days Headers -->
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Sunday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Monday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Tuesday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Wednesday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Thursday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Friday</th>
-                    <th class="py-2 px-4 border-b border-gray-200 text-center">Saturday</th>
+                    <!-- Week Days Headers will be generated dynamically -->
                 </tr>
             </thead>
             <tbody id="calendar-body">
@@ -35,12 +35,35 @@
         </table>
     </div>
 </div>
+
+<!-- Modal for Adding Shift -->
+<div id="addShiftModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-semibold mb-4">Add Shift</h2>
+        <form id="addShiftForm">
+            <input type="hidden" id="modal-employee-id">
+            <input type="hidden" id="modal-shift-date">
+            <div class="mb-4">
+                <label for="shiftStartTime" class="block text-gray-700">Start Time:</label>
+                <input type="time" id="shiftStartTime" class="w-full px-3 py-2 border rounded">
+            </div>
+            <div class="mb-4">
+                <label for="shiftEndTime" class="block text-gray-700">End Time:</label>
+                <input type="time" id="shiftEndTime" class="w-full px-3 py-2 border rounded">
+            </div>
+            <div class="flex justify-end">
+                <button type="button" id="cancelButton" class="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Add Shift</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -93,6 +116,31 @@
     }
 
     /**
+     * Function to generate the table header with week days
+     * @param {Array} weekDates - Array of Date objects representing the current week
+     */
+    function generateTableHeader(weekDates) {
+        const headerRow = document.getElementById('week-days-header');
+
+        // Remove existing day headers except the first cell (Employee)
+        while (headerRow.children.length > 1) {
+            headerRow.removeChild(headerRow.lastChild);
+        }
+
+        weekDates.forEach(date => {
+            const th = document.createElement('th');
+            th.className = 'py-2 px-4 border-b border-gray-200 text-center';
+
+            // Format date to "mon 19"
+            const dayName = date.toLocaleDateString(undefined, { weekday: 'short' }).toLowerCase();
+            const dayNumber = date.getDate();
+            th.textContent = `${dayName} ${dayNumber}`;
+
+            headerRow.appendChild(th);
+        });
+    }
+
+    /**
      * Function to generate the calendar grid
      * @param {Array} employees - Array of employee objects
      * @param {Array} weekDates - Array of Date objects representing the current week
@@ -114,7 +162,7 @@
             // Create cells for each day
             weekDates.forEach(date => {
                 const cell = document.createElement('td');
-                cell.className = 'py-4 px-6 border border-gray-200 align-top';
+                cell.className = 'py-4 px-6 border border-gray-200 align-top relative';
                 cell.dataset.date = date.toISOString().split('T')[0];
 
                 const shiftContainer = document.createElement('div');
@@ -144,6 +192,17 @@
                 });
 
                 cell.appendChild(shiftContainer);
+
+                // Add an icon to add a new shift
+                const addShiftIcon = document.createElement('ion-icon');
+                addShiftIcon.setAttribute('name', 'add-circle-outline');
+                addShiftIcon.className = 'absolute bottom-1 right-1 text-blue-500 hover:text-blue-700 cursor-pointer';
+                addShiftIcon.style.fontSize = '24px';
+                addShiftIcon.addEventListener('click', () => {
+                    openAddShiftModal(employee.id, cell.dataset.date);
+                });
+
+                cell.appendChild(addShiftIcon);
                 weekRow.appendChild(cell);
             });
 
@@ -176,9 +235,9 @@
             const querySnapshot = await getDocs(q);
             const employees = [];
 
-            for (const doc of querySnapshot.docs) {
-                const employeeData = doc.data();
-                const employeeId = doc.id;
+            for (const docSnap of querySnapshot.docs) {
+                const employeeData = docSnap.data();
+                const employeeId = docSnap.id;
 
                 // Fetch shifts for the employee within the current week
                 const shiftsRef = collection(db, 'employees', employeeId, 'shifts');
@@ -192,6 +251,7 @@
                 const shifts = shiftsSnapshot.docs.map(shiftDoc => shiftDoc.data());
 
                 employees.push({
+                    id: employeeId,
                     name: employeeData.name,
                     shifts: shifts || [] // Default to empty array if no shifts
                 });
@@ -210,8 +270,9 @@
     async function populateShifts() {
         showLoading(true);
         try {
-            const employees = await fetchEmployees();
             const weekDates = getWeekDates();
+            generateTableHeader(weekDates); // Generate table header with formatted dates
+            const employees = await fetchEmployees();
             generateCalendar(employees, weekDates);
             updateWeekDisplay(); // Update the week display after generating the calendar
         } catch (error) {
@@ -272,6 +333,56 @@
     // Initialize the calendar on page load
     document.addEventListener('DOMContentLoaded', () => {
         populateShifts();
+    });
+
+    /**
+     * Function to open the Add Shift modal
+     * @param {string} employeeId 
+     * @param {string} date 
+     */
+    function openAddShiftModal(employeeId, date) {
+        document.getElementById('modal-employee-id').value = employeeId;
+        document.getElementById('modal-shift-date').value = date;
+        document.getElementById('shiftStartTime').value = '';
+        document.getElementById('shiftEndTime').value = '';
+        document.getElementById('addShiftModal').classList.remove('hidden');
+    }
+
+    // Close the modal when cancel button is clicked
+    document.getElementById('cancelButton').addEventListener('click', () => {
+        document.getElementById('addShiftModal').classList.add('hidden');
+    });
+
+    // Handle form submission to add a shift
+    document.getElementById('addShiftForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const employeeId = document.getElementById('modal-employee-id').value;
+        const date = document.getElementById('modal-shift-date').value;
+        const startTime = document.getElementById('shiftStartTime').value;
+        const endTime = document.getElementById('shiftEndTime').value;
+
+        if (!startTime || !endTime) {
+            alert('Please enter both start and end times.');
+            return;
+        }
+
+        try {
+            const shiftData = {
+                date: date,
+                start_time: startTime,
+                end_time: endTime,
+                // Add other shift properties if needed
+            };
+
+            const shiftsRef = collection(db, 'employees', employeeId, 'shifts');
+            await addDoc(shiftsRef, shiftData);
+
+            document.getElementById('addShiftModal').classList.add('hidden');
+            populateShifts(); // Refresh the calendar
+        } catch (error) {
+            console.error('Error adding shift:', error);
+            alert('Failed to add shift. Please try again.');
+        }
     });
 </script>
 {% endblock %}
