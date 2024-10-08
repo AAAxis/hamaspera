@@ -19,10 +19,14 @@
                 <tr>
                     <!-- Employee Column Header -->
                     <th class="py-2 px-4 border-b border-gray-200 text-center">Employee</th>
-                    <!-- Generate Week Days -->
-                    {% for day in week_days %}
-                        <th class="py-2 px-4 border-b border-gray-200 text-center">{{ day }}</th>
-                    {% endfor %}
+                    <!-- Week Days Headers -->
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Sunday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Monday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Tuesday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Wednesday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Thursday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Friday</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-center">Saturday</th>
                 </tr>
             </thead>
             <tbody id="calendar-body">
@@ -36,21 +40,28 @@
 {% block scripts %}
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
         authDomain: "barbershop-77353.firebaseapp.com",
         projectId: "barbershop-77353",
         storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1052222222222",
-        appId: "1:1052222222222:web:1234567890abcdef123456"
+        messagingSenderId: "1018170430611",
+        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        measurementId: "G-4VS048B47G"
     };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    // Retrieve the user ID from localStorage
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        console.error("User ID not found. Please ensure you are logged in.");
+        // Optionally redirect to login page
+    }
 
     // Initialize current week start to the previous Sunday
     let currentWeekStart = new Date();
@@ -159,20 +170,38 @@
      * @returns {Promise<Array>} - Promise resolving to an array of employee objects
      */
     async function fetchEmployees() {
-        const employeesRef = collection(db, 'employees'); // Ensure you have an 'employees' collection
-        const q = query(employeesRef);
-        const querySnapshot = await getDocs(q);
-        const employees = [];
+        try {
+            const employeesRef = collection(db, 'employees');
+            const q = query(employeesRef, where('userId', '==', userId));
+            const querySnapshot = await getDocs(q);
+            const employees = [];
 
-        querySnapshot.forEach(doc => {
-            const employeeData = doc.data();
-            employees.push({
-                name: employeeData.name,
-                shifts: employeeData.shifts || [] // Default to empty array if no shifts
-            });
-        });
+            for (const doc of querySnapshot.docs) {
+                const employeeData = doc.data();
+                const employeeId = doc.id;
 
-        return employees;
+                // Fetch shifts for the employee within the current week
+                const shiftsRef = collection(db, 'employees', employeeId, 'shifts');
+                const startOfWeek = currentWeekStart.toISOString().split('T')[0];
+                const endOfWeekDate = new Date(currentWeekStart);
+                endOfWeekDate.setDate(endOfWeekDate.getDate() + 6);
+                const endOfWeek = endOfWeekDate.toISOString().split('T')[0];
+
+                const shiftsQuery = query(shiftsRef, where('date', '>=', startOfWeek), where('date', '<=', endOfWeek));
+                const shiftsSnapshot = await getDocs(shiftsQuery);
+                const shifts = shiftsSnapshot.docs.map(shiftDoc => shiftDoc.data());
+
+                employees.push({
+                    name: employeeData.name,
+                    shifts: shifts || [] // Default to empty array if no shifts
+                });
+            }
+
+            return employees;
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+            throw error;
+        }
     }
 
     /**
