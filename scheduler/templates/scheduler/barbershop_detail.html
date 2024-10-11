@@ -116,9 +116,14 @@
 <!-- Barbershop Name -->
 <div id="barbershopName" class="text-center text-5xl font-bold mt-6 relative text-black">{{ business_name }}</div>
 
-<!--About us Section-->
-<div id="workingHours" class="container mx-auto px-4">Today's open hours: {{ working_hours }}</div>
-   
+<!-- About us Section -->
+<div id="workingHours" class="container mx-auto px-4">
+    {% if working_hours %}
+      Today's open hours: {{ working_hours }}
+    {% else %}
+      Today's open hours: Not provided
+    {% endif %}
+  </div>
 <!--Order Section-->
 <div class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
     <div id="serviceDescription">Loading service description...</div>

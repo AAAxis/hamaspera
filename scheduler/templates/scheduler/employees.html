@@ -49,7 +49,6 @@
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Photo</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Services</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 
                             </tr>
@@ -71,6 +70,10 @@
             <div class="bg-white rounded-lg shadow-lg w-96 p-6">
                 <h2 class="text-lg font-bold mb-4">Add Employee</h2>
                 <form id="addEmployeeForm" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="employeePhoto" class="block font-medium text-gray-700">Photo:</label>
+                        <input type="text" id="employeePhoto" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Employee Photo" />
+                    </div>
                     <div class="mb-4">
                         <label for="employeeName" class="block font-medium text-gray-700">Name:</label>
                         <input type="text" id="employeeName" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Employee Name" />
@@ -104,6 +107,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
@@ -246,19 +250,27 @@
         }
     };
     const loadServices = async () => {
-        const servicesTable = document.getElementById('servicesTable');
-        servicesTable.innerHTML = ''; // Clear the table before loading
+    const servicesTable = document.getElementById('servicesTable');
+    servicesTable.innerHTML = ''; // Clear the table before loading
 
-        const q = query(collection(db, 'services'), where('userId', '==', userId));
-        const servicesSnapshot = await getDocs(q);
+    const q = query(collection(db, 'services'), where('userId', '==', userId));
+    const servicesSnapshot = await getDocs(q);
+    
+    if (servicesSnapshot.empty) {
+        servicesTable.innerHTML = '<tr><td colspan="4" class="text-left text-black">No services found.</td></tr>';
+    } else {
         servicesSnapshot.forEach(doc => {
             const service = doc.data();
             
             // Ensure the price is treated as a number
             const price = typeof service.price === 'number' ? service.price : parseFloat(service.price) || 0;
 
+            // Create table row
             const serviceRow = document.createElement('tr');
             serviceRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <img src="${service.image}" alt="Service Image" class="h-12 w-12 rounded-full object-cover" />
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${service.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${price.toFixed(2)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -267,7 +279,8 @@
             `;
             servicesTable.appendChild(serviceRow);
         });
-    };
+    }
+};
 
     const loadEmployees = async () => {
         const employeesTable = document.getElementById('employeesTable');
@@ -292,10 +305,8 @@
                         </td>
                         <td class="px-4 py-2 text-left">${employeeData.name || 'N/A'}</td>
                         <td class="px-4 py-2 text-left">${employeeData.phone || 'N/A'}</td>
-                        <td class="px-4 py-2 text-left">${employeeData.services || 'N/A'}</td>
+        
                         <td class="px-4 py-2 text-left">
-                            <button class="bg-blue-800 hover:bg-blue-700 text-white py-1 px-2 rounded attach-service-button" data-id="${employeeId}" onclick="attachServiceToEmployee('${employeeId}')">Attach Service</button>
-                            <button class="bg-green-800 hover:bg-green-700 text-white py-1 px-2 rounded edit-employee-button" data-id="${employeeId}" onclick="editEmployee('${employeeId}')">Edit</button>
                             <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-employee-button" data-id="${employeeId}" onclick="deleteEmployee('${employeeId}')">Delete</button>
                         </td>
                     </tr>

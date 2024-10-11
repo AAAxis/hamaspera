@@ -173,9 +173,6 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Send email verification
-        await sendEmailVerification(user);
-        document.getElementById('message').innerText = "A verification email has been sent to your email address.";
 
         // Initialize URLs to empty strings if no file is uploaded
         let imageUrl = '';
@@ -207,6 +204,11 @@
             image_url: imageUrl,  // URL of the uploaded logo image
         });
 
+        // Send email verification
+        await sendEmailVerification(user);
+        window.location.href = '/login';
+     
+
     } catch (error) {
         console.error("Error registering:", error);
     }
@@ -223,35 +225,7 @@
       const image = document.getElementById('logo').files[0];
       const background = document.getElementById('background').value[0];
 
-      try {
-          // Create user in Firebase Authentication
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-          localStorage.setItem('userId', user.uid);
-      
-
-          // Send email verification
-          await sendEmailVerification(user);
-          document.getElementById('message').innerText = "A verification email has been sent to your email address.";
-          window.location.href = '/login';
-          // Save business details in Firestore
-          await addDoc(collection(db, 'businesses'), {
-              business_name: businessName,
-              email: email,
-              address: address,
-              phone: phone,
-              service: service, // Save the selected service
-              uid: user.uid,
-              background: background,
-              image_url: image,
-              // Optionally save logo and background URLs if needed
-          });
-
-   
-      } catch (e) {
-          console.error("Error registering: ", e);
-          document.getElementById('message').innerText = "Error occurred during registration.";
-      }
+     
   ;
 </script>
 
