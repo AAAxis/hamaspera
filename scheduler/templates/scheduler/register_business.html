@@ -176,9 +176,8 @@
         // Send email verification
         await sendEmailVerification(user);
         
-        // Alert and confirmation
-        alert("A verification email has been sent to your email address.");
-        if (window.confirm("Do you want to go to the login page?")) {
+           // Alert and confirmation
+        if (window.confirm("A verification email has been sent to your email address. Do you want to go to the login page?")) {
             window.location.href = '/login';
         }
 
