@@ -78,16 +78,19 @@
       });
   });
 
-  // Google Sign-In
-  document.getElementById('google-signin-btn').addEventListener('click', () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        window.location.href = '/dashboard';
-      })
-      .catch((error) => {
-        document.getElementById('error-message').innerText = error.message;
-      });
-  });
+// Google Sign-In
+document.getElementById('google-signin-btn').addEventListener('click', () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      // Store the user ID in localStorage
+      localStorage.setItem('userId', user.uid);
+      window.location.href = '/dashboard';
+    })
+    .catch((error) => {
+      document.getElementById('error-message').innerText = error.message;
+    });
+});
 
 </script>
 {% endblock %}
