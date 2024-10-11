@@ -175,7 +175,12 @@
 
         // Send email verification
         await sendEmailVerification(user);
-        document.getElementById('message').innerText = "A verification email has been sent to your email address.";
+        
+        // Alert and confirmation
+        alert("A verification email has been sent to your email address.");
+        if (window.confirm("Do you want to go to the login page?")) {
+            window.location.href = '/login';
+        }
 
         // Initialize URLs to empty strings if no file is uploaded
         let imageUrl = '';
