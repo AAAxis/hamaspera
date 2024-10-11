@@ -13,16 +13,19 @@
               <div class="form-group mb-3 max-w-sm">
                   <label for="business-name" class="block text-sm font-medium mt-4 dark:text-white">Business Name</label>
                   <input type="text" id="business-name" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Business Name" required>
+
               </div>
 
               <div class="form-group mb-3 max-w-sm">
                   <label for="email" class="block text-sm font-medium mt-4 dark:text-white">Email</label>
                   <input type="email" id="email" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="you@site.com" required>
+            
               </div>
 
               <div class="form-group mb-3 max-w-sm">
                   <label for="password" class="block text-sm font-medium mt-4 dark:text-white">Password</label>
                   <input type="password" id="password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Password" required>
+ 
               </div>
 
               <button type="button" class="btn btn-primary w-100" onclick="nextStep(1)">Next ></button>
@@ -34,11 +37,13 @@
               <div class="form-group mb-3 max-w-sm">
                   <label for="address" class="block text-sm font-medium mb-2 dark:text-white">Address</label>
                   <input type="text" id="address" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Address" required>
+      
               </div>
 
               <div class="form-group mb-3 max-w-sm">
                   <label for="phone" class="block text-sm font-medium mb-2 dark:text-white">Phone</label>
                   <input type="text" id="phone" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 mt-2" placeholder="Phone" required>
+              
               </div>
 
               <!-- Business Type -->
@@ -50,6 +55,7 @@
                       <option value="Nail Salon">Nail Salon</option>
                       <option value="Spa">Spa</option>
                   </select>
+            
               </div>
 
               <button type="button" class="btn btn-secondary text-gray-500 mt-2" onclick="prevStep(2)"> < Previous |</button>
@@ -110,75 +116,143 @@
   // Step Navigation Functions
   window.nextStep = function(currentStep) {
       const nextStep = currentStep + 1;
-      document.getElementById(`step-${currentStep}`).style.display = 'none';
-      document.getElementById(`step-${nextStep}`).style.display = 'block';
+      document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
+      document.getElementById(`step-${nextStep}`).style.display = 'block'; // Show next step
   }
 
   window.prevStep = function(currentStep) {
       const prevStep = currentStep - 1;
-      document.getElementById(`step-${currentStep}`).style.display = 'none';
-      document.getElementById(`step-${prevStep}`).style.display = 'block';
+      document.getElementById(`step-${currentStep}`).style.display = 'none'; // Hide current step
+      document.getElementById(`step-${prevStep}`).style.display = 'block'; // Show previous step
   }
 
-  // Image Upload Function
-  window.uploadImage = async function(type) {
+  // Function to upload images with progress tracking
+  window.uploadImage = function(type) {
       const fileInput = document.getElementById(type);
       const file = fileInput.files[0];
 
       if (file) {
-          const progressDiv = document.getElementById(`${type}-progress`);
-          const progressBar = document.getElementById(`${type}-progress-bar`);
-
-          progressDiv.style.display = 'block';
-
-          const storageRef = ref(storage, `${type}s/${file.name}`);
+          const storageRef = ref(storage, `uploads/${file.name}`);
           const uploadTask = uploadBytesResumable(storageRef, file);
 
           uploadTask.on('state_changed', (snapshot) => {
               const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              progressBar.style.width = progress + '%';
-              progressBar.innerHTML = Math.round(progress) + '%';
+              const progressBar = document.getElementById(`${type}-progress-bar`);
+              const progressContainer = document.getElementById(`${type}-progress`);
+
+              progressContainer.style.display = 'block'; // Show progress bar
+              progressBar.style.width = `${progress}%`;
+              progressBar.innerText = `${Math.round(progress)}%`;
           }, (error) => {
-              console.error('Upload failed:', error);
+              console.error('Upload error:', error);
+              alert('An error occurred while uploading. Please try again.');
           }, async () => {
               const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log(`${type} uploaded successfully. Download URL: ${downloadURL}`);
-              progressDiv.style.display = 'none';
+              console.log('File available at', downloadURL);
+              // Optionally save the download URL in Firestore or another database
           });
+      } else {
+          alert('Please select a file to upload.');
       }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('step-3').addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const businessName = document.getElementById('business-name').value;
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          const address = document.getElementById('address').value;
-          const phone = document.getElementById('phone').value;
-          const service = document.getElementById('service').value;
+  document.getElementById('step-3').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-          try {
-              const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-              const user = userCredential.user;
-              await sendEmailVerification(user);
+    const businessName = document.getElementById('business-name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const address = document.getElementById('address').value;
+    const phone = document.getElementById('phone').value;
+    const service = document.getElementById('service').value;
+    const logoFile = document.getElementById('logo').files[0]; // File object for the logo
+    const backgroundFile = document.getElementById('background').files[0]; // File object for the background
 
-              // Save user data to Firestore
-              await addDoc(collection(db, "businesses"), {
-                  uid: user.uid,
-                  name: businessName,
-                  address: address,
-                  phone: phone,
-                  service: service,
-                  email: email,
-              });
+    try {
+        // Create user in Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-              document.getElementById('message').innerHTML = "<span class='text-green-600'>Registration successful! Please check your email for verification.</span>";
-          } catch (error) {
-              document.getElementById('message').innerHTML = "<span class='text-red-600'>Error: " + error.message + "</span>";
-          }
-      });
-  });
+        // Send email verification
+        await sendEmailVerification(user);
+        document.getElementById('message').innerText = "A verification email has been sent to your email address.";
+
+        // Initialize URLs to empty strings if no file is uploaded
+        let imageUrl = '';
+        let backgroundUrl = '';
+
+        // Upload logo and get the download URL if a file is selected
+        if (logoFile) {
+            const logoUploadTask = uploadBytesResumable(ref(storage, `logos/${logoFile.name}`), logoFile);
+            await logoUploadTask;  // Wait for the upload to finish
+            imageUrl = await getDownloadURL(logoUploadTask.snapshot.ref);  // Get the logo's download URL
+        }
+
+        // Upload background and get the download URL if a file is selected
+        if (backgroundFile) {
+            const backgroundUploadTask = uploadBytesResumable(ref(storage, `backgrounds/${backgroundFile.name}`), backgroundFile);
+            await backgroundUploadTask;  // Wait for the upload to finish
+            backgroundUrl = await getDownloadURL(backgroundUploadTask.snapshot.ref);  // Get the background's download URL
+        }
+
+        // Save business details in Firestore with the download URLs
+        await addDoc(collection(db, 'businesses'), {
+            business_name: businessName,
+            email: email,
+            address: address,
+            phone: phone,
+            service: service, // Save the selected service
+            uid: user.uid,
+            background: backgroundUrl, // URL of the uploaded background image
+            image_url: imageUrl,  // URL of the uploaded logo image
+        });
+
+    } catch (error) {
+        console.error("Error registering:", error);
+    }
+});
+
+      event.preventDefault();
+
+      const businessName = document.getElementById('business-name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+      const service = document.getElementById('service').value;
+      const image = document.getElementById('logo').files[0];
+      const background = document.getElementById('background').value[0];
+
+      try {
+          // Create user in Firebase Authentication
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          localStorage.setItem('userId', user.uid);
+      
+
+          // Send email verification
+          await sendEmailVerification(user);
+          document.getElementById('message').innerText = "A verification email has been sent to your email address.";
+          window.location.href = '/login';
+          // Save business details in Firestore
+          await addDoc(collection(db, 'businesses'), {
+              business_name: businessName,
+              email: email,
+              address: address,
+              phone: phone,
+              service: service, // Save the selected service
+              uid: user.uid,
+              background: background,
+              image_url: image,
+              // Optionally save logo and background URLs if needed
+          });
+
+   
+      } catch (e) {
+          console.error("Error registering: ", e);
+          document.getElementById('message').innerText = "Error occurred during registration.";
+      }
+  ;
 </script>
 
 {% endblock %}
