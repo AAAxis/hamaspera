@@ -115,14 +115,13 @@
 </div>
 <!-- Barbershop Name -->
 <div id="barbershopName" class="text-center text-5xl font-bold mt-6 relative text-black">{{ business_name }}</div>
-<!-- Barbershop Description -->
-<div class="text-center mb-4 text-sm text-gray-500" id="barbershopDescription">{{ service }}</div>    
+
 <!--About us Section-->
 <div id="workingHours" class="container mx-auto px-4">Today's open hours: {{ working_hours }}</div>
    
 <!--Order Section-->
 <div class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
-    <h1 class="text-left text-lg my-4 text-gray-500">Book your appointment in just a one minute <span class="text-xl font-bold">💇‍♂️</span></h1>
+    <h1 class="text-left text-lg my-4 text-gray-500">{{ service }} <span class="text-xl font-bold">💇‍♂️</span></h1>
     <div class="flex flex-col mb-4">
         <div class="flex flex-col mb-4">
             <label for="serviceSelect" class="mb-2 text-xl text-gray-700 text-left">Select Service:</label>
