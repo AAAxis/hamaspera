@@ -168,11 +168,16 @@
     const logoFile = document.getElementById('logo').files[0]; // File object for the logo
     const backgroundFile = document.getElementById('background').files[0]; // File object for the background
 
+    // Validate if at least one image is uploaded
+    if (!logoFile && !backgroundFile) {
+        alert('Please upload at least one image (Logo or Background) before submitting.');
+        return; // Prevent form submission
+    }
+
     try {
         // Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
 
         // Initialize URLs to empty strings if no file is uploaded
         let imageUrl = '';
@@ -207,7 +212,6 @@
         // Send email verification
         await sendEmailVerification(user);
         window.location.href = '/login';
-     
 
     } catch (error) {
         console.error("Error registering:", error);
