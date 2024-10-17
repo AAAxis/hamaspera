@@ -1,19 +1,7 @@
-<!DOCTYPE html>
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-<html lang="en" class="relative min-h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Barbershop Booking</title>
-    <!-- Importing Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-</head>
 
 <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
 
@@ -46,19 +34,15 @@
         <div class="mb-4 mt-8">
             <h2 class="text-4xl font-bold text-gray-900">Dashboard</h2>
         </div>
-        <div class="mb-4 mt-8">
-            <div class="w-full p-4 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
-                <ul class="list-disc list-inside mt-4">
-                    <li id="business-address"> Address </li>
-                    <li id="business-email"> Email </li>
-                    <li id="business-phone"> Phone </li>
-                    <button onclick="window.location.href='/edit'" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
-                        Edit Business
-                    </button>
-                </ul>
-            </div>
-        </div>
+    <!-- Edit icon for background image remains as is -->
+    <div class="absolute bottom-2 right-2">
+        <button id="editBackgroundButton" class="p-2 bg-gray-100 rounded-full shadow hover:bg-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+        <input type="file" id="businessBackground" accept="image/*" class="hidden" />
+    </div>
         <div class="mb-4 mt-8">
             <div class="mt-6 bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold text-gray-900">Employees Info</h2>
@@ -106,7 +90,7 @@
 <!-- Working Hours Section -->
 <div class="mb-4 mt-8">
     <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-900">Business Working Hours</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Working Hours</h2>
         <ul class="flex flex-col divide-y divide-gray-200 dark:divide-neutral-700 mt-4">
             <li class="flex items-center gap-x-2 py-3 text-sm font-medium text-gray-800 dark:text-white px-2">
                 <span>Monday</span>
@@ -185,17 +169,6 @@
 <script type="module">
        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        measurementId: "G-4VS048B47G"
-    };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
