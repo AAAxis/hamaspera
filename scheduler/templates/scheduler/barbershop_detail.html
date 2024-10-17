@@ -114,26 +114,28 @@
     </div>
 </div>
 <!-- Barbershop Name -->
-<div style="display: flex; align-items: center; justify-content: center; margin-left: 20%;">
-    <div id="barbershopName" class="text-center text-5xl font-bold relative text-black" style="margin-right: 20px;">
+<div style="display: flex; align-items: center; justify-content: center; margin-left: 45%; margin-top: -55px;">
+    <div id="barbershopName" class="text-center text-5xl font-bold relative text-black">
         {{ business_name }}
     </div>
-    <div id="workingHours" class="container mx-auto px-4">
-        {% if working_hours %}
-          Today's open hours: {{ working_hours }}
-        {% else %}
-          Today's open hours:<br>  Not provided
-        {% endif %}
-      </div>
+
 </div>
 
 <!--Order Section-->
-<div  class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
-    <div id="serviceDescription">
-        Loading service description...
+<div  class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 "> 
+    <div class="container mx-auto px-4">
+        <div id="workingHours" class="flex-row">
+            {% if working_hours %}
+              <div class="working-hours">Today's open hours: {{ working_hours }}</div>
+            {% else %}
+              <div class="working-hours">Today's open hours: Not provided</div>
+            {% endif %}
+      
+        </div>
+
     </div>
     <!-- About us Section -->
-
+    
     <br>
 
     <div class="flex flex-col mb-4">
@@ -199,6 +201,7 @@
         </div>
     </div>
     <div class="container mx-auto my-4 p-4">
+        <div id="serviceDescription" class="service-description">Loading service description...</div>
         <h1 class="text-left text-2xl font-bold my-4 text-gray-700">Gallery</h1>
         <div id="gallery" class="flex overflow-x-auto space-x-4 mt-4 px-4 scrollbar-hide">
             <!-- Gallery images will be dynamically inserted here -->
