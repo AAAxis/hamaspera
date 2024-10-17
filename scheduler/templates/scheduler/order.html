@@ -38,7 +38,7 @@
     <div id="verificationCodeSection" class="mt-4 hidden">
         <label for="verificationCode">Enter Verification Code:</label>
         <input type="text" id="verificationCode" class="border border-gray-300 rounded px-2 py-1 w-full" placeholder="Enter the code you received">
-        <button id="confirmCodeButton" class="bg-black text-white mt-4 px-4 py-2 rounded">Confirm Code</button>
+        <button id="confirmCodeButton" class="bg-black text-white mt-4 px-4 py-2 rounded">Confirm</button>
     </div>
 </div>
 
@@ -68,8 +68,8 @@
     document.getElementById('confirmCodeButton').addEventListener('click', async () => {
         const code = document.getElementById('verificationCode').value;
         const phoneNumber = document.getElementById('phone').value;
-        const serviceName = urlParams.get('serviceName');
-        const employeeName = urlParams.get('employeeName');
+        const serviceName = urlParams.get('service');
+        const employeeName = urlParams.get('employee');
         const dateTime = urlParams.get('datetime');
 
         // Check if the entered code matches the sent verification code

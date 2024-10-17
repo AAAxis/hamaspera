@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbershop</title>
+    <title>Appoint Me</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -141,20 +141,20 @@
     </div>
     <div class="flex flex-col mb-4">
         <div class="flex flex-col mb-4">
-            <label for="daySelect" class="mb-2 text-xl text-gray-700 text-left">Select Day:</label>
+            <label for="dateSelect" class="mb-2 text-xl text-gray-700 text-left">Select Day:</label>
         </div>
         <div class="w-full">
-            <select id="daySelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+            <select id="dateSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
                 <!-- Days will be dynamically inserted here -->
             </select>
         </div>
     </div>
     <div class="flex flex-col mb-4">
         <div class="flex flex-col mb-4">
-            <label for="hourSelect" class="mb-2 text-xl text-gray-700 text-left">Select Hour:</label>
+            <label for="timeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Hour:</label>
         </div>
         <div class="w-full">
-            <select id="hourSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+            <select id="timeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
                 <!-- Available hours will be dynamically inserted here -->
             </select>
         </div>
@@ -191,7 +191,7 @@
                 <p class="text-xl text-gray-500">Do you want a site like this?  <a href="https://t.me/polskoydm" class="text-blue-500 ">Contact Us</a></p>
             </div>
             <div class="mt-4">
-                <a href="{% url 'schedule' %}" class="text-xl text-gray-700">Powered by Hamaspera <img src="https://play-lh.googleusercontent.com/qS5E6u-ZbMe8S20V2jCkYoNtcGP-oV1olkShS3cpV0fCw1tBHx4Fq-k_8b-gY90NaOw=w480-h960-rw" alt="Logo" class="inline h-8"> </a>
+                <a href="{% url 'schedule' %}" class="text-xl text-gray-700">Powere by Appoint Me <img src="https://polskoydm.pythonanywhere.com/static/playstore.png" alt="Logo" class="inline h-8"> </a>
             </div>
     </div>
     
@@ -303,68 +303,31 @@
     window.location.href = orderUrl;
 });
 
-    // Fetch Working Hours for Today
-    async function fetchWorkingHoursForToday() {
-        try {
-            const workingHoursRef = doc(db, 'working_hours', store);
-            const workingHoursDoc = await getDoc(workingHoursRef);
+async function fetchWorkingHoursForToday() {
+    try {
+        const workingHoursRef = doc(db, 'working_hours', store);
+        const workingHoursDoc = await getDoc(workingHoursRef);
 
-            if (workingHoursDoc.exists()) {
-                const workingHours = workingHoursDoc.data().workingHours;
-                const workingHoursDiv = document.getElementById('workingHours');
-                if (!workingHoursDiv) {
-                    console.error('Element with ID "workingHours" not found.');
-                    return;
-                }
-                workingHoursDiv.innerHTML = ''; // Clear previous content
-
-                // Get today's day name and normalize it
-                const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-                console.log('Today is:', today); // Debugging
-                console.log('Fetched working hours:', workingHours); // Debugging
-
-                if (workingHours[today]) {
-                    const hours = workingHours[today];
-                    const hoursText = hours.working ? `${hours.from} - ${hours.to}` : 'Closed';
-                    let message = `Today's open hours: ${hoursText}`;
-
-                    if (hours.working) {
-                        const now = new Date();
-                        const [fromHour, fromMinute] = hours.from.split(':').map(Number);
-                        const [toHour, toMinute] = hours.to.split(':').map(Number);
-
-                        const openingTime = new Date(now);
-                        openingTime.setHours(fromHour, fromMinute);
-
-                        const closingTime = new Date(now);
-                        closingTime.setHours(toHour, toMinute);
-
-                        const oneHour = 60 * 60 * 1000; // One hour in milliseconds
-
-                        if (now < openingTime && openingTime - now <= oneHour) {
-                            message += ' (Opening soon)';
-                        } else if (now > closingTime) {
-                            message += ' (Closed)';
-                        } else if (now > openingTime && now - openingTime <= oneHour) {
-                            message += ' (Open)';
-                        }
-                        // Closing soon icon
-                        if (now > closingTime && now - closingTime <= oneHour) {
-                            message += ' (Closing soon)';
-                        }
-                    }
-
-                    workingHoursDiv.textContent = message;
-                } else {
-                    workingHoursDiv.textContent = 'No working hours available for today.';
-                }
-            } else {
-                console.warn('No working hours found for store:', store);
+        if (workingHoursDoc.exists()) {
+            const workingHours = workingHoursDoc.data().workingHours;
+            const workingHoursDiv = document.getElementById('workingHours');
+            if (!workingHoursDiv) {
+                console.error('Element with ID "workingHours" not found.');
+                return;
             }
-        } catch (error) {
-            console.error('Error fetching working hours:', error);
+            workingHoursDiv.innerHTML = ''; // Clear previous content
+
+            // Get today's day name and normalize it
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+            const hoursToday = workingHours[today] || 'Closed today'; // Default message if no hours found
+            workingHoursDiv.textContent = hoursToday;
+        } else {
+            console.error('No working hours found for this store.');
         }
+    } catch (e) {
+        console.error("Error fetching working hours:", e);
     }
+}
 
     // Fetch Services Based on UserId
     async function fetchServices() {
@@ -422,7 +385,7 @@
     }
 
     async function populateDays() {
-        const daySelect = document.getElementById('daySelect');
+        const daySelect = document.getElementById('dateSelect');
         const today = new Date();
         const options = { weekday: 'long', month: '2-digit', day: '2-digit' };
 
@@ -438,8 +401,8 @@
     }
 
     async function populateHours() {
-        const daySelect = document.getElementById('daySelect');
-        const hourSelect = document.getElementById('hourSelect');
+        const daySelect = document.getElementById('dateSelect');
+        const hourSelect = document.getElementById('timeSelect');
         const selectedDate = new Date(daySelect.value);
         const dayName = selectedDate.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
 
@@ -471,7 +434,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         await populateDays();
-        document.getElementById('daySelect').addEventListener('change', populateHours);
+        document.getElementById('dateSelect').addEventListener('change', populateHours);
         await fetchBarbershopData("{{ barbershop_id }}");
         await fetchServices();
         await fetchGallery();
@@ -534,18 +497,29 @@
             console.error("Error fetching next available slot:", error);
         }
     }
-
     document.getElementById('orderButton').addEventListener('click', async () => {
-        const dateTime = document.getElementById('dateTime').value;
+    const serviceSelect = document.getElementById('serviceSelect');
+    const employeeSelect = document.getElementById('employeeSelect');
+    const date = document.getElementById('dateSelect').value;
+    const time = document.getElementById('timeSelect').value;
 
-        if (!dateTime) {
-            alert("Please select a date and time.");
-            return;
-        }
+    if (!serviceSelect.value || !employeeSelect.value || !date || !time) {
+        alert("Please select a service, an employee, and a date/time.");
+        return;
+    }
 
-        const orderUrl = `/order?datetime=${encodeURIComponent(dateTime)}&store=${encodeURIComponent(store)}`;
-        window.location.href = orderUrl;
-    });
+    // Get selected service and employee names
+    const serviceName = serviceSelect.options[serviceSelect.selectedIndex].text;
+    const employeeName = employeeSelect.options[employeeSelect.selectedIndex].text;
+
+    const dateTime = `${date}T${time}`;
+    
+    // Construct the URL with service and employee names
+    const orderUrl = `/order?datetime=${encodeURIComponent(dateTime)}&store=${encodeURIComponent(store)}&service=${encodeURIComponent(serviceName)}&employee=${encodeURIComponent(employeeName)}`;
+    
+    window.location.href = orderUrl;
+});
+
 
     document.addEventListener('DOMContentLoaded', async () => {
         const barbershopId = "{{ barbershop_id }}";

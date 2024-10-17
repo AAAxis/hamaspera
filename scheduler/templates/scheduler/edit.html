@@ -6,12 +6,9 @@
         <h2 class="text-4xl font-bold text-gray-900">Edit Business</h2>
     </div>
 
-<!-- Background Image with logo overlay and edit icons -->
-<div class="relative mb-8">
-    <img id="background" alt="Business Background" class="w-full h-96 object-cover rounded-md shadow">
-    
-    <div class="absolute inset-0 flex justify-center items-center">
-        <div class="relative">
+    <!-- Business Logo Section -->
+    <div class="relative mb-8">
+        <div class="flex justify-center items-center">
             <!-- Business Logo -->
             <img id="image_url" alt="Business Logo" class="w-48 h-48 rounded-full border-4 border-white object-cover shadow-lg">
             
@@ -26,17 +23,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Edit icon for background image remains as is -->
-    <div class="absolute bottom-2 right-2">
-        <button id="editBackgroundButton" class="p-2 bg-gray-100 rounded-full shadow hover:bg-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-        </button>
-        <input type="file" id="businessBackground" accept="image/*" class="hidden" />
-    </div>
-</div>
 
     <!-- Edit Business Info -->
     <div class="min-w-full">
@@ -76,7 +62,6 @@
     import { getFirestore, query, where, getDocs, collection, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
@@ -97,7 +82,6 @@
                 document.getElementById('businessPhone').value = data.phone || '';
                 document.getElementById('businessService').value = data.service || '';
                 document.getElementById('image_url').src = data.image_url;
-                document.getElementById('background').src = data.background;
             } else {
                 alert('No business document found for this user.');
             }
@@ -127,10 +111,8 @@
         }
     }
 
-    document.getElementById('editBackgroundButton').onclick = () => document.getElementById('businessBackground').click();
     document.getElementById('editLogoButton').onclick = () => document.getElementById('businessLogo').click();
 
-    document.getElementById('businessBackground').onchange = () => handleImageUpload(document.getElementById('businessBackground'), document.getElementById('background'));
     document.getElementById('businessLogo').onchange = () => handleImageUpload(document.getElementById('businessLogo'), document.getElementById('image_url'));
 
     // Handle form submission

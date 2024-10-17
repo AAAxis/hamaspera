@@ -5,48 +5,35 @@
 
 <body class="text-gray-800 relative min-h-full {% if request.path != '/dashboard/' %}bg-cover bg-center bg-no-repeat bg-opacity-10 backdrop-blur-lg{% endif %}">
 
-<header class="flex items-center justify-between bg-white p-4 shadow-md hidden">
-    <!-- Business Info as Logo and Name -->
-    <div class="relative">
-        <button class="flex items-center focus:outline-none" onclick="window.location.href='/edit'">
-            <img src="" id="business-logo" alt="Business Logo" class="w-10 h-10 rounded-full object-cover mr-3 cursor-pointer shadow-md">
-            <span id="business-name" class="text-gray-800 font-medium">Business Name</span>
-        </button>
-    </div>
 
-    
-    <!-- Navbar links -->
-    <nav class="flex items-center space-x-4">
-        <a href="{% url 'orders_history' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Orders</a>
-        <a href="{% url 'schedule' %}" class="px-3 py-2 text-sm text-gray-800 hover:text-gray-600">Home</a>
-        <a href="#" onclick="logout()" class="flex items-center px-3 py-2 text-sm text-gray-800 hover:text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H3m6-6l-6 6 6 6m3 6h6a2 2 0 002-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2v16a2 2 0 002 2z" />
-            </svg>
-        </a>
-    </nav>
-</header>
 <!-- Workers Data Section -->
 <body class="bg-white">
     
     
     <div class="min-h-full">
         <div class="mb-4 mt-8">
-            <h2 class="text-4xl font-bold text-gray-900">Dashboard</h2>
+            <h4 class="text-4xl font-bold text-gray-900">Dashboard</h4>
         </div>
         <div class="relative mb-8">
+            <!-- Background image -->
             <img id="background" alt="Business Background" class="w-full h-96 object-cover rounded-md shadow">
-            
-           <!-- Edit icon for background image remains as is -->
-    <div class="absolute bottom-2 right-2">
-        <button id="editBackgroundButton" class="p-2 bg-gray-100 rounded-full shadow hover:bg-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-        </button>
-        <input type="file" id="businessBackground" accept="image/*" class="hidden" />
-    </div>
-</div>
+        
+            <!-- Business Name in top left corner -->
+            <div class="absolute top-2 left-2 bg-gray-900 bg-opacity-50 text-white px-4 py-2 rounded-md shadow">
+                <h2 id="business-name" class="text-lg font-bold"></h2>
+            </div>
+        
+            <!-- Edit icon for background image remains as is -->
+            <div class="absolute bottom-2 right-2">
+                <button id="editBackgroundButton" class="p-2 bg-gray-100 rounded-full shadow hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+                <input type="file" id="businessBackground" accept="image/*" class="hidden" />
+            </div>
+        </div>
+        
         <div class="mb-4 mt-8">
             <div class="mt-6 bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold text-gray-900">Employees Info</h2>
@@ -63,7 +50,7 @@
                     </tbody>
                 </table>
                 <button onclick="window.location.href='/employees'" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
-                    Edit Employees
+                    Add Employees
                 </button>
             </div>
    
@@ -171,13 +158,14 @@
 </main>
 
 <script type="module">
-       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app);
     
 
 
@@ -237,8 +225,8 @@ async function fetchBusinessData(userId) {
             console.log('Fetched business data:', business);
 
             // Update the navbar with business information
-            document.getElementById('business-logo').src = business.image_url || '';
-            document.getElementById('business-name').textContent = business.business_name || 'N/A';
+            document.getElementById('background').src = business.background || 'NA';
+            document.getElementById('business-name').textContent = business.business_name || 'NA';
 
             // Ensure these elements exist in your HTML
             document.getElementById('business-address').textContent = business.address || 'Address not available';

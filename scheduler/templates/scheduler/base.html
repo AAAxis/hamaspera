@@ -71,7 +71,7 @@
                 authLinks.innerHTML = `
                     <div class="relative">
                         <button class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                            Menu
+                        
                             <ion-icon name="menu-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
@@ -85,11 +85,11 @@
                             </a>
                             <a href="{% url 'edit' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
                                 <ion-icon name="create-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Edit
+                                Edit Bussiness
                             </a>
                             <a href="{% url 'orders_history' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
                                 <ion-icon name="list-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Orders
+                                Appointments
                             </a>
                             <a href="{% url 'employees' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
                                 <ion-icon name="people-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
