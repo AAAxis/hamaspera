@@ -7,6 +7,12 @@
 </div>
 
 <script type="module">
+    // Firebase SDK Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     // Fetch all businesses from Firestore
     async function fetchBusinesses() {

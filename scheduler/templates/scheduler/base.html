@@ -50,10 +50,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.5.2/cdn.js" defer></script>
 
         <script>
-    // Firebase SDK Imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
+    
      // Firebase configuration
      const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -66,8 +63,7 @@
     };
 
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  
         document.addEventListener('DOMContentLoaded', () => {
             const userId = localStorage.getItem('userId');
             const authLinks = document.getElementById('auth-links');
