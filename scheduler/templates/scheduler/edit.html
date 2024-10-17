@@ -76,14 +76,6 @@
     import { getFirestore, query, where, getDocs, collection, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
