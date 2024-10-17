@@ -34,17 +34,7 @@
         <div class="mb-4 mt-8">
             <h2 class="text-4xl font-bold text-gray-900">Dashboard</h2>
         </div>
-        <div class="mb-4 mt-8">
-            <div class="w-full p-4 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-gray-900">Business Info</h2>
-                <ul class="list-disc list-inside mt-4">
-                    <li id="business-address"> Address </li>
-                    <li id="business-email"> Email </li>
-                    <li id="business-phone"> Phone </li>
-           
-                </ul>
-            </div>
-        </div>
+     
            <!-- Edit icon for background image remains as is -->
     <div class="absolute bottom-2 right-2">
         <button id="editBackgroundButton" class="p-2 bg-gray-100 rounded-full shadow hover:bg-gray-200">
@@ -180,16 +170,49 @@
 <script type="module">
        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    
+
+
 
     // Get user info from localStorage
     const userId = localStorage.getItem("userId");
     console.log("User ID:", userId);
 
 
+
+
+   
+
+    function handleImageUpload(fileInput) {
+        const file = fileInput.files[0];
+        if (file) {
+            const storageRef = ref(storage, `businessImages/${userId}/${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed', null, null, async () => {
+                const downloadURL = await getDownloadURL(storageRef);
+                document.getElementById('background').src = downloadURL;
+
+                // Update the business document with the new background URL
+                const q = query(collection(db, "businesses"), where("uid", "==", userId));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const docSnap = querySnapshot.docs[0];
+                    const docRef = doc(db, "businesses", docSnap.id);
+                    await updateDoc(docRef, { background: downloadURL });
+                }
+            });
+        }
+    }
+
+    // Trigger background image upload when button is clicked
+    document.getElementById('editBackgroundButton').onclick = () => document.getElementById('businessBackground').click();
+    document.getElementById('businessBackground').onchange = () => handleImageUpload(document.getElementById('businessBackground'));
 
 
 
