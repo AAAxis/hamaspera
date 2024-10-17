@@ -227,12 +227,7 @@ async function fetchBusinessData(userId) {
             // Update the navbar with business information
             document.getElementById('background').src = business.background || 'NA';
             document.getElementById('business-name').textContent = business.business_name || 'NA';
-
-            // Ensure these elements exist in your HTML
-            document.getElementById('business-address').textContent = business.address || 'Address not available';
-            document.getElementById('business-email').textContent = business.email || 'Email not available';
-            document.getElementById('business-phone').textContent = business.phone || 'Phone not available';
-        });
+     });
     } catch (error) {
         console.error('Error fetching business data:', error);
     }
@@ -447,54 +442,36 @@ function closeServiceModal() {
             }
         });
 
-function populateWeekDays() {
-    const today = new Date();
-    const options = { weekday: 'long', month: '2-digit', day: '2-digit' };
-    const headerRow = document.querySelector('#shiftTable thead tr');
-
-    // Find the next Sunday
-    const nextSunday = new Date(today);
-    nextSunday.setDate(today.getDate() - today.getDay());
-
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(nextSunday);
-        date.setDate(nextSunday.getDate() + i);
-        const dayName = date.toLocaleDateString('en-US', options);
-        const th = document.createElement('th');
-        th.textContent = dayName;
-        headerRow.appendChild(th);
-    }
-}
-
-async function populateAvailableHours(select, dayName) {
+        async function populateWorkingHours() {
+    const userId = localStorage.getItem('userId');
+    
     if (!userId) {
         console.error("User ID is not available.");
         return;
     }
 
     const workingHoursRef = doc(db, 'working_hours', userId);
+
     try {
         const workingHoursDoc = await getDoc(workingHoursRef);
+        
         if (workingHoursDoc.exists()) {
             const workingHours = workingHoursDoc.data().workingHours;
-            console.log(`Fetched working hours:`, workingHours);
+            console.log('Fetched working hours:', workingHours);
 
-            if (workingHours[dayName] && workingHours[dayName].working) {
-                const { from, to } = workingHours[dayName];
-                const [fromHour, fromMinute] = from.split(':').map(Number);
-                const [toHour, toMinute] = to.split(':').map(Number);
-
-                for (let hour = fromHour; hour <= toHour; hour++) {
-                    const option = document.createElement('option');
-                    option.value = `${hour}:${fromMinute < 10 ? '0' + fromMinute : fromMinute}`;
-                    option.textContent = `${hour}:${fromMinute < 10 ? '0' + fromMinute : fromMinute}`;
-                    select.appendChild(option);
+            // Populate each day's working hours
+            ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+                if (workingHours[day]) {
+                    document.getElementById(`${day}-working`).checked = workingHours[day].working;
+                    document.getElementById(`${day}-from`).value = workingHours[day].from;
+                    document.getElementById(`${day}-to`).value = workingHours[day].to;
+                } else {
+                    // If no data for that day, set default values
+                    document.getElementById(`${day}-working`).checked = false;
+                    document.getElementById(`${day}-from`).value = '08:00';
+                    document.getElementById(`${day}-to`).value = '20:00';
                 }
-            } else {
-                const option = document.createElement('option');
-                option.textContent = 'Closed';
-                select.appendChild(option);
-            }
+            });
         } else {
             console.error("No working hours document found for user ID:", userId);
         }
@@ -502,6 +479,11 @@ async function populateAvailableHours(select, dayName) {
         console.error("Error fetching working hours:", error);
     }
 }
+
+// Call the function when the page loads to populate the working hours
+document.addEventListener('DOMContentLoaded', () => {
+    populateWorkingHours();
+});
 
 async function populateEmployeeRows() {
     if (!userId) {

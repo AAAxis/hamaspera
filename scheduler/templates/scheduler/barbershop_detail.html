@@ -116,7 +116,11 @@
 <!-- Barbershop Name -->
 <div id="barbershopName" class="text-center text-5xl font-bold mt-6 relative text-black">{{ business_name }}</div>
 
-<!-- About us Section -->
+<div style="margin-left: 6%;" id="serviceDescription">Loading service description...</div>
+<!--Order Section-->
+<div  class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
+
+    <!-- About us Section -->
 <div id="workingHours" class="container mx-auto px-4">
     {% if working_hours %}
       Today's open hours: {{ working_hours }}
@@ -124,9 +128,6 @@
       Today's open hours: Not provided
     {% endif %}
   </div>
-<!--Order Section-->
-<div class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 ">  
-    <div id="serviceDescription">Loading service description...</div>
     <br>
 
     <div class="flex flex-col mb-4">
@@ -136,6 +137,16 @@
         <div class="w-full">
             <select id="serviceSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
                 <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select a service</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex flex-col mb-4">
+        <div class="flex flex-col mb-4">
+            <label for="employeeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Master:</label>
+        </div>
+        <div class="w-full">
+            <select id="employeeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
+                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select an employee</option>
             </select>
         </div>
     </div>
@@ -155,20 +166,24 @@
         </div>
         <div class="w-full">
             <select id="timeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <!-- Available hours will be dynamically inserted here -->
+                <option value="8:00">8:00 AM</option>
+                <option value="9:00">9:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="11:00">11:00 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="13:00">1:00 PM</option>
+                <option value="14:00">2:00 PM</option>
+                <option value="15:00">3:00 PM</option>
+                <option value="16:00">4:00 PM</option>
+                <option value="17:00">5:00 PM</option>
+                <option value="18:00">6:00 PM</option>
+                <option value="19:00">7:00 PM</option>
+                <option value="20:00">8:00 PM</option>
             </select>
         </div>
     </div>
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <label for="employeeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Employee:</label>
-        </div>
-        <div class="w-full">
-            <select id="employeeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select an employee</option>
-            </select>
-        </div>
-    </div>
+    
+
     <div class="flex flex-col mb-4">
 
     </div>
@@ -311,16 +326,25 @@ async function fetchWorkingHoursForToday() {
         if (workingHoursDoc.exists()) {
             const workingHours = workingHoursDoc.data().workingHours;
             const workingHoursDiv = document.getElementById('workingHours');
+            
             if (!workingHoursDiv) {
                 console.error('Element with ID "workingHours" not found.');
                 return;
             }
+
             workingHoursDiv.innerHTML = ''; // Clear previous content
 
-            // Get today's day name and normalize it
+            // Get today's day name
             const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-            const hoursToday = workingHours[today] || 'Closed today'; // Default message if no hours found
-            workingHoursDiv.textContent = hoursToday;
+            const todayHours = workingHours[today];
+
+            if (todayHours && todayHours.working) {
+                // If the store is open today, display the hours
+                workingHoursDiv.textContent = `Open: ${todayHours.from} - Close: ${todayHours.to}`;
+            } else {
+                // If the store is closed today
+                workingHoursDiv.textContent = 'Closed today';
+            }
         } else {
             console.error('No working hours found for this store.');
         }
@@ -329,60 +353,81 @@ async function fetchWorkingHoursForToday() {
     }
 }
 
-    // Fetch Services Based on UserId
-    async function fetchServices() {
-        console.log('User ID:', store);
+async function fetchServices() {
+    console.log('User ID:', store);
 
-        if (!store) {
-            console.error('User ID not found.');
-            return;
+    if (!store) {
+        console.error('User ID not found.');
+        return;
+    }
+
+    const servicesQuery = query(collection(db, 'services'), where('userId', '==', store));
+    const querySnapshot = await getDocs(servicesQuery);
+
+    // Process service data
+    const serviceSelect = document.getElementById('serviceSelect');
+    serviceSelect.innerHTML = '<option value="">Select a service</option>'; // Clear previous options
+
+    let firstServiceId = ''; // To store the first available service ID
+
+    querySnapshot.forEach((doc, index) => {
+        const serviceData = doc.data();
+        console.log('Service Data:', serviceData);
+
+        const option = document.createElement('option');
+        option.value = doc.id; // Service document ID
+        option.textContent = serviceData.name; // Service name
+        serviceSelect.appendChild(option);
+
+        if (index === 0) {
+            firstServiceId = doc.id; // Save the first service ID
         }
+    });
 
-        const servicesQuery = query(collection(db, 'services'), where('userId', '==', store));
-        const querySnapshot = await getDocs(servicesQuery);
-
-        // Process service data
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '<option value="">Select a service</option>'; // Clear previous options
-        querySnapshot.forEach((doc) => {
-            const serviceData = doc.data();
-            console.log('Service Data:', serviceData);
-
-            const option = document.createElement('option');
-            option.value = doc.id; // Service document ID
-            option.textContent = serviceData.name; // Service name
-            serviceSelect.appendChild(option);
-        });
-
-        // Add event listener for services dropdown
-        serviceSelect.addEventListener('change', async (event) => {
-            const serviceId = event.target.value;
-            if (serviceId) {
-                await fetchServiceEmployees(serviceId);
-            } else {
-                // Clear employee select if no service is selected
-                document.getElementById('employeeSelect').innerHTML = '<option value="">Select an employee</option>';
-            }
-        });
+    if (firstServiceId) {
+        serviceSelect.value = firstServiceId; // Automatically select the first service
+        await fetchServiceEmployees(firstServiceId); // Fetch employees for the first service
     }
 
-    async function fetchServiceEmployees(serviceId) {
-        const employeesQuery = query(collection(db, 'employees'), where('services', 'array-contains', serviceId));
-        const querySnapshot = await getDocs(employeesQuery);
+    // Add event listener for services dropdown
+    serviceSelect.addEventListener('change', async (event) => {
+        const serviceId = event.target.value;
+        if (serviceId) {
+            await fetchServiceEmployees(serviceId);
+        } else {
+            // Clear employee select if no service is selected
+            document.getElementById('employeeSelect').innerHTML = '<option value="">Select an employee</option>';
+        }
+    });
+}
 
-        const employeeSelect = document.getElementById('employeeSelect');
-        employeeSelect.innerHTML = '<option value="">Select an employee</option>'; // Clear previous options
+async function fetchServiceEmployees(serviceId) {
+    const employeesQuery = query(collection(db, 'employees'), where('services', 'array-contains', serviceId));
+    const querySnapshot = await getDocs(employeesQuery);
 
-        querySnapshot.forEach((doc) => {
-            const employeeData = doc.data();
-            console.log('Employee Data:', employeeData);
+    const employeeSelect = document.getElementById('employeeSelect');
+    employeeSelect.innerHTML = ''; // Clear previous options
 
-            const option = document.createElement('option');
-            option.value = doc.id; // Employee document ID
-            option.textContent = employeeData.name; // Employee name
-            employeeSelect.appendChild(option);
-        });
-    }
+    // Always add "Any Employee" option and preselect it
+    const anyEmployeeOption = document.createElement('option');
+    anyEmployeeOption.value = 'any';
+    anyEmployeeOption.textContent = 'Any Employee';
+    employeeSelect.appendChild(anyEmployeeOption);
+
+    // Populate employee options
+    querySnapshot.forEach((doc) => {
+        const employeeData = doc.data();
+        console.log('Employee Data:', employeeData);
+
+        const option = document.createElement('option');
+        option.value = doc.id; // Employee document ID
+        option.textContent = employeeData.name; // Employee name
+        employeeSelect.appendChild(option);
+    });
+
+    // Preselect "Any Employee" by default, regardless of the number of employees
+    employeeSelect.value = 'any';
+}
 
     async function populateDays() {
         const daySelect = document.getElementById('dateSelect');
@@ -400,46 +445,14 @@ async function fetchWorkingHoursForToday() {
         }
     }
 
-    async function populateHours() {
-        const daySelect = document.getElementById('dateSelect');
-        const hourSelect = document.getElementById('timeSelect');
-        const selectedDate = new Date(daySelect.value);
-        const dayName = selectedDate.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
 
-        const workingHoursRef = doc(db, 'working_hours', store);
-        const workingHoursDoc = await getDoc(workingHoursRef);
-
-        if (workingHoursDoc.exists()) {
-            const workingHours = workingHoursDoc.data().workingHours;
-            hourSelect.innerHTML = ''; // Clear previous options
-
-            if (workingHours[dayName] && workingHours[dayName].working) {
-                const { from, to } = workingHours[dayName];
-                const [fromHour] = from.split(':').map(Number);
-                const [toHour] = to.split(':').map(Number);
-
-                for (let hour = fromHour; hour < toHour; hour++) {
-                    const option = document.createElement('option');
-                    option.value = `${hour}:00`;
-                    option.textContent = `${hour}:00`;
-                    hourSelect.appendChild(option);
-                }
-            } else {
-                const option = document.createElement('option');
-                option.textContent = 'Closed';
-                hourSelect.appendChild(option);
-            }
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        await populateDays();
-        document.getElementById('dateSelect').addEventListener('change', populateHours);
-        await fetchBarbershopData("{{ barbershop_id }}");
-        await fetchServices();
-        await fetchGallery();
-        await fetchWorkingHoursForToday();
-    });
+document.addEventListener('DOMContentLoaded', async () => {
+    await populateDays();
+    await fetchBarbershopData("{{ barbershop_id }}");
+    await fetchServices();
+    await fetchGallery();
+    await fetchWorkingHoursForToday();
+});
 
     async function fetchGallery() {
         try {
@@ -482,22 +495,7 @@ async function fetchWorkingHoursForToday() {
         }
     }
 
-    async function fetchNextAvailableSlot() {
-        try {
-            const slotsQuery = query(collection(db, 'slots'), where('userId', '==', store), where('available', '==', true));
-            const querySnapshot = await getDocs(slotsQuery);
-
-            if (!querySnapshot.empty) {
-                const nextSlot = querySnapshot.docs[0].data();
-                document.getElementById('nextAvailableSlot').textContent = `${nextSlot.date} at ${nextSlot.time}`;
-            } else {
-                document.getElementById('nextAvailableSlot').textContent = 'No available slots';
-            }
-        } catch (error) {
-            console.error("Error fetching next available slot:", error);
-        }
-    }
-    document.getElementById('orderButton').addEventListener('click', async () => {
+      document.getElementById('orderButton').addEventListener('click', async () => {
     const serviceSelect = document.getElementById('serviceSelect');
     const employeeSelect = document.getElementById('employeeSelect');
     const date = document.getElementById('dateSelect').value;
