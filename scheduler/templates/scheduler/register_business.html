@@ -78,7 +78,9 @@
               <button type="button" class="btn btn-secondary text-gray-500 mt-2" onclick="prevStep(3)"> < Previous |</button>
               <button type="submit" class="btn btn-primary w-100 mt-2"><mark>Submit</mark></button>
           </form>
-
+          <div id="loading-spinner" style="display:none;" class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
           <div id="message" class="mt-3"></div>
       </div>
   </div>
@@ -141,9 +143,11 @@
         }
     }
 
-
     document.getElementById('step-3').addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    // Show loading spinner
+    document.getElementById('loading-spinner').style.display = 'block';
 
     const businessName = document.getElementById('business-name').value;
     const email = document.getElementById('email').value;
@@ -155,6 +159,8 @@
 
     if (!businessName || !email || !password || !address || !phone || !service ) {
         alert('Please fill in all required fields.');
+        // Hide the spinner if there are errors
+        document.getElementById('loading-spinner').style.display = 'none';
         return;
     }
 
@@ -170,7 +176,6 @@
             imageUrl = await getDownloadURL(logoUploadTask.snapshot.ref);
         }
 
-        // Save business details with the selected theme
         await addDoc(collection(db, 'businesses'), {
             business_name: businessName,
             email: email,
@@ -182,12 +187,15 @@
             image_url: imageUrl,
         });
 
-        
         await sendEmailVerification(user);
+        // Redirect after submission
         window.location.href = '/login';
 
     } catch (error) {
         console.error("Error registering:", error);
+    } finally {
+        // Hide the spinner once the process is complete
+        document.getElementById('loading-spinner').style.display = 'none';
     }
 });
 
