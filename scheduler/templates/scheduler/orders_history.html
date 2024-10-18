@@ -57,7 +57,7 @@
                 <td class="py-2 px-4 border-b text-center">${orderData.phone}</td>
                 <td class="py-2 px-4 border-b text-center">${orderData.service}</td>
                 <td class="py-2 px-4 border-b text-center">${orderData.employee}</td>
-                <td class="py-2 px-4 border-b text-center">${formatDate(orderData.datetime)}</td>
+                  <td class="py-2 px-4 border-b text-center">${orderData.datetime}</td>
                 <td class="py-2 px-4 border-b text-center">
                     <select onchange="changeOrderStatus('${id}', this.value)" class="border rounded">
                         <option value="new" class="text-gray-700" ${orderData.status === 'new' ? 'selected' : ''}>New</option>
