@@ -26,8 +26,8 @@
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const businessId = doc.id; 
-                    const bannerImage = data.background || 'https://via.placeholder.com/600x300'; // Fallback for banner
-                    const logoImage = data.image_url || 'https://via.placeholder.com/100'; // Fallback for logo
+                    const bannerImage = data.background; // Fallback for banner
+                    const logoImage = data.image_url; // Fallback for logo
                     const businessItem = `
                         <div class="backdrop-blur-xl bg-white bg-opacity-70 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <!-- Top half: Banner and Logo -->
@@ -42,7 +42,7 @@
                             <div class="p-6 text-lg backdrop-blur-xl bg-white bg-opacity-80">
                                 <h3 class="text-2xl font-bold text-gray-800 mb-2">${data.business_name}</h3>
                         
-                                <p class="text-lg text-gray-600 mb-1">Phone: ${data.sservice}</p>
+                                <p class="text-lg text-gray-600 mb-1">Phone: ${data.service}</p>
                   
                                 <a href="/barbershop/${businessId}/" class="mt-4 inline-block bg-black shadow-lg text-white font-semibold px-6 py-3 rounded-lg shadow hover:shadow-xl hover:bg-yellow-300 transition-colors ">Book Now</a>
                             </div>
