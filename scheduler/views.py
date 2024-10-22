@@ -88,10 +88,10 @@ class SuccessView(TemplateView):
 
 
 class SubscriptionsView(View):
-    def get(self, request, id):
+    def get(self, request):
         # You can now use the 'id' variable directly
         # Pass it to the template context or handle it as needed
-        return render(request, 'scheduler/subscription.html', {'barbershop_id': id})
+        return render(request, 'scheduler/subscription.html')
 
 
 class HistoryView(TemplateView):

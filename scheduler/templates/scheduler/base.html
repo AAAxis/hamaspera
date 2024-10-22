@@ -31,6 +31,93 @@
         </nav>
     </header>
     {% endblock %}
+    <script>
+    
+        // Firebase configuration
+        const firebaseConfig = {
+           apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+           authDomain: "barbershop-77353.firebaseapp.com",
+           projectId: "barbershop-77353",
+           storageBucket: "barbershop-77353.appspot.com",
+           messagingSenderId: "1018170430611",
+           appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+           measurementId: "G-4VS048B47G"
+       };
+   
+   
+     
+           document.addEventListener('DOMContentLoaded', () => {
+               const userId = localStorage.getItem('userId');
+               const authLinks = document.getElementById('auth-links');
+               if (userId) {
+                   authLinks.innerHTML = `
+                       <div class="relative">
+                           <button class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                           
+                               <ion-icon name="menu-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                           </button>
+                           <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
+                               <a href="{% url 'dashboard' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                   <ion-icon name="home-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Dashboard
+                               </a>
+                               <a href="{% url 'shift_schedule' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                   <ion-icon name="calendar-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Shift Schedule
+                               </a>
+                               <a href="{% url 'edit' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                   <ion-icon name="create-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Edit Bussiness
+                               </a>
+                               <a href="{% url 'orders_history' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                   <ion-icon name="list-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Appointments
+                               </a>
+                               <a href="{% url 'employees' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
+                                   <ion-icon name="people-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Employees
+                               </a>
+                               <a href="#" onclick="logout()" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-red-100">
+                                   <ion-icon name="log-out-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
+                                   Log Out
+                               </a>
+                           </div>
+                       </div>
+                   `;
+               } else {
+                   authLinks.innerHTML = `
+                       <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg  bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">About</a>
+                       <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg  bg-white text-gray-800 hover:bg-green-100 focus:outline-none focus:bg-green-100 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Login</a>
+                   `;
+               }
+   
+               // Toggle dropdown menu
+               const userMenuButton = document.getElementById('user-menu-button');
+               const userMenu = document.getElementById('user-menu');
+   
+               userMenuButton.addEventListener('click', () => {
+                   const isExpanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+                   userMenuButton.setAttribute('aria-expanded', !isExpanded);
+                   userMenu.classList.toggle('hidden');
+               });
+   
+               document.addEventListener('click', (event) => {
+                   if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                       userMenu.classList.add('hidden');
+                       userMenuButton.setAttribute('aria-expanded', 'false');
+                   }
+               });
+           });
+       
+           function logout() {
+               // Remove userId from local storage
+               localStorage.removeItem('userId');
+               
+               // Redirect to login page
+               window.location.href = "/login"; // Change this URL to your actual login page
+           }
+       </script>
+       
     <!-- ========== END HEADER ========== -->
 
     <!-- Main Content Section -->
@@ -49,93 +136,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.5.2/cdn.js" defer></script>
 
-        <script>
-    
-     // Firebase configuration
-     const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        measurementId: "G-4VS048B47G"
-    };
 
-
-  
-        document.addEventListener('DOMContentLoaded', () => {
-            const userId = localStorage.getItem('userId');
-            const authLinks = document.getElementById('auth-links');
-            if (userId) {
-                authLinks.innerHTML = `
-                    <div class="relative">
-                        <button class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                        
-                            <ion-icon name="menu-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                        </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
-                            <a href="{% url 'dashboard' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
-                                <ion-icon name="home-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Dashboard
-                            </a>
-                            <a href="{% url 'shift_schedule' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
-                                <ion-icon name="calendar-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Shift Schedule
-                            </a>
-                            <a href="{% url 'edit' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
-                                <ion-icon name="create-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Edit Bussiness
-                            </a>
-                            <a href="{% url 'orders_history' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
-                                <ion-icon name="list-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Appointments
-                            </a>
-                            <a href="{% url 'employees' %}" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-gray-100">
-                                <ion-icon name="people-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Employees
-                            </a>
-                            <a href="#" onclick="logout()" class="flex items-center px-6 py-4 text-sm text-gray-700 hover:bg-red-100">
-                                <ion-icon name="log-out-outline" class="inline-block w-4 h-4 mr-2"></ion-icon>
-                                Log Out
-                            </a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                authLinks.innerHTML = `
-                    <a href="{% url 'about' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg  bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">About</a>
-                    <a href="{% url 'login' %}" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg  bg-white text-gray-800 hover:bg-green-100 focus:outline-none focus:bg-green-100 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">Login</a>
-                `;
-            }
-
-            // Toggle dropdown menu
-            const userMenuButton = document.getElementById('user-menu-button');
-            const userMenu = document.getElementById('user-menu');
-
-            userMenuButton.addEventListener('click', () => {
-                const isExpanded = userMenuButton.getAttribute('aria-expanded') === 'true';
-                userMenuButton.setAttribute('aria-expanded', !isExpanded);
-                userMenu.classList.toggle('hidden');
-            });
-
-            document.addEventListener('click', (event) => {
-                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
-                    userMenu.classList.add('hidden');
-                    userMenuButton.setAttribute('aria-expanded', 'false');
-                }
-            });
-        });
-    
-        function logout() {
-            // Remove userId from local storage
-            localStorage.removeItem('userId');
-            
-            // Redirect to login page
-            window.location.href = "/login"; // Change this URL to your actual login page
-        }
-    </script>
-    
     {% block scripts %}{% endblock %}
 </body>
 </html>

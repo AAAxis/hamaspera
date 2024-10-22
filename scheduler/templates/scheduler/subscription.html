@@ -48,10 +48,11 @@
     <div id="plans"></div>
     <button id="subscribeButton" class="subscribe-button" disabled>Subscribe Now</button>
 </div>
+<!-- Firebase App (the core Firebase SDK) -->
 
-<script>
-    // TODO: Replace with your Firebase project configuration
-
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
@@ -64,7 +65,7 @@
     const subscribeButton = document.getElementById('subscribeButton');
 
     function fetchSubscriptions() {
-        db.collection('subscription').get().then((querySnapshot) => {
+        db.collection('subscriptions').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 const plan = doc.data();
                 const planElement = document.createElement('div');
@@ -73,10 +74,10 @@
                     <h3>${plan.title}</h3>
                     <p>${plan.description}</p>
                     <p><strong>Price:</strong> ${plan.price}</p>
-                    <input type="radio" name="plan" value="${doc.id}"> Select
+                    <input type="radio" name="plan" value="${plan.title}"> Select
                 `;
                 planElement.querySelector('input').addEventListener('change', () => {
-                    selectedPlan = doc.id;
+                    selectedPlan = plan;  // Store the entire plan object
                     subscribeButton.disabled = false;
                 });
                 plansContainer.appendChild(planElement);
@@ -87,7 +88,7 @@
     // Subscribe button click handler
     subscribeButton.addEventListener('click', () => {
         if (selectedPlan) {
-            alert(`You have selected the plan with ID: ${selectedPlan}`);
+            alert(`You have selected the plan: ${selectedPlan.title}`);
             // Here you can handle the subscription process (e.g., open a payment gateway or trial flow)
         }
     });
@@ -95,6 +96,7 @@
     // Fetch the plans when the page loads
     fetchSubscriptions();
 </script>
+
 
 </body>
 
