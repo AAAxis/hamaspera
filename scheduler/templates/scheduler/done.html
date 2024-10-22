@@ -1,98 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success Page</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f9f9f9;
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<div class="container mt-5 p-5 bg-light bg-gradient rounded-lg">
+    <h3>Success</h3>
+    <p id="uidDisplay">UID: Not provided</p>
+    <p id="subscriptionTitleDisplay">Subscription: Not provided</p>
+    <p id="endDateDisplay">End Date: Not calculated</p>
+</div>
+
+<script type="module">
+    // Firebase SDK Imports
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; 
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Function to get query parameters from the URL
+    function getQueryParams() {
+        const params = {};
+        const queryString = window.location.search.substring(1);
+        const regex = /([^&=]+)=([^&]*)/g;
+        let match;
+        while ((match = regex.exec(queryString))) {
+            params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
         }
-        .success-message {
-            border: 2px solid #4CAF50;
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #e7f9e7;
-            color: #4CAF50;
-        }
-    </style>
-</head>
-<body>
-    <div class="success-message" id="successMessage">
-        <h1>Success!</h1>
-        <p id="uidDisplay"></p>
-    </div>
+        return params;
+    }
 
-    <script>
-        // Firebase configuration
-             // Firebase configuration
-             const firebaseConfig = {
-           apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-           authDomain: "barbershop-77353.firebaseapp.com",
-           projectId: "barbershop-77353",
-           storageBucket: "barbershop-77353.appspot.com",
-           messagingSenderId: "1018170430611",
-           appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-           measurementId: "G-4VS048B47G"
-       };
-   
+    // Display the parameters on the page and update Firestore
+    const params = getQueryParams();
+    document.getElementById('uidDisplay').innerText = 'UID: ' + (params.uid || 'Not provided');
+    document.getElementById('subscriptionTitleDisplay').innerText = 'Subscription: ' + (params.subscription || 'Not provided');
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    const uid = params.uid;
+    const subscription = params.subscription;
 
-        // Function to get query parameters from the URL
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let match;
-            while ((match = regex.exec(queryString))) {
-                params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
-            }
-            return params;
-        }
+    // Update Firestore with subscription status and calculate the end date
+    if (uid && subscription) {
+        const businessesCollection = collection(db, 'businesses');
+        const businessQuery = query(businessesCollection, where('uid', '==', uid));
 
-        // Display the parameters on the page and update Firestore
-        const params = getQueryParams();
-        document.getElementById('uidDisplay').innerText = 'UID: ' + (params.uid || 'Not provided');
-        document.getElementById('subscriptionDisplay').innerText = 'Subscription: ' + (params.subscription || 'Not provided');
+        getDocs(businessQuery)
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((docSnapshot) => {
+                        // Fetch the subscription details
+                        const subscriptionRef = doc(db, 'subscriptions', subscription);
+                        getDoc(subscriptionRef)
+                            .then((subscriptionDoc) => {
+                                if (subscriptionDoc.exists()) {
+                                    const subscriptionData = subscriptionDoc.data();
+                                    const subscriptionTitle = subscriptionData.title;
+                                    const days = subscriptionData.days;
 
-        // Update Firestore with subscription status
-        const uid = params.uid;
-        const subscription = params.subscription;
+                                    document.getElementById('subscriptionTitleDisplay').innerText = 'Subscription Title: ' + subscriptionTitle;
 
-        if (uid && subscription) {
-            // Query the businesses collection to find the document with UserId matching the uid
-            db.collection('businesses').where('uid', '==', uid).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach((doc) => {
-                            // Update the status for the found document
-                            doc.ref.update({ status: subscription })
-                                .then(() => {
-                                    console.log("Status successfully updated!");
-                                })
-                                .catch((error) => {
-                                    console.error("Error updating status: ", error);
-                                });
-                        });
-                    } else {
-                        console.log("No matching document found.");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error getting documents: ", error);
-                });
-        }
-    </script>
-</body>
-</html>
+                                    // Calculate the new end date based on the days in the subscription
+                                    const currentDate = new Date();
+                                    const endDate = new Date(currentDate);
+                                    endDate.setDate(currentDate.getDate() + days);
+
+                                    // Display the calculated end date
+                                    document.getElementById('endDateDisplay').innerText = 'End Date: ' + endDate.toDateString();
+
+                                    // Update the business document with the new end date
+                                    updateDoc(docSnapshot.ref, { status: subscription, sub_expiration: endDate })
+                                        .then(() => {
+                                            console.log("Status and End Date successfully updated!");
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error updating business: ", error);
+                                        });
+                                } else {
+                                    console.log("No subscription document found.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching subscription details: ", error);
+                            });
+                    });
+                } else {
+                    console.log("No matching business document found.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error getting business documents: ", error);
+            });
+    }
+</script>
+{% endblock %}
