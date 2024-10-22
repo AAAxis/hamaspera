@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (ScheduleView, AboutView, available_slots_api, 
                     BarberShopDetailView, BarberShopBookingView, 
                     RegisterView, LoginView, ForgotView, 
-                    DashboardView, EditView, HoursView, EmployeesView, LogoutView, OrderView, SuccessView, HistoryView, SubscriptionsViewView ShiftScheduleView)  # Import the new view
+                    DashboardView, EditView, HoursView, EmployeesView, LogoutView, OrderView, SuccessView, HistoryView, SubscriptionsView, ShiftScheduleView)  # Import the new view
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register_business'),  # Registration path
