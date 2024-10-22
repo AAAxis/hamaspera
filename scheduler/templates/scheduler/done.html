@@ -72,7 +72,7 @@
 
         if (uid && subscription) {
             // Query the businesses collection to find the document with UserId matching the uid
-            db.collection('businesses').where('UserId', '==', uid).get()
+            db.collection('businesses').where('uid', '==', uid).get()
                 .then((querySnapshot) => {
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach((doc) => {
