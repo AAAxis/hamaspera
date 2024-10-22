@@ -1,103 +1,172 @@
 {% extends 'scheduler/base.html' %}
 
 {% block content %}
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        .subscription-plan {
-            border: 1px solid #eee;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        .subscription-plan h3 {
-            margin-top: 0;
-        }
-
-        .subscribe-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .subscribe-button:disabled {
-            background-color: #ccc;
-        }
-    </style>
-
-<body>
-
-<div class="container">
-    <h1>Select a Subscription Plan</h1>
-
-    <div id="plans"></div>
-    <button id="subscribeButton" class="subscribe-button" disabled>Subscribe Now</button>
+<div id="subscriptions-container" class="container mt-5 p-5 bg-light bg-gradient rounded-lg">
+    <h2 class="text-center mb-4">Select Subscription</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div id="subscriptions-list" class="mb-3"></div>
+         
+            <button id="confirm-subscription" class="btn btn-primary w-100" disabled>Confirm Subscription</button> 
+            
+            <br>            <br>            <br>
+            
+            <p id="current-subscription" class="text-center mt-3"></p> <!-- Display current subscription message -->
+            <p id="message" class="text-center mt-3"></p><!-- Initially disabled -->
+        </div>
+    </div>
 </div>
-<!-- Firebase App (the core Firebase SDK) -->
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    // Firebase SDK Imports
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; 
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); 
 
-    let selectedPlan = null;
+    async function fetchAllSubscriptions() {
+        const userId = localStorage.getItem('userId'); // Get user ID from local storage
+        let selectedSubscription = 'kKe8EGkty2uA0Dk2ROD5'; // Default to a specific ID
 
-    // Fetch subscription plans from Firestore
-    const plansContainer = document.getElementById('plans');
-    const subscribeButton = document.getElementById('subscribeButton');
+        try {
+            // Fetch all subscriptions
+            const subscriptionsRef = collection(db, 'subscriptions');
+            const subscriptionsSnapshot = await getDocs(subscriptionsRef);
+            const allSubscriptions = subscriptionsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
 
-    function fetchSubscriptions() {
-        db.collection('subscriptions').get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const plan = doc.data();
-                const planElement = document.createElement('div');
-                planElement.classList.add('subscription-plan');
-                planElement.innerHTML = `
-                    <h3>${plan.title}</h3>
-                    <p>${plan.description}</p>
-                    <p><strong>Price:</strong> ${plan.price}</p>
-                    <input type="radio" name="plan" value="${plan.title}"> Select
-                `;
-                planElement.querySelector('input').addEventListener('change', () => {
-                    selectedPlan = plan;  // Store the entire plan object
-                    subscribeButton.disabled = false;
-                });
-                plansContainer.appendChild(planElement);
+            // Fetch user's business document by uid
+            const businessesRef = collection(db, 'businesses');
+            const businessesSnapshot = await getDocs(businessesRef);
+            const userBusiness = businessesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).find(business => business.uid === userId); // Filter based on uid
+
+            console.log("User Business:", userBusiness); // Log userBusiness for debugging
+
+            if (userBusiness) {
+                const currentStatus = userBusiness.status || 'N/A'; // Fallback to 'N/A' if status is undefined
+                const expirationDate = userBusiness.sub_expiration 
+                    ? userBusiness.sub_expiration.toDate() 
+                    : null; // Set to null if sub_expiration is undefined
+
+                // Find the subscription title using the current subscription ID
+                const currentSubscription = allSubscriptions.find(subscription => subscription.id === currentStatus);
+                const subscriptionTitle = currentSubscription ? currentSubscription.title : 'Unknown Subscription';
+
+                // Format the expiration date if it exists
+                const formattedExpirationDate = expirationDate 
+                    ? expirationDate.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) + ' ' + expirationDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) 
+                    : 'N/A'; // Fallback if expirationDate is null
+
+                // Update the selected subscription
+                selectedSubscription = currentStatus;
+
+                // Display current subscription message with title and formatted date
+                document.getElementById('current-subscription').innerText = 
+                    `You currently have subscription ${subscriptionTitle} that expires on: ${formattedExpirationDate}`;
+            } else {
+                document.getElementById('current-subscription').innerText = "You have no businesses associated with your account.";
+            }
+
+            // Populate the radio buttons with all subscriptions
+            const subscriptionsList = document.getElementById('subscriptions-list');
+            subscriptionsList.innerHTML = ''; // Clear previous results
+
+            allSubscriptions.forEach(subscription => {
+                const businessElement = document.createElement('div');
+                businessElement.classList.add('form-check');
+
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'subscription'; // Group name for radio buttons
+                radioInput.id = `subscription-${subscription.id}`;
+                radioInput.value = subscription.id; // Store subscription ID as value
+                radioInput.checked = subscription.id === selectedSubscription; // Check if it matches selected status
+
+                const label = document.createElement('label');
+                label.htmlFor = radioInput.id;
+
+                // Build the label content with title, description, and price
+                label.innerHTML = `
+                    <strong>${subscription.title || 'No Title'}</strong><br>
+                    ${subscription.description || 'No Description'}<br>
+                    <em>Price: $${subscription.price?.toFixed(2) || 'N/A'}</em>
+                `; // Display title, description, and formatted price
+                label.classList.add('form-check-label');
+
+                businessElement.appendChild(radioInput);
+                businessElement.appendChild(label);
+                subscriptionsList.appendChild(businessElement);
             });
-        });
+
+            // Display message indicating success
+            document.getElementById('message').innerText = "Subscriptions fetched successfully!";
+            document.getElementById('message').classList.add('text-success');
+        } catch (error) {
+            console.error("Error fetching subscriptions:", error);
+            document.getElementById('message').innerText = "Error fetching subscriptions.";
+            document.getElementById('message').classList.add('text-danger');
+        }
     }
 
-    // Subscribe button click handler
-    subscribeButton.addEventListener('click', () => {
-        if (selectedPlan) {
-            alert(`You have selected the plan: ${selectedPlan.title}`);
-            // Here you can handle the subscription process (e.g., open a payment gateway or trial flow)
-        }
-    });
+    // Enable or disable the confirm button based on the selected subscription
+    function toggleConfirmButton() {
+        const selectedSubscriptionId = document.querySelector('input[name="subscription"]:checked')?.value;
+        const confirmButton = document.getElementById('confirm-subscription');
 
-    // Fetch the plans when the page loads
-    fetchSubscriptions();
+        if (selectedSubscriptionId === 'kKe8EGkty2uA0Dk2ROD5') {
+            confirmButton.disabled = true; // Disable button if the default subscription is selected
+        } else {
+            confirmButton.disabled = false; // Enable button for other selections
+        }
+    }
+
+    // Fetch subscriptions on page load
+    window.addEventListener('DOMContentLoaded', fetchAllSubscriptions);
+
+    // Event listener for radio button change
+    document.getElementById('subscriptions-list').addEventListener('change', toggleConfirmButton);
+
+    document.getElementById('confirm-subscription').addEventListener('click', () => {
+    const userId = localStorage.getItem('userId'); // Get user ID from local storage
+
+ // Check if userId is null
+if (!userId) {
+    // Redirect to the login page if userId is not found
+    window.location.href = '/login'; // Use absolute path to your login page
+    return; // Stop further execution
+}
+
+    const selectedSubscriptionId = document.querySelector('input[name="subscription"]:checked')?.value;
+
+    if (selectedSubscriptionId) {
+        // Redirect to the details page with subscription ID and user ID as query parameters
+        window.location.href = `/details?subscriptionId=${selectedSubscriptionId}&userId=${userId}`;
+    } else {
+        document.getElementById('message').innerText = "Please select a subscription.";
+        document.getElementById('message').classList.add('text-danger');
+    }
+});
+
+
 </script>
 
-
-</body>
+<style>
+    /* Add any additional styles here */
+    .form-check {
+        margin-bottom: 10px;
+    }
+</style>
 
 {% endblock %}

@@ -93,6 +93,26 @@ class SubscriptionsView(View):
         # Pass it to the template context or handle it as needed
         return render(request, 'scheduler/subscription.html')
 
+class DoneView(View):
+    def get(self, request):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/done.html')
+
+class DoneView(View):
+    def get(self, request):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/done.html')
+
+
+
+class DetailsView(View):
+    def get(self, request):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/details.html')
+
 
 class HistoryView(TemplateView):
     template_name = "scheduler/orders_history.html"

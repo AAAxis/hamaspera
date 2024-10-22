@@ -1,0 +1,83 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+<div class="container mt-5 p-5 bg-light bg-gradient rounded-lg">
+    <button id="back-button" class="btn btn-secondary w-100">Back to Subscriptions</button>
+    <div id="subscription-details" class="mb-3"></div>
+    <p id="message" class="text-center mt-3"></p>
+</div>
+
+<script type="module">
+    // Firebase SDK Imports
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, getDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; 
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); 
+
+    async function fetchSubscriptionDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const subscriptionId = urlParams.get('subscriptionId');
+        const userId = urlParams.get('userId'); // Fetch userId from URL params
+
+        try {
+            if (!subscriptionId || !userId) {
+                throw new Error("Invalid subscription ID or user ID.");
+            }
+
+            // Fetch the selected subscription details
+            const subscriptionRef = doc(db, 'subscriptions', subscriptionId);
+            const subscriptionDoc = await getDoc(subscriptionRef);
+
+            if (subscriptionDoc.exists()) {
+                const subscriptionData = subscriptionDoc.data();
+                const title = subscriptionData.title;
+
+                // Define the mapping of subscription titles to payment links
+                const paymentLinkMapping = {
+                    'Yearly': `https://polskoydm.pythonanywhere.com/subscription_year?uid=${userId}`,
+                    'Monthly': `https://polskoydm.pythonanywhere.com/subscription_month?uid=${userId}`,
+                    // Add more mappings as needed
+                };
+
+                // Get the payment link based on the subscription title
+                const paymentLink = paymentLinkMapping[title] || '#'; // Fallback link
+
+                const detailsHtml = `
+                    <img src="https://img.freepik.com/free-vector/web-app-subscribe-button-online-followers-vector_1017-45945.jpg" alt="Subscription Image" class="img-fluid mb-4" />
+                    <h3>${title}</h3>
+                    <p><strong>Price:</strong> $${subscriptionData.price?.toFixed(2) || 'N/A'}</p>
+                    <p><strong>Features:</strong></p>
+                    <p>${subscriptionData.description || 'No Description'}</p>
+                    <a href="${paymentLink}" class="btn btn-primary" target="_blank">Pay Now</a>
+                `;
+                document.getElementById('subscription-details').innerHTML = detailsHtml;
+            } else {
+                document.getElementById('message').innerText = "Subscription not found.";
+                document.getElementById('message').classList.add('text-danger');
+            }
+        } catch (error) {
+            console.error("Error fetching subscription details:", error);
+            document.getElementById('message').innerText = "Error fetching subscription details.";
+            document.getElementById('message').classList.add('text-danger');
+        }
+    }
+
+    // Fetch subscription details on page load
+    window.addEventListener('DOMContentLoaded', fetchSubscriptionDetails);
+
+    document.getElementById('back-button').addEventListener('click', () => {
+        window.location.href = '/subscriptions'; // Redirect to the subscriptions page
+    });
+</script>
+
+<style>
+    /* Add any additional styles here */
+    .subscription-feature {
+        margin-bottom: 5px;
+    }
+</style>
+
+{% endblock %}
