@@ -85,6 +85,15 @@ class SuccessView(TemplateView):
         return context
     
 
+
+
+class SubscriptionsView(View):
+    def get(self, request, id):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/subscription.html', {'barbershop_id': id})
+
+
 class HistoryView(TemplateView):
     template_name = "scheduler/orders_history.html"
 

@@ -1,0 +1,101 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .subscription-plan {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .subscription-plan h3 {
+            margin-top: 0;
+        }
+
+        .subscribe-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .subscribe-button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+
+<body>
+
+<div class="container">
+    <h1>Select a Subscription Plan</h1>
+
+    <div id="plans"></div>
+    <button id="subscribeButton" class="subscribe-button" disabled>Subscribe Now</button>
+</div>
+
+<script>
+    // TODO: Replace with your Firebase project configuration
+
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let selectedPlan = null;
+
+    // Fetch subscription plans from Firestore
+    const plansContainer = document.getElementById('plans');
+    const subscribeButton = document.getElementById('subscribeButton');
+
+    function fetchSubscriptions() {
+        db.collection('subscription').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const plan = doc.data();
+                const planElement = document.createElement('div');
+                planElement.classList.add('subscription-plan');
+                planElement.innerHTML = `
+                    <h3>${plan.title}</h3>
+                    <p>${plan.description}</p>
+                    <p><strong>Price:</strong> ${plan.price}</p>
+                    <input type="radio" name="plan" value="${doc.id}"> Select
+                `;
+                planElement.querySelector('input').addEventListener('change', () => {
+                    selectedPlan = doc.id;
+                    subscribeButton.disabled = false;
+                });
+                plansContainer.appendChild(planElement);
+            });
+        });
+    }
+
+    // Subscribe button click handler
+    subscribeButton.addEventListener('click', () => {
+        if (selectedPlan) {
+            alert(`You have selected the plan with ID: ${selectedPlan}`);
+            // Here you can handle the subscription process (e.g., open a payment gateway or trial flow)
+        }
+    });
+
+    // Fetch the plans when the page loads
+    fetchSubscriptions();
+</script>
+
+</body>
+
+{% endblock %}
