@@ -84,14 +84,6 @@ class SuccessView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['barbershops'] = BarberShop.objects.all()
         return context
-    
-
-class IndexView(View):
-    def get(self, request):
-        # You can now use the 'id' variable directly
-        # Pass it to the template context or handle it as needed
-        return render(request, 'scheduler/index.html')
-
 
 
 class SubscriptionsView(View):
