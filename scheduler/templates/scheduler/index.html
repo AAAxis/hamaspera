@@ -3,40 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Store Link to Firebase</title>
+  <title>Store Link</title>
   
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js"></script>
-  <!-- Firebase Firestore -->
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js"></script>
 </head>
 <body>
   <h1>Store Link to Firebase</h1>
   <script type="module">
-    // Import necessary functions from Firebase
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js';
-    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
-
-      // Firebase configuration
-      const firebaseConfig = {
-           apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-           authDomain: "barbershop-77353.firebaseapp.com",
-           projectId: "barbershop-77353",
-           storageBucket: "barbershop-77353.appspot.com",
-           messagingSenderId: "1018170430611",
-           appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-           measurementId: "G-4VS048B47G"
-       };
-   
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        authDomain: "barbershop-77353.firebaseapp.com",
+        projectId: "barbershop-77353",
+        storageBucket: "barbershop-77353.appspot.com",
+        messagingSenderId: "1018170430611",
+        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        measurementId: "G-4VS048B47G"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+  
     // Function to store the link in Firestore
     async function storeLinkToFirebase(chatId, verificationCode, timestamp) {
       try {
-        await db.collection("links").add({
+        // Get a reference to the "links" collection
+        const linksRef = collection(db, "telegram");
+        // Add a new document with the provided data
+        await addDoc(linksRef, {
           chat_id: chatId,
           verification_code: verificationCode,
           timestamp: timestamp
@@ -46,16 +42,15 @@
         console.error("Error storing link: ", error);
       }
     }
-
+  
     // Extract values from the link
     const urlParams = new URLSearchParams(window.location.search);
     const chatId = urlParams.get('chat_id');
     const verificationCode = urlParams.get('verification_code');
     const timestamp = urlParams.get('timestamp');
-
+  
     // Store the link data in Firebase
     storeLinkToFirebase(chatId, verificationCode, timestamp);
-
+  
   </script>
-</body>
-</html>
+  
