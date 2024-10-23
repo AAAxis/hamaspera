@@ -17,8 +17,10 @@
     </tr>
   </table>
 
-  <script>
-    // Initialize Firebase
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
       // Firebase configuration
       const firebaseConfig = {
            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
