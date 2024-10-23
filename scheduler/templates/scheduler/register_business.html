@@ -54,6 +54,7 @@
                       <option value="Barber Shop">Barber Shop</option>
                       <option value="Nail Salon">Nail Salon</option>
                       <option value="Spa">Spa</option>
+                      <option value="Nail Salon">GYM</option>
                   </select>
             
               </div>
@@ -89,10 +90,10 @@
 <script type="module">
     // Firebase SDK Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-  
+    import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
 
   
     const app = initializeApp(firebaseConfig);
@@ -157,7 +158,7 @@
     const service = document.getElementById('service').value;
     const logoFile = document.getElementById('logo').files[0];
 
-    if (!businessName || !email || !password || !address || !phone || !service ) {
+    if (!businessName || !email || !password || !address || !phone || !service) {
         alert('Please fill in all required fields.');
         // Hide the spinner if there are errors
         document.getElementById('loading-spinner').style.display = 'none';
@@ -176,7 +177,61 @@
             imageUrl = await getDownloadURL(logoUploadTask.snapshot.ref);
         }
 
-        await addDoc(collection(db, 'businesses'), {
+        const createdAt = new Date(); // Current date and time
+        const subExpiration = new Date();
+        subExpiration.setDate(subExpiration.getDate() + 14); // Add 14 days
+
+                // Assuming this is inside your existing function after business registration
+        const services = [
+            {
+                name: 'Women Cut',
+                price: 120,
+                image: 'https://polskoydm.pythonanywhere.com/static/womencut.jpeg',
+                userId: user.uid
+            },
+            {
+                name: 'Classic Cut',
+                price: 70,
+                image: 'https://polskoydm.pythonanywhere.com/static/mencut.jpeg',
+                userId: user.uid
+            },
+            {
+                name: 'Coloring',
+                price: 130,
+                image: 'https://polskoydm.pythonanywhere.com/static/coloring.jpeg',
+                userId: user.uid
+
+            },
+            {
+                name: 'Beard Trim',
+                price: 80,
+                image: 'https://polskoydm.pythonanywhere.com/static/beardtrim.jpeg',
+                userId: user.uid
+            }
+        ];
+
+        // Function to add services to Firestore
+        const addServicesToFirestore = async () => {
+            try {
+                const servicesCollectionRef = collection(db, 'services');
+
+                // Loop through each service and add it to the collection
+                for (const service of services) {
+                    await addDoc(servicesCollectionRef, service);
+                }
+
+                console.log('Services added successfully');
+            } catch (error) {
+                console.error('Error adding services:', error);
+            }
+        };
+
+        // Call the function after adding business details
+        await addServicesToFirestore();
+
+
+        // Add business details to Firestore
+        const businessDocRef = await addDoc(collection(db, 'businesses'), {
             business_name: businessName,
             email: email,
             address: address,
@@ -185,6 +240,63 @@
             uid: user.uid,
             background: "https://polskoydm.pythonanywhere.com/static/background.png", // Save the selected theme as the background
             image_url: imageUrl,
+            status: "kKe8EGkty2uA0Dk2ROD5",
+            created_date: createdAt, // Add created date
+            sub_expiration: subExpiration // Add subscription expiration date
+        });
+
+
+        // Define working hours for all days of the week
+        const workingHours = {
+            monday: {
+    
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            tuesday: {
+             
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            wednesday: {
+         
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            thursday: {
+       
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            friday: {
+      
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            saturday: {
+       
+                from: "08:00",
+                to: "20:00",
+                working: true
+            },
+            sunday: {
+
+                from: "08:00",
+                to: "20:00",
+                working: true
+            }
+        };
+
+
+        // Create a new document in the working_hours collection using uid as the document ID
+        await setDoc(doc(db, 'working_hours', user.uid), {
+            uid: user.uid,
+            workingHours: workingHours
         });
 
         await sendEmailVerification(user);

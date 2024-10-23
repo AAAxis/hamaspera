@@ -34,36 +34,8 @@
 
         <!-- Page Heading -->
         <div class="min-h-full">
-            <div class="mb-4 mt-8">
-                <h2 class="text-4xl font-bold text-gray-900">Employees & Services</h2>
-            </div>
-
-        <!-- Main Content for Employees -->
-        <main>
-            <div class="min-w-full">
-                <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-bold mb-4">Employees</h2>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Photo</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody id="employeesTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Employee rows will be populated here -->
-                        </tbody>
-                    </table>
-                    <!-- Add Employee Button -->
-                    <button id="addEmployeeButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
-                        Add Employees
-                    </button>
-                </div>
-            </div>
-        </main>
+      
+    
 
         <!-- Add Employee Modal -->
         <div id="employeeModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
@@ -79,13 +51,10 @@
                         <label for="employeePhone" class="block font-medium text-gray-700">Phone:</label>
                         <input type="tel" id="employeePhone" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Phone Number" />
                     </div>
-                    <div class="mb-4">
-                        <label for="employeeImage" class="block font-medium text-gray-700">Photo:</label>
-                        <input type="file" id="employeeImage" accept="image/*" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" />
-                    </div>
+               
                     <div class="flex justify-end space-x-4">
                         <button type="button" class="mt-4 inline-flex justify-center py-2 px-4 bg-red-900 text-white font-medium rounded-md hover:bg-red-800" onclick="closeEmployeeModal()">Cancel</button>
-                        <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Add Employee</button>
+                        <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Add</button>
                     </div>
                 </form>
                 <div id="uploadProgressContainer" class="hidden mt-4">
@@ -96,73 +65,69 @@
             </div>
         </div>
 
-        <!-- Main Content for Services -->
-        <main>
-            <div class="min-w-full">
-                <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-bold mb-4">Services</h2>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="servicesTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Service rows will be populated here -->
-                        </tbody>
-                    </table>
-                    <!-- Add Service Button -->
-                    <button id="addServiceButton" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">
-                        Add Service
-                    </button>
-                </div>
-            </div>
-        </main>
-    </div>
 
 
 
-    <!-- Add Service Modal -->
-    <div id="serviceModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg w-96 p-6">
-            <h2 class="text-lg font-bold mb-4">Add Service</h2>
-            <form id="addServiceForm" enctype="multipart/form-data">
-                <div class="mb-4">
-                    <label for="serviceName" class="block font-medium text-gray-700">Service Name:</label>
-                    <input type="text" id="serviceName" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Service Name" />
-                </div>
-                <div class="mb-4">
-                    <label for="servicePrice" class="block  font-medium text-gray-700">Price:</label>
-                    <input type="number" id="servicePrice" required class="mt-4 block w-full shadow-sm sm:text-base border-gray-300 rounded-md" placeholder="Price" />
-                </div>
-                <div class="mb-4">
-                    <label for="serviceImage" class="block  font-medium text-gray-700">Service Image:</label>
-                    <input type="file" id="serviceImage" accept="image/*" required class="mt-4 block w-full shadow-sm rounded-md" />
-                </div>
+        <div class="mb-4 mt-8">
+            <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-900">Employees Info</h2>
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Photo</th>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Name</th>
+                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Services</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employees-table-body" class="divide-y divide-gray-200 dark:divide-neutral-700">
+                        <!-- Employee items will be dynamically inserted here -->
+                    </tbody>
+                </table>
             
-                <div class="flex mb-4 justify-end space-x-4">
-                    <button type="button" class="mt-4 inline-flex justify-center py-2 px-4 bg-red-900 text-white font-medium rounded-md hover:bg-red-800" onclick="closeServiceModal()">Cancel</button>
-                    <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-900">Add Service</button>
-                </div>
-            </form>
+                <!-- Button to Open Modal -->
+<button id="addEmployeeButton" class="p-2 bg-black text-white rounded-md hover:bg-blue-700">Add Employee</button>
 
-            <div id="serviceUploadProgressContainer" class="hidden mt-4">
-                <div class="w-full bg-gray-200 rounded-full">
-                    <div id="serviceUploadProgress" class="bg-indigo-600 text-xs font-medium text-white text-center rounded-full" style="width: 0%">0%</div>
-                </div>
+            </div>
+   
+        </div>
+
+    <div class="flex justify-center mt-4">
+
+    </div>
+</div>
+
+    <!-- Services Modal -->
+    <div id="servicesModal" class="fixed inset-0 flex items-left justify-left z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+            <h2 class="text-4xl font-bold text-gray-900 mt-8 mb-8">Attached Services</h2>
+            <div id="servicesList" class="mt-4 mb-8 border-b border-gray-200 dark:border-neutral-700">
+                <!-- Services will be dynamically fetched and added here -->
+            </div>
+            <div class="mt-4 mb-2 flex justify-start ">
+                <button id="saveServicesButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
+                    Save
+                </button>
+              
             </div>
         </div>
     </div>
-    
+
+
+
+
+
+
+
+</div>
+</body>
+
+
 
     <!-- Scripts -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-    import { getFirestore, addDoc, collection, onSnapshot, deleteDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, getDoc, addDoc, updateDoc, collection, onSnapshot, deleteDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 
     const app = initializeApp(firebaseConfig);
@@ -171,150 +136,98 @@
 
     const userId = localStorage.getItem('userId');
 
-    if (userId) {
-        document.getElementById('user-id').innerText = userId;
-    } else {
+// Delete employee function
+window.deleteEmployee = async (employeeId) => {
+    try {
+        await deleteDoc(doc(db, 'employees', employeeId));
+        alert('Employee deleted successfully.');
+        fetchEmployees(); // Refresh the employee list after deletion
+    } catch (error) {
+        console.error('Error deleting employee: ', error);
+        alert('Failed to delete employee.');
+    }
+};
+
+
+// Function to fetch and display employees
+async function fetchEmployees() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
         console.error("User ID not found in localStorage.");
+        return;
     }
 
-    // Declare the deleteService function in the global scope
-    window.deleteService = async (serviceId) => {
-        try {
-            await deleteDoc(doc(db, 'services', serviceId));
-            // Refresh the service list
-            loadServices();
-        } catch (error) {
-            console.error("Error deleting service: ", error);
-        }
-    };
+    try {
+        const employeesCollection = collection(db, "employees");
+        const q = query(employeesCollection, where("userId", "==", userId)); // Filter by userId
+        const employeesSnapshot = await getDocs(q);
 
-    // Declare the deleteEmployee function in the global scope
-    window.deleteEmployee = async (employeeId) => {
-        try {
-            await deleteDoc(doc(db, 'employees', employeeId));
-            // Refresh the employee list
-            loadEmployees();
-        } catch (error) {
-            console.error("Error deleting employee: ", error);
+        const employeesTableBody = document.getElementById('employees-table-body');
+        employeesTableBody.innerHTML = ''; // Clear existing entries
+
+        if (employeesSnapshot.empty) {
+            employeesTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-black">No employees found.</td></tr>';
+        } else {
+            employeesSnapshot.forEach((doc) => {
+                const employeeData = doc.data();
+                const employeeId = doc.id; // Get the document ID
+
+                // Map service IDs to names
+                const serviceNames = employeeData.services ? employeeData.services.map(id => serviceMapping[id] || id).join(', ') : 'N/A';
+
+                const employeeRow = `
+                    <tr>
+                           <td class="px-4 py-2 text-left">
+                        <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover rounded-full" />
+                    </td>
+                        <td class="px-4 py-2 text-center">${employeeData.name || 'N/A'}</td>
+                        <td class="px-4 py-2 text-center">${serviceNames}</td>
+                       
+                        <td class="px-4 py-2 text-center">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded attach-service-button" data-id="${employeeId}">Attach</button>
+                     
+                            <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-employee-button" data-id="${employeeId}" onclick="deleteEmployee('${employeeId}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                employeesTableBody.innerHTML += employeeRow; // Add employee row to table body
+            });
         }
-    };
+    } catch (error) {
+        console.error('Error fetching employees:', error);
+    }
+}
+
+    
 
     document.getElementById('addEmployeeForm').onsubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
 
         const employeeName = document.getElementById('employeeName').value;
         const employeePhone = document.getElementById('employeePhone').value;
-        const employeeImageFile = document.getElementById('employeeImage').files[0];
-
-        if (employeeImageFile) {
-            const storageRef = ref(storage, `employees/${employeeImageFile.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, employeeImageFile);
-
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById('uploadProgressContainer').classList.remove('hidden');
-                document.getElementById('uploadProgress').style.width = progress + '%';
-                document.getElementById('uploadProgress').innerText = Math.round(progress) + '%';
-            }, (error) => {
-                console.error("Upload error:", error);
-            }, async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+  
                 try {
                     await addDoc(collection(db, 'employees'), {
                         name: employeeName,
                         phone: employeePhone,
-                        image: downloadURL,
+                        image: 'https://png.pngtree.com/png-vector/20231201/ourmid/pngtree-vector-office-worker-staff-avatar-employee-icon-png-image_10796991.png',
                         userId: userId,
                     });
                     alert("Employee added successfully!");
                     document.getElementById('addEmployeeForm').reset();
-                    document.getElementById('uploadProgressContainer').classList.add('hidden');
+               
                     closeEmployeeModal();
-                    loadEmployees(); // Refresh the employee list
+             fetchEmployees();
                 } catch (error) {
                     console.error("Error adding document: ", error);
                     alert("Failed to add employee. Please try again.");
                 }
-            });
-        }
-    };
-    const loadServices = async () => {
-    const servicesTable = document.getElementById('servicesTable');
-    servicesTable.innerHTML = ''; // Clear the table before loading
-
-    const q = query(collection(db, 'services'), where('userId', '==', userId));
-    const servicesSnapshot = await getDocs(q);
-    
-    if (servicesSnapshot.empty) {
-        servicesTable.innerHTML = '<tr><td colspan="4" class="text-left text-black">No services found.</td></tr>';
-    } else {
-        servicesSnapshot.forEach(doc => {
-            const service = doc.data();
             
-            // Ensure the price is treated as a number
-            const price = typeof service.price === 'number' ? service.price : parseFloat(service.price) || 0;
-
-            // Create table row
-            const serviceRow = document.createElement('tr');
-            serviceRow.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <img src="${service.image}" alt="Service Image" class="h-12 w-12 rounded-full object-cover" />
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${service.name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${price.toFixed(2)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-service-button" onclick="deleteService('${doc.id}')">Delete</button>
-                </td>
-            `;
-            servicesTable.appendChild(serviceRow);
-        });
-    }
-};
-
-    const loadEmployees = async () => {
-        const employeesTable = document.getElementById('employeesTable');
-        employeesTable.innerHTML = ''; // Clear the table before loading
-
-        const q = query(collection(db, 'employees'), where('userId', '==', userId));
-        const employeesSnapshot = await getDocs(q);
-        if (employeesSnapshot.empty) {
-            employeesTable.innerHTML = '<tr><td colspan="4" class="text-left text-black">No employees found.</td></tr>';
-        } else {
-            employeesSnapshot.forEach((doc) => {
-                const employeeData = doc.data();
-                const employeeId = doc.id; // Get the document ID
-                // Fetch service names and replace employeeData.services
-                
-
-
-                const employeeRow = `
-                    <tr>
-                        <td class="px-4 py-2 text-left">
-                            <img src="${employeeData.image || 'placeholder-image-url'}" alt="Profile Image" class="w-10 h-10 object-cover rounded-full" />
-                        </td>
-                        <td class="px-4 py-2 text-left">${employeeData.name || 'N/A'}</td>
-                        <td class="px-4 py-2 text-left">${employeeData.phone || 'N/A'}</td>
-        
-                        <td class="px-4 py-2 text-left">
-                            <button class="bg-red-800 hover:bg-red-700 text-white py-1 px-2 rounded delete-employee-button" data-id="${employeeId}" onclick="deleteEmployee('${employeeId}')">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                employeesTable.innerHTML += employeeRow; // Add employee row to table body
-            });
-        }
-
-        // Attach service button event listener
-        document.querySelectorAll('.attach-service-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const employeeId = button.getAttribute('data-id');
-                attachServiceToEmployee(employeeId);
-            });
-        });
-
+   
     };
+   
 
-    
+
 
     document.getElementById('addEmployeeButton').onclick = () => {
         document.getElementById('employeeModal').classList.remove('hidden');
@@ -325,63 +238,13 @@
         document.getElementById('addEmployeeForm').reset();
     };
 
-    document.getElementById('addServiceButton').onclick = () => {
-        document.getElementById('serviceModal').classList.remove('hidden');
-    };
+ 
 
-    const closeServiceModal = () => {
-        document.getElementById('serviceModal').classList.add('hidden');
-        document.getElementById('addServiceForm').reset();
-    };
 
     const checkServiceExists = async (serviceName) => {
         const q = query(collection(db, 'services'), where('userId', '==', userId));
         const servicesSnapshot = await getDocs(q);
         return servicesSnapshot.docs.some(doc => doc.data().name.toLowerCase() === serviceName.toLowerCase());
-    };
-
-
-    document.getElementById('addServiceForm').onsubmit = async (e) => {
-        e.preventDefault();
-
-        const serviceName = document.getElementById('serviceName').value.trim();
-        const servicePrice = parseFloat(document.getElementById('servicePrice').value.trim());
-        const serviceImageFile = document.getElementById('serviceImage').files[0];
-
-        if (!serviceImageFile || !serviceName || isNaN(servicePrice) || servicePrice <= 0) {
-            alert('Please enter a valid service name, price, and image.');
-            return;
-        }
-
-        const serviceImageRef = ref(storage, `services/${serviceImageFile.name}`);
-        const uploadTask = uploadBytesResumable(serviceImageRef, serviceImageFile);
-
-        uploadTask.on('state_changed', (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            document.getElementById('serviceUploadProgressContainer').classList.remove('hidden');
-            document.getElementById('serviceUploadProgress').style.width = progress + '%';
-            document.getElementById('serviceUploadProgress').innerText = Math.round(progress) + '%';
-        }, (error) => {
-            console.error("Upload error:", error);
-        }, async () => {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-
-            try {
-                await addDoc(collection(db, 'services'), {
-                    name: serviceName,
-                    price: servicePrice,
-                    image: downloadURL,
-                    userId: userId
-                });
-                alert('Service added successfully!');
-                loadServices(); // Refresh the service list
-                closeServiceModal();
-                document.getElementById('serviceUploadProgressContainer').classList.add('hidden');
-            } catch (error) {
-                console.error("Error adding service: ", error);
-                alert("Failed to add service. Please try again.");
-            }
-        });
     };
 
 
@@ -391,28 +254,163 @@ window.closeEmployeeModal = () => {
     document.getElementById('addEmployeeForm').reset();
 };
 
-window.closeServiceModal = () => {
-    document.getElementById('serviceModal').classList.add('hidden');
-    document.getElementById('addServiceForm').reset();
-};
 
 
-    const deleteService = async (serviceId) => {
-        if (confirm("Are you sure you want to delete this service?")) {
-            try {
-                await deleteDoc(doc(db, 'services', serviceId));
-                alert('Service deleted successfully!');
-                loadServices(); // Refresh the service list
-            } catch (error) {
-                console.error("Error deleting service: ", error);
-                alert('Failed to delete service. Please try again.');
-            }
+  
+async function fetchServices(existingServices) {
+    try {
+        const servicesRef = collection(db, 'services');
+        const q = query(servicesRef, where('userId', '==', userId)); // Filter by userId
+        const querySnapshot = await getDocs(q);
+
+        const servicesList = document.getElementById('servicesList');
+        servicesList.innerHTML = ''; // Clear existing services
+
+        if (querySnapshot.empty) {
+            servicesList.innerHTML = '<p>No services found.</p>';
+            return;
         }
-    };
 
-    // Load employees and services when the page loads
-    loadEmployees();
-    loadServices();
+        // Create checkboxes for each service
+        querySnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            const serviceId = doc.id;
+
+            const serviceItem = `
+                <div class="flex items-center mb-2">
+                    <input type="checkbox" id="service-${serviceId}" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''}>
+                    <label for="service-${serviceId}" class="text-gray-700">${serviceData.name}</label>
+                </div>
+            `;
+            servicesList.innerHTML += serviceItem;
+        });
+    } catch (error) {
+        console.error("Error fetching services: ", error);
+        alert("Failed to fetch services. Please try again.");
+    }
+
+
+    try {
+        const servicesRef = collection(db, 'services');
+        const q = query(servicesRef, where('userId', '==', userId)); // Filter by userId
+        const querySnapshot = await getDocs(q);
+
+        const servicesList = document.getElementById('servicesList');
+        servicesList.innerHTML = ''; // Clear existing services
+
+        if (querySnapshot.empty) {
+            console.log("No services found for userId:", userId);
+            return;
+        }
+
+        // Iterate through the documents and create checkboxes with price, image, and document ID
+        querySnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            const serviceName = serviceData.name;
+            const servicePrice = serviceData.price; // Assuming price is a field in the document
+            const serviceImage = serviceData.image; // Assuming image URL is a field in the document
+            const serviceId = doc.id; // Get document ID
+
+            const label = document.createElement('label');
+            label.className = 'flex items-center mb-4 mt-4 text-sm'; // Add some spacing between services
+            label.innerHTML = `
+                <input type="checkbox" value="${serviceId}" class="mr-2" ${existingServices.includes(serviceId) ? 'checked' : ''} />
+                <img src="${serviceImage}" alt="${serviceName}" class="w-12 h-12 mr-2 rounded-full" />
+                <span>${serviceName} - $${servicePrice}</span>
+            `;
+            servicesList.appendChild(label);
+        });
+    } catch (error) {
+        console.error("Error fetching services:", error);
+    }
+}
+// Mapping for service IDs to names
+let serviceMapping = {};
+
+// Function to fetch services
+async function retrieveServices() {
+    try {
+        const servicesCollection = collection(db, "services");
+        const servicesSnapshot = await getDocs(servicesCollection);
+        
+        servicesSnapshot.forEach((doc) => {
+            const serviceData = doc.data();
+            const serviceId = doc.id; // Get the document ID
+            serviceMapping[serviceId] = serviceData.name; // Store the service name in mapping
+        });
+    } catch (error) {
+        console.error('Error fetching services:', error);
+    }
+}
+
+
+
+// Call the functions to fetch services and employees
+async function init() {
+    await retrieveServices(); // Fetch services first
+    await fetchEmployees(); // Then fetch employees
+}
+
+// Initialize the application
+init();
+
+// Event listener for Attach Service buttons
+document.getElementById('employees-table-body').addEventListener('click', async (event) => {
+    if (event.target.classList.contains('attach-service-button')) {
+        const employeeId = event.target.getAttribute('data-id');
+        console.log("Opening service modal for employee ID:", employeeId); // Debugging
+
+        // Fetch the employee document to get previously attached services
+        const employeeRef = doc(db, "employees", employeeId);
+        const employeeDoc = await getDoc(employeeRef);
+        
+        // Get the existing services for the employee
+        let existingServices = [];
+        if (employeeDoc.exists()) {
+            existingServices = employeeDoc.data().services || []; // Assume services is an array
+        }
+
+        // Fetch and display services when the modal opens
+        await fetchServices(existingServices);
+        
+        // Open the modal
+        document.getElementById('servicesModal').classList.remove('hidden');
+
+        // Save button click handler
+        document.getElementById('saveServicesButton').onclick = async () => {
+            const selectedServiceIds = Array.from(document.querySelectorAll('#servicesList input[type="checkbox"]:checked')).map(input => input.value);
+            console.log("Selected service IDs for employee ID:", employeeId, selectedServiceIds); // Debugging
+
+            // Save the selected services for the employee
+            await updateDoc(employeeRef, {
+                services: selectedServiceIds // Update employee document with selected service IDs
+            });
+            alert("Services attached successfully!");
+            closeServiceModal(); // Close the modal after saving
+        };
+    }
+});
+
+
+// Update the existing closeServiceModal function if needed
+const closeServiceModal = () => {
+    document.getElementById('servicesModal').classList.add('hidden'); }
+    // Reset any forms or state if necessary
+
+
+        // Enable/disable time inputs based on checkbox
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                const day = event.target.id.split('-')[0];
+                document.getElementById(`${day}-from`).disabled = !event.target.checked;
+                document.getElementById(`${day}-to`).disabled = !event.target.checked;
+            });
+        });
+
+
+
+      
+
 </script>
 </body>
 {% endblock %}
