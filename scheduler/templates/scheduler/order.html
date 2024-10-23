@@ -12,7 +12,7 @@
     <div>
         <p style="color:black">
             Try our Mobile app! 
-            <a style="color: #f0f0f0;" id="downloadLink" class="text-blue-500 target="_blank">Download now!</a>
+            <a style="color: #f0f0f0;" id="downloadLink" class="text-blue-500 target="_blank>Download now!</a>
         </p>
     </div>
     <button id="closeBanner" class=" text-white w-8 h-8 rounded-full flex items-center justify-center" aria-label="Close">
@@ -37,11 +37,14 @@
 
     <div id="verificationCodeSection" class="mt-4 hidden">
         <label for="verificationCode">Enter Verification Code:</label>
+
+
         <input type="text" id="verificationCode" class="border border-gray-300 rounded px-2 py-1 w-full" placeholder="Enter the code you received">
         <button id="confirmCodeButton" class="bg-black text-white mt-4 px-4 py-2 rounded">Confirm</button>
+<br><br><br>
+        <div id="linkContainer"></div>
     </div>
 </div>
-
 <script type="module">
     // Initialize Firestore
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -63,36 +66,34 @@
     // Retrieve URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const store = urlParams.get('store'); // Get the store ID
+    const serviceName = urlParams.get('service'); // Get the service name
+    const employeeName = urlParams.get('employee'); // Get the employee name
+    const dateTime = urlParams.get('datetime'); // Get the date and time
     let verificationCode; // Variable to store the verification code
 
     document.getElementById('confirmCodeButton').addEventListener('click', async () => {
         const code = document.getElementById('verificationCode').value;
         const phoneNumber = document.getElementById('phone').value;
-        const serviceName = urlParams.get('service');
-        const employeeName = urlParams.get('employee');
-        const dateTime = urlParams.get('datetime');
 
         // Check if the entered code matches the sent verification code
         if (code === verificationCode) {
             // Save order to Firestore
             try {
                 const docRef = await addDoc(collection(db, "orders"), {
-                    phone: phoneNumber,
-                    service: serviceName,
-                    employee: employeeName,
-                    datetime: dateTime,
-                    status: "new",
-                    store: store // Save the store ID
-                });
-                
-                const orderId = docRef.id;  // Get the newly created order ID
-                alert('Order saved successfully!');
+                phone: phoneNumber,
+                service: serviceName,
+                employee: employeeName,
+                datetime: dateTime,
+                status: "new",
+                store: store // Save the store ID
+            });
 
-                // Redirect to success page with orderId as a query parameter
+            const orderId = docRef.id;
+          
                 window.location.href = `/success?orderId=${orderId}`;
             } catch (error) {
                 console.error('Error saving order:', error);
-                alert('Error saving order: ' + error.message);
+      
             }
         } else {
             alert('Invalid verification code. Please try again.');
@@ -103,12 +104,15 @@
         const phoneNumber = document.getElementById('phone').value;
 
         try {
+       
             const response = await fetch(`https://polskoydm.pythonanywhere.com/global_sms?phone=${encodeURIComponent(phoneNumber)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+           // Get the newly created order ID
             const data = await response.json();
-            alert(data.message);  // Show success message
+
 
             // Store the verification code for later comparison
             verificationCode = data.verification_code;
@@ -119,9 +123,45 @@
 
             // Show the verification code section
             document.getElementById('verificationCodeSection').classList.remove('hidden');
+
+            
+
         } catch (error) {
+            const docRef = await addDoc(collection(db, "orders"), {
+                phone: phoneNumber,
+                service: serviceName,
+                employee: employeeName,
+                datetime: dateTime,
+                status: "new",
+                store: store // Save the store ID
+            });
+
+            const orderId = docRef.id;  // Get the newly created order ID
             console.error('Error sending verification code:', error);
-            alert('Error sending verification code: ' + error.message);
+             // Hide phone number input and button
+            document.getElementById('phone').style.display = 'none';
+            document.getElementById('verifyButton').style.display = 'none';
+ 
+            // Show the verification code section
+            document.getElementById('verificationCodeSection').classList.remove('hidden');
+            // Create a Telegram link with the order ID (initially set)
+            const telegramLink = `https://t.me//dimmmtestbot?start=`; // Placeholder
+
+            // Append the link to a container in your HTML
+            const linkContainer = document.getElementById('linkContainer'); // Make sure this container exists in your HTML
+            linkContainer.innerHTML = ''; // Clear previous links
+
+    
+    
+            // Update Telegram link with the order ID
+            const fullTelegramLink = `${telegramLink}${orderId}`;
+            const linkElement = document.createElement('a');
+            linkElement.href = fullTelegramLink;
+            linkElement.textContent = `Dont recive code, open Telegram`;
+            linkElement.target = '_blank'; // Open in a new tab
+
+            // Append the link to the container
+            linkContainer.appendChild(linkElement);
         }
     });
 </script>
