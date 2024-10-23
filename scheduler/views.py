@@ -7,14 +7,12 @@ from .models import Slot, Booking, Service, Barber, BarberShop
 
 from google.cloud import firestore
 import calendar
-
-# myapp/views.py
-from django.shortcuts import render
-from django.http import JsonResponse
 import json
+import logging
 import random
 import requests
-import logging
+from django.http import JsonResponse
+from django.shortcuts import render
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +30,11 @@ def telegram_webhook(request):
 
         try:
             # Process incoming Telegram message
-            message = json.loads(update)['message']
+            message = json.loads(update).get('message', {})
+            if not message:  # Check if there is a message
+                logging.warning("No message found in update.")
+                return JsonResponse({'status': 'success'}, status=200)
+
             chat_id = message['chat']['id']
             username = message['chat'].get('username', '')
             first_name = message['chat'].get('first_name', '')
@@ -44,7 +46,7 @@ def telegram_webhook(request):
             send_telegram_message(chat_id, verification_code)
 
             return JsonResponse({'status': 'success', 'chat_id': chat_id, 'verification_code': verification_code}, status=200)
-        
+
         except Exception as e:
             error_message = f"Failed to process update: {e}"
             error_messages.append(error_message)  # Store the error message
@@ -52,9 +54,6 @@ def telegram_webhook(request):
             return JsonResponse({'status': 'error', 'message': 'Failed to process update'}, status=500)
 
     return JsonResponse({'status': 'method_not_allowed'}, status=405)
-
-def index(request):
-    return render(request, 'index.html', {'bot_connected': bot_connected, 'error_messages': error_messages})
 
 def send_telegram_message(chat_id, verification_code):
     token = '5278311018:AAHHgwcyvabDWaqIMKByTMQJS0cAWm7GyfM'  # Replace with your bot token
@@ -64,8 +63,9 @@ def send_telegram_message(chat_id, verification_code):
         'text': f'Your verification code is: {verification_code}'
     }
     response = requests.post(url, json=payload)
+    logging.info("Response from Telegram API: %s", response.text)  # Log the response
     if response.status_code != 200:
-        raise Exception("Telegram API responded with status code: {}".format(response.status_code))
+        logging.error("Failed to send message: %s", response.text)
 
 class BarberShopDetailView(View):
     def get(self, request, id):
