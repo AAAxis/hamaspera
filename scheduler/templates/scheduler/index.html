@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save and Display Data</title>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Chat Data</h1>
+  <table id="chatTable" border="1">
+    <tr>
+      <th>ID</th>
+      <th>Code</th>
+      <th>Time</th>
+    </tr>
+  </table>
+
+  <script>
+    // Initialize Firebase
+      // Firebase configuration
+      const firebaseConfig = {
+           apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+           authDomain: "barbershop-77353.firebaseapp.com",
+           projectId: "barbershop-77353",
+           storageBucket: "barbershop-77353.appspot.com",
+           messagingSenderId: "1018170430611",
+           appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+           measurementId: "G-4VS048B47G"
+       };
+   
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to get URL parameters
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        chat_id: params.get('chat_id'),
+        code: params.get('code'),
+        time: params.get('time')
+      };
+    }
+
+    // Save data to Firestore
+    async function saveToFirestore(data) {
+      try {
+        await db.collection('chats').add(data);
+        console.log('Data saved successfully');
+        displayData(); // Call function to display data in table
+      } catch (error) {
+        console.error('Error saving data: ', error);
+      }
+    }
+
+    // Display data in table
+    async function displayData() {
+      const table = document.getElementById('chatTable');
+      try {
+        const querySnapshot = await db.collection('chats').get();
+        querySnapshot.forEach((doc) => {
+          const rowData = doc.data();
+          const row = table.insertRow(-1);
+          const cell1 = row.insertCell(0);
+          const cell2 = row.insertCell(1);
+          const cell3 = row.insertCell(2);
+          cell1.innerHTML = rowData.chat_id;
+          cell2.innerHTML = rowData.code;
+          cell3.innerHTML = rowData.time;
+        });
+      } catch (error) {
+        console.error('Error displaying data: ', error);
+      }
+    }
+
+    // Get URL params and save data
+    const params = getQueryParams();
+    if (params.chat_id && params.code && params.time) {
+      saveToFirestore(params);
+    }
+  </script>
+</body>
+</html>

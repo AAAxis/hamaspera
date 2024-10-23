@@ -86,6 +86,12 @@ class SuccessView(TemplateView):
         return context
     
 
+class IndexView(View):
+    def get(self, request):
+        # You can now use the 'id' variable directly
+        # Pass it to the template context or handle it as needed
+        return render(request, 'scheduler/index.html')
+
 
 
 class SubscriptionsView(View):
