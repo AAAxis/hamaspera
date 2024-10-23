@@ -1,0 +1,28 @@
+<!-- myapp/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Bot Status</title>
+</head>
+<body>
+    <h1>Telegram Bot Status</h1>
+    {% if bot_connected %}
+        <p>The Telegram bot is connected successfully!</p>
+    {% else %}
+        <p>The Telegram bot is not connected.</p>
+    {% endif %}
+
+    <h2>Error Messages</h2>
+    {% if error_messages %}
+        <ul>
+            {% for error in error_messages %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No errors have occurred.</p>
+    {% endif %}
+</body>
+</html>

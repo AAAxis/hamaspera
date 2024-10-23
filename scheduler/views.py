@@ -8,6 +8,64 @@ from .models import Slot, Booking, Service, Barber, BarberShop
 from google.cloud import firestore
 import calendar
 
+# myapp/views.py
+from django.shortcuts import render
+from django.http import JsonResponse
+import json
+import random
+import requests
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+# Global variables
+bot_connected = True  # Set to True to indicate bot is connected
+error_messages = []  # List to store error messages
+
+def telegram_webhook(request):
+    global error_messages  # Use global variables to modify them
+
+    if request.method == 'POST':
+        update = request.body.decode('utf-8')  # Get the raw body
+        logging.info("Received update: %s", update)
+
+        try:
+            # Process incoming Telegram message
+            message = json.loads(update)['message']
+            chat_id = message['chat']['id']
+            username = message['chat'].get('username', '')
+            first_name = message['chat'].get('first_name', '')
+
+            # Generate a random 6-digit verification code
+            verification_code = str(random.randint(100000, 999999))
+
+            # Send the verification code back to the user
+            send_telegram_message(chat_id, verification_code)
+
+            return JsonResponse({'status': 'success', 'chat_id': chat_id, 'verification_code': verification_code}, status=200)
+        
+        except Exception as e:
+            error_message = f"Failed to process update: {e}"
+            error_messages.append(error_message)  # Store the error message
+            logging.error(error_message)
+            return JsonResponse({'status': 'error', 'message': 'Failed to process update'}, status=500)
+
+    return JsonResponse({'status': 'method_not_allowed'}, status=405)
+
+def index(request):
+    return render(request, 'index.html', {'bot_connected': bot_connected, 'error_messages': error_messages})
+
+def send_telegram_message(chat_id, verification_code):
+    token = '5278311018:AAHHgwcyvabDWaqIMKByTMQJS0cAWm7GyfM'  # Replace with your bot token
+    url = f'https://api.telegram.org/bot{token}/sendMessage'
+    payload = {
+        'chat_id': chat_id,
+        'text': f'Your verification code is: {verification_code}'
+    }
+    response = requests.post(url, json=payload)
+    if response.status_code != 200:
+        raise Exception("Telegram API responded with status code: {}".format(response.status_code))
 
 class BarberShopDetailView(View):
     def get(self, request, id):
