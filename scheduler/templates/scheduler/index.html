@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Save and Display Data</title>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js"></script>
+  <title>Store Link to Firebase</title>
+  
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js"></script>
 </head>
 <body>
-  <h1>Chat Data</h1>
-  <table id="chatTable" border="1">
-    <tr>
-      <th>ID</th>
-      <th>Code</th>
-      <th>Time</th>
-    </tr>
-  </table>
+  <h1>Store Link to Firebase</h1>
 
   <script>
+    // Your web app's Firebase configuration
       // Firebase configuration
       const firebaseConfig = {
            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -29,56 +26,34 @@
            measurementId: "G-4VS048B47G"
        };
    
-    // Initialize Firebase globally using Firebase v9's compat methods
+
+    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Function to get URL parameters
-    function getQueryParams() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        chat_id: params.get('chat_id'),
-        code: params.get('code'),
-        time: params.get('time')
-      };
-    }
-
-    // Save data to Firestore
-    async function saveToFirestore(data) {
+    // Function to store the link in Firestore
+    async function storeLinkToFirebase(chatId, verificationCode, timestamp) {
       try {
-        await db.collection('chats').add(data);
-        console.log('Data saved successfully');
-        displayData(); // Call function to display data in table
-      } catch (error) {
-        console.error('Error saving data: ', error);
-      }
-    }
-
-    // Display data in table
-    async function displayData() {
-      const table = document.getElementById('chatTable');
-      try {
-        const querySnapshot = await db.collection('chats').get();
-        querySnapshot.forEach((doc) => {
-          const rowData = doc.data();
-          const row = table.insertRow(-1);
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          const cell3 = row.insertCell(2);
-          cell1.innerHTML = rowData.chat_id;
-          cell2.innerHTML = rowData.code;
-          cell3.innerHTML = rowData.time;
+        await db.collection("links").add({
+          chat_id: chatId,
+          verification_code: verificationCode,
+          timestamp: timestamp
         });
+        console.log("Link stored successfully!");
       } catch (error) {
-        console.error('Error displaying data: ', error);
+        console.error("Error storing link: ", error);
       }
     }
 
-    // Get URL params and save data
-    const params = getQueryParams();
-    if (params.chat_id && params.code && params.time) {
-      saveToFirestore(params);
-    }
+    // Extract values from the link
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get('chat_id');
+    const verificationCode = urlParams.get('verification_code');
+    const timestamp = urlParams.get('timestamp');
+
+    // Store the link data in Firebase
+    storeLinkToFirebase(chatId, verificationCode, timestamp);
+
   </script>
 </body>
 </html>
