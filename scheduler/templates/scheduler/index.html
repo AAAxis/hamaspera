@@ -55,6 +55,11 @@
   
     // Function to store the link in Firestore
     async function storeLinkToFirebase(chatId, verificationCode, timestamp) {
+      if (!chatId || !verificationCode || !timestamp) {
+        alert("All fields must be filled out.");
+        return;
+      }
+
       try {
         const linksRef = collection(db, "telegram");
         await addDoc(linksRef, {
