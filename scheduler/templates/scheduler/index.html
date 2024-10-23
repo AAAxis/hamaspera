@@ -12,9 +12,11 @@
 </head>
 <body>
   <h1>Store Link to Firebase</h1>
+  <script type="module">
+    // Import necessary functions from Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js';
+    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
 
-  <script>
-    // Your web app's Firebase configuration
       // Firebase configuration
       const firebaseConfig = {
            apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
