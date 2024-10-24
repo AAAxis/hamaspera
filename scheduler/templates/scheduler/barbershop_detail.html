@@ -550,6 +550,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+async function fetchServiceEmployees(serviceId) {
+    const employeesQuery = query(collection(db, 'employees'), where('services', 'array-contains', serviceId));
+    const querySnapshot = await getDocs(employeesQuery);
+
+    const employeeSelect = document.getElementById('employeeSelect');
+    employeeSelect.innerHTML = '<option value="">Select an employee</option>'; // Clear previous options
+
+    // Populate employee options
+    querySnapshot.forEach((doc) => {
+        const employeeData = doc.data();
+        console.log('Employee Data:', employeeData);
+
+        const option = document.createElement('option');
+        option.value = doc.id; // Employee document ID
+        option.textContent = employeeData.name; // Employee name
+        employeeSelect.appendChild(option);
+    });
+
+    // Preselect the first employee if available
+    if (employeeSelect.options.length > 1) {
+        employeeSelect.selectedIndex = 1;
+    }
+}
+
+// Update the event listener for the service dropdown to fetch employees
+document.getElementById('serviceSelect').addEventListener('change', async (event) => {
+    const serviceId = event.target.value;
+    if (serviceId) {
+        await populateDays(); // Populate days when a service is selected
+        await fetchServiceEmployees(serviceId); // Fetch employees for the selected service
+    } else {
+        // Clear subsequent selects if no service is selected
+        document.getElementById('dateSelect').innerHTML = '<option value="">Select a day</option>';
+        document.getElementById('timeSelect').innerHTML = '<option value="">Select an hour</option>';
+        document.getElementById('employeeSelect').innerHTML = '<option value="">Select an employee</option>';
+    }
+});
+
 </script>
 {% endblock %}
 
