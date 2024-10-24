@@ -124,8 +124,8 @@
         </div>
 
         <section class="mb-12">
-            <h2 class="text-3xl font-bold mb-6 text-center">Our Gallery</h2>
-            <div id="gallery" class="bg-gray grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 class="text-3xl font-bold mb-6 text-center">Gallery</h2>
+            <div id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Gallery images will be dynamically inserted here -->
             </div>
         </section>
@@ -374,6 +374,7 @@ async function fetchServiceEmployees(serviceId) {
     }
 
 
+
 document.addEventListener('DOMContentLoaded', async () => {
     await populateDays();
     await fetchBarbershopData("{{ barbershop_id }}");
@@ -405,15 +406,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const name = serviceData.name; // Directly use the image field
                 if (image) {
                     console.log('Image URL:', image);
-                    const imgDiv = document.createElement('div');
-                    imgDiv.className = 'w-full h-96 bg-white flex items-center justify-center rounded-lg';
+
+                    // Create container div for image and service name
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'w-full flex flex-col items-center justify-center rounded-lg mb-6';
+
+                    // Image element
                     const img = document.createElement('img');
                     img.src = image; // Set image source correctly
                     img.alt = 'Service Image';
                     img.title = name; // Set the service name as the title
-                    img.className = 'w-full h-full rounded-lg mx-4 scrollbar-hide';
-                    imgDiv.appendChild(img);
-                    galleryDiv.appendChild(imgDiv);
+                    img.className = 'w-full h-full rounded-lg mb-2'; // Adjusted for some spacing
+
+                    // Service name element
+                    const nameParagraph = document.createElement('p');
+                    nameParagraph.textContent = name;
+                    nameParagraph.className = 'text-center text-lg font-semibold mt-2';
+
+                    // Append image and service name to container
+                    imgContainer.appendChild(img);
+                    imgContainer.appendChild(nameParagraph);
+
+                    // Append container to gallery
+                    galleryDiv.appendChild(imgContainer);
                 } else {
                     console.warn('No image URL found for service:', name);
                 }
@@ -422,6 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error fetching gallery images:", error);
         }
     }
+
 
     document.getElementById('orderButton').addEventListener('click', async () => {
     const serviceSelect = document.getElementById('serviceSelect');
