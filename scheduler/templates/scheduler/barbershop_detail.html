@@ -295,7 +295,7 @@ async function fetchServices() {
 
         const option = document.createElement('option');
         option.value = doc.id; // Service document ID
-        option.textContent = serviceData.name; // Service name
+        option.textContent = `${serviceData.name} - $${serviceData.price}`; // Display service name and price
         serviceSelect.appendChild(option);
 
         if (index === 0) {
@@ -439,6 +439,7 @@ async function fetchServiceEmployees(serviceId) {
 
                 const image = serviceData.image; // Directly use the image field
                 const name = serviceData.name; // Directly use the image field
+                const price = serviceData.price; // Fetch the price
                 if (image) {
                     console.log('Image URL:', image);
 
@@ -455,7 +456,7 @@ async function fetchServiceEmployees(serviceId) {
 
                     // Service name element
                     const nameParagraph = document.createElement('p');
-                    nameParagraph.textContent = name;
+                    nameParagraph.textContent = `${name} - $${price}`; // Display service name and price
                     nameParagraph.className = 'text-center text-lg font-semibold mt-2';
 
                     // Append image and service name to container
@@ -473,30 +474,83 @@ async function fetchServiceEmployees(serviceId) {
         }
     }
 
+    async function checkEmployeeAvailability(employeeId, selectedDate, selectedTime) {
+        try {
+            // Fetch shifts for the employee on the selected date
+            const shiftsRef = collection(db, 'employees', employeeId, 'shifts');
+            const shiftsQuery = query(shiftsRef, where('date', '==', selectedDate));
+            const shiftsSnapshot = await getDocs(shiftsQuery);
 
-    document.getElementById('orderButton').addEventListener('click', async () => {
-    const serviceSelect = document.getElementById('serviceSelect');
-    const employeeSelect = document.getElementById('employeeSelect');
-    const date = document.getElementById('dateSelect').value;
-    const time = document.getElementById('timeSelect').value;
+            let isAvailable = false;
 
-    if (!serviceSelect.value || !employeeSelect.value || !date || !time) {
-        alert("Please select a service, an employee, and a date/time.");
-        return;
+            shiftsSnapshot.forEach((shiftDoc) => {
+                const shiftData = shiftDoc.data();
+                const shiftStart = shiftData.start_time;
+                const shiftEnd = shiftData.end_time;
+
+                // Check if the selected time is within the shift hours
+                if (selectedTime >= shiftStart && selectedTime < shiftEnd) {
+                    isAvailable = true;
+                }
+            });
+
+            if (!isAvailable) {
+                alert("The selected employee does not have a shift at this time.");
+                return false;
+            }
+
+            // Fetch appointments for the employee on the selected date and time
+            const appointmentsRef = collection(db, 'appointments');
+            const appointmentsQuery = query(
+                appointmentsRef,
+                where('employeeId', '==', employeeId),
+                where('date', '==', selectedDate),
+                where('time', '==', selectedTime)
+            );
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
+
+            if (!appointmentsSnapshot.empty) {
+                alert("The selected employee already has an appointment at this time.");
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Error checking employee availability:", error);
+            return false;
+        }
     }
 
-    // Get selected service and employee names
-    const serviceName = serviceSelect.options[serviceSelect.selectedIndex].text;
-    const employeeName = employeeSelect.options[employeeSelect.selectedIndex].text;
+    document.getElementById('orderButton').addEventListener('click', async () => {
+        const serviceSelect = document.getElementById('serviceSelect');
+        const employeeSelect = document.getElementById('employeeSelect');
+        const date = document.getElementById('dateSelect').value;
+        const time = document.getElementById('timeSelect').value;
 
-    const dateTime = `${date}T${time}`;
-    
-    // Construct the URL with service and employee names
-    const orderUrl = `/order?datetime=${encodeURIComponent(dateTime)}&store=${encodeURIComponent(store)}&service=${encodeURIComponent(serviceName)}&employee=${encodeURIComponent(employeeName)}`;
-    
-    window.location.href = orderUrl;
-});
+        if (!serviceSelect.value || !employeeSelect.value || !date || !time) {
+            alert("Please select a service, an employee, and a date/time.");
+            return;
+        }
 
+        const employeeId = employeeSelect.value;
+
+        // Check employee availability
+        const isAvailable = await checkEmployeeAvailability(employeeId, date, time);
+        if (!isAvailable) {
+            return;
+        }
+
+        // Get selected service and employee names
+        const serviceName = serviceSelect.options[serviceSelect.selectedIndex].text;
+        const employeeName = employeeSelect.options[employeeSelect.selectedIndex].text;
+
+        const dateTime = `${date}T${time}`;
+        
+        // Construct the URL with service and employee names
+        const orderUrl = `/order?datetime=${encodeURIComponent(dateTime)}&store=${encodeURIComponent(store)}&service=${encodeURIComponent(serviceName)}&employee=${encodeURIComponent(employeeName)}`;
+        
+        window.location.href = orderUrl;
+    });
 
     document.addEventListener('DOMContentLoaded', async () => {
         const barbershopId = "{{ barbershop_id }}";
@@ -507,3 +561,4 @@ async function fetchServiceEmployees(serviceId) {
 
 </script>
 {% endblock %}
+
