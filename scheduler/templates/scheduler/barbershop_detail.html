@@ -3,222 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appoint Me</title>
+    <title>Appoint Me - Barbershop Booking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        #banner {
-            transition: all 0.5s ease;
-        }
-        #banner.closed {
-            height: 0;
-            overflow: hidden;
-            opacity: 0;
-            padding: 0;
-        }
+        #banner { transition: all 0.5s ease; }
+        #banner.closed { height: 0; overflow: hidden; opacity: 0; padding: 0; }
         #background {
-            height: 300px;
+            height: 400px;
             background-size: cover;
             background-position: center;
             position: relative;
         }
-
         #logo {
-            width: 150px;
-            height: 150px;
-            background-color: #000; /* Default to black if not set */
-            border: 5px solid white; /* Rounded white border */
-            border-radius: 10px; /* Slightly rounded corners for a box look */
-            border-radius: 50%; /* Make it circular */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Cast shadow */
-            position: absolute; /* Change to absolute positioning */
-            top: 200px; /* Snap it 100px above the bottom */
-            left: 5%; /* Center it horizontally */
+            width: 180px;
+            height: 180px;
+            background-color: #000;
+            border: 5px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            bottom: -90px;
+            left: 50%;
+            transform: translateX(-50%);
         }
-
         #iconSection {
-            display: flex;
-            position: absolute; /* Absolute positioning to place icons on the right */
-            right: 5%; /* Align it to the right for small screens */
-            top: 32%;
-            z-index: 1; /* Place it above the background */
+            position: absolute;
+            right: 5%;
+            top: 20px;
+            z-index: 10;
         }
-
         .icon-wrapper {
-            margin: 0 10px; /* Space between icons */
+            margin: 0 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center; /* Center icon */
-            width: 40px; /* Width for button-like appearance */
-            height: 40px; /* Height for button-like appearance */
-            border-radius: 50%; /* Make it circular */
-            background-color: white; /* White background for buttons */
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add shadow for button effect */
-            transition: background-color 0.3s; /* Smooth background transition */
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
-
         .icon-wrapper:hover {
-            background-color: #f0f0f0; /* Light gray on hover */
+            background-color: #ffffff;
+            transform: scale(1.1);
         }
-
         .icon-wrapper i {
-            font-size: 1.5rem; /* Increase icon size */
-            color: black; /* Icon color */
+            font-size: 1.5rem;
+            color: #333;
         }
-
         #gallery img {
-            height: 200px; /* Set a fixed height */
-            width: auto;   /* Maintain aspect ratio */
-            border-radius: 0.5rem; /* Rounded corners for images */
-            object-fit: cover; /* Ensure images cover the area */
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            transition: transform 0.3s ease;
         }
-
+        #gallery img:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
-<body class="bg-white">
-<div class="max-w-md mx-auto bg-white p-2 md:p-4 hidden">
-    <div>
-        <p class="text-black text-sm md:text-base">
-            Try our Mobile app! 
-        </p>
-    </div>
-    <button id="closeBanner" class="text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center hidden md:block" aria-label="Close">
-        &times;
-    </button>
-</div>
-<!-- End of Banner Section -->
-
-
-<!-- Barbershop Logo Image -->
-<div id="background" class=" mx-auto bg-white">
-    <div class="h-full flex flex-col justify-center items-center text-white">
-        <div id="logo" class="flex justify-center mt-4">
-                <img src="{{ image_url }}" alt="Logo" class="w-full h-full object-contain rounded-full" id="logoImage">
-        </div>
-    </div>
-</div>
-<!-- Barbershop Name -->
-<div class="container mx-auto my-4 p-4">
-<!-- Icons Section -->
-    <div id="iconSection" class="flex justify-center">
-        <div class="icon-wrapper" id="phoneIcon">
-            <i class="fas fa-phone-alt" style="font-size: 30px; color: black;"></i>
-        </div>
-        <div class="icon-wrapper" id="instagramIcon">
-            <i class='fab fa-instagram' style='font-size:30px;color:black'></i>
-        </div>
-        <div class="icon-wrapper" id="addressIcon">
-            <i class="fas fa-map-marker-alt" style="font-size: 30px; color: black;"></i>
-        </div>
-    </div>
-</div>
-<!-- Barbershop Name -->
-<div style="display: flex; align-items: center; justify-content: center; margin-left: 45%; margin-top: -55px;">
-    <div id="barbershopName" class="text-center text-5xl font-bold relative text-black">
-        {{ business_name }}
-    </div>
-
-</div>
-
-<!--Order Section-->
-<div  class="container mx-auto my-2 p-4 border rounded-lg border-gray-100 "> 
-    <div class="container mx-auto px-4">
-        <div id="workingHours" class="flex-row">
-            {% if working_hours %}
-              <div class="working-hours">Today's open hours: {{ working_hours }}</div>
-            {% else %}
-              <div class="working-hours">Today's open hours: Not provided</div>
-            {% endif %}
-      
-        </div>
-
-    </div>
-    <!-- About us Section -->
-    
-    <br>
-
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <label for="serviceSelect" class="mb-2 text-xl text-gray-700 text-left">Select Service:</label>
-        </div>
-        <div class="w-full">
-            <select id="serviceSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select a service</option>
-            </select>
-        </div>
-    </div>
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <label for="employeeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Master:</label>
-        </div>
-        <div class="w-full">
-            <select id="employeeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <option value="" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2" >Select an employee</option>
-            </select>
-        </div>
-    </div>
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <label for="dateSelect" class="mb-2 text-xl text-gray-700 text-left">Select Day:</label>
-        </div>
-        <div class="w-full">
-            <select id="dateSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <!-- Days will be dynamically inserted here -->
-            </select>
-        </div>
-    </div>
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <label for="timeSelect" class="mb-2 text-xl text-gray-700 text-left">Select Hour:</label>
-        </div>
-        <div class="w-full">
-            <select id="timeSelect" class="w-full border border-gray-300 rounded px-2 py-1 text-xl text-gray-700 mb-2">
-                <option value="8:00">8:00 AM</option>
-                <option value="9:00">9:00 AM</option>
-                <option value="10:00">10:00 AM</option>
-                <option value="11:00">11:00 AM</option>
-                <option value="12:00">12:00 PM</option>
-                <option value="13:00">1:00 PM</option>
-                <option value="14:00">2:00 PM</option>
-                <option value="15:00">3:00 PM</option>
-                <option value="16:00">4:00 PM</option>
-                <option value="17:00">5:00 PM</option>
-                <option value="18:00">6:00 PM</option>
-                <option value="19:00">7:00 PM</option>
-                <option value="20:00">8:00 PM</option>
-            </select>
-        </div>
-    </div>
-    
-
-    <div class="flex flex-col mb-4">
-
-    </div>
-    <div class="flex flex-col mb-4">
-        <div class="flex flex-col mb-4">
-            <button id="orderButton" class="bg-black text-white w-full px-4 py-2 rounded text-xl hover:bg-gray-800">Order now</button>
-        </div>
-    </div>
-    <div class="container mx-auto my-4 p-4">
-        <h1 class="text-left text-2xl font-bold my-4 text-gray-700">Gallery</h1>
-        <div id="gallery" class="flex overflow-x-auto space-x-4 mt-4 px-4 scrollbar-hide">
-            <!-- Gallery images will be dynamically inserted here -->
-        </div>
-    </div>
-
-    <!-- Footer Section -->
-    <footer class="text-black text-center py-4 mt-8">
-        <div class="container mx-auto px-4 flex flex-col items-center border-t border-gray-200">
-            <div class="mt-4">
-                <p class="text-xl text-gray-500">Do you want a site like this?  <a href="https://t.me/polskoydm" class="text-blue-500 ">Contact Us</a></p>
+<body class="bg-gray-100 font-sans">
+    <header id="background" class="relative">
+        <div id="iconSection" class="flex">
+            <div class="icon-wrapper" id="phoneIcon">
+                <i class="fas fa-phone-alt"></i>
             </div>
-            <div class="mt-4">
-                <a href="{% url 'schedule' %}" class="text-xl text-gray-700">Powere by Appoint Me <img src="https://polskoydm.pythonanywhere.com/static/playstore.png" alt="Logo" class="inline h-8"> </a>
+            <div class="icon-wrapper" id="instagramIcon">
+                <i class="fab fa-instagram"></i>
             </div>
-    </div>
-    
-</footer>
+            <div class="icon-wrapper" id="addressIcon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+        </div>
+        <div id="logo" class="flex justify-center items-center overflow-hidden">
+            <img src="{{ image_url }}" alt="Logo" class="w-full h-full object-cover" id="logoImage">
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pt-24 pb-12">
+        <h1 id="barbershopName" class="text-4xl font-bold text-center mb-8">{{ business_name }}</h1>
+        
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+            <div id="workingHours" class="text-center text-lg mb-6"></div>
+            
+            <form class="space-y-6">
+                <div>
+                    <label for="serviceSelect" class="block text-lg font-medium text-gray-700 mb-2">Select Service:</label>
+                    <select id="serviceSelect" class="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a service</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="employeeSelect" class="block text-lg font-medium text-gray-700 mb-2">Select Master:</label>
+                    <select id="employeeSelect" class="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select an employee</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="dateSelect" class="block text-lg font-medium text-gray-700 mb-2">Select Day:</label>
+                    <select id="dateSelect" class="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Days will be dynamically inserted here -->
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="timeSelect" class="block text-lg font-medium text-gray-700 mb-2">Select Hour:</label>
+                    <select id="timeSelect" class="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Hours will be dynamically inserted here based on working hours -->
+                    </select>
+                </div>
+                
+                <button id="orderButton" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-700 transition duration-300">Book Appointment</button>
+            </form>
+        </div>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-center">Our Gallery</h2>
+            <div id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Gallery images will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4 text-lg">Do you want a site like this? <a href="https://t.me/polskoydm" class="text-blue-400 hover:underline">Contact Us</a></p>
+            <a href="{% url 'schedule' %}" class="text-lg">
+                Powered by Appoint Me 
+                <img src="https://polskoydm.pythonanywhere.com/static/playstore.png" alt="Logo" class="inline h-8 ml-2">
+            </a>
+        </div>
+    </footer>
 
 </div>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -226,7 +147,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
@@ -237,16 +158,15 @@
         appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
         measurementId: "G-4VS048B47G"
     };
-
+    
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
+    const storage = getStorage(app);
     // Declare store globally
     let store;
 
-    document.getElementById('closeBanner').addEventListener('click', function () {
-        document.getElementById('banner').classList.add('closed');
-    });
+   
 
     async function fetchBarbershopData(barbershopId) {
         try {
@@ -503,7 +423,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-      document.getElementById('orderButton').addEventListener('click', async () => {
+    document.getElementById('orderButton').addEventListener('click', async () => {
     const serviceSelect = document.getElementById('serviceSelect');
     const employeeSelect = document.getElementById('employeeSelect');
     const date = document.getElementById('dateSelect').value;
