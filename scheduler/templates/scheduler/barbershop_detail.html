@@ -1,3 +1,7 @@
+{% extends 'scheduler/base.html' %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,19 +11,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        #banner { transition: all 0.5s ease; }
+        #banner { transition: all 1.004.07s ease; }
         #banner.closed { height: 0; overflow: hidden; opacity: 0; padding: 0; }
         #background {
             height: 300px;
             background-size: cover;
             background-position: center;
             position: relative;
+            border-radius: 6px;
+            
+            
         }
         #logo {
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
             background-color: #000;
-            border: 5px solid white;
+            border: 3px solid black;
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             position: absolute;
@@ -131,15 +138,7 @@
         </section>
     </main>
 
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="mb-4 text-lg">Do you want a site like this? <a href="https://t.me/polskoydm" class="text-blue-400 hover:underline">Contact Us</a></p>
-            <a href="{% url 'schedule' %}" class="text-lg">
-                Powered by Appoint Me 
-                <img src="https://polskoydm.pythonanywhere.com/static/playstore.png" alt="Logo" class="inline h-8 ml-2">
-            </a>
-        </div>
-    </footer>
+    
 
 </div>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -149,15 +148,7 @@
     import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
     // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
-        authDomain: "barbershop-77353.firebaseapp.com",
-        projectId: "barbershop-77353",
-        storageBucket: "barbershop-77353.appspot.com",
-        messagingSenderId: "1018170430611",
-        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
-        measurementId: "G-4VS048B47G"
-    };
+    
     
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
@@ -268,7 +259,7 @@ async function fetchWorkingHoursForToday() {
 
             if (todayHours && todayHours.working) {
                 // If the store is open today, display the hours
-                workingHoursDiv.textContent = `Open: ${todayHours.from} - Close: ${todayHours.to}`;
+                workingHoursDiv.innerHTML = `<span class="flex items-center"><ion-icon name="time-outline" class="mr-2"></ion-icon>Open hours: ${todayHours.from} - ${todayHours.to}</span>`;
             } else {
                 // If the store is closed today
                 workingHoursDiv.textContent = 'Closed today';
@@ -373,15 +364,59 @@ async function fetchServiceEmployees(serviceId) {
         }
     }
 
+    async function fetchWorkingHoursForSelectedDay(selectedDate) {
+        try {
+            const workingHoursRef = doc(db, 'working_hours', store);
+            const workingHoursDoc = await getDoc(workingHoursRef);
 
+            if (workingHoursDoc.exists()) {
+                const workingHours = workingHoursDoc.data().workingHours;
+                const selectedDay = new Date(selectedDate).toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+                const selectedDayHours = workingHours[selectedDay];
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await populateDays();
-    await fetchBarbershopData("{{ barbershop_id }}");
-    await fetchServices();
-    await fetchGallery();
-    await fetchWorkingHoursForToday();
-});
+                const timeSelect = document.getElementById('timeSelect');
+                timeSelect.innerHTML = ''; // Clear previous options
+
+                if (selectedDayHours && selectedDayHours.working) {
+                    const fromHour = parseInt(selectedDayHours.from.split(':')[0]);
+                    const toHour = parseInt(selectedDayHours.to.split(':')[0]);
+
+                    for (let hour = fromHour; hour < toHour; hour++) {
+                        const option = document.createElement('option');
+                        option.value = `${hour}:00`;
+                        option.textContent = `${hour}:00`;
+                        timeSelect.appendChild(option);
+                    }
+                } else {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Closed';
+                    timeSelect.appendChild(option);
+                }
+            } else {
+                console.error('No working hours found for this store.');
+            }
+        } catch (e) {
+            console.error("Error fetching working hours:", e);
+        }
+    }
+
+    document.getElementById('dateSelect').addEventListener('change', async (event) => {
+        const selectedDate = event.target.value;
+        await fetchWorkingHoursForSelectedDay(selectedDate);
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await populateDays();
+        await fetchBarbershopData("{{ barbershop_id }}");
+        await fetchServices();
+        await fetchGallery();
+        await fetchWorkingHoursForToday();
+
+        // Initialize the timeSelect for the first day
+        const initialDate = document.getElementById('dateSelect').value;
+        await fetchWorkingHoursForSelectedDay(initialDate);
+    });
 
     async function fetchGallery() {
         try {
@@ -471,3 +506,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
 </script>
+{% endblock %}
