@@ -193,14 +193,14 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, addDoc, deleteDoc, collection, getDocs, query, where, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-  
+
     // Initialize Firebase
+    const firebaseConfig = {
+        // Your Firebase configuration object
+    };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
-    
-
-
 
     // Get user info from localStorage
     const userId = localStorage.getItem("userId");
