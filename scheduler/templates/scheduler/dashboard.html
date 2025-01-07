@@ -193,14 +193,20 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, addDoc, deleteDoc, collection, getDocs, query, where, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-  
+
     // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDdn3sQrXDz9lGzmCsU7sIfazS56K4ScLI",
+        authDomain: "barbershop-77353.firebaseapp.com",
+        projectId: "barbershop-77353",
+        storageBucket: "barbershop-77353.appspot.com",
+        messagingSenderId: "1018170430611",
+        appId: "1:1018170430611:web:3667f5a317d34e0e2ea966",
+        measurementId: "G-4VS048B47G"
+    };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
-    
-
-
 
     // Get user info from localStorage
     const userId = localStorage.getItem("userId");
